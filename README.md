@@ -6,7 +6,13 @@ A statistics website for FRC.
 
 ---
 
-##### Dependencies
+##### Used in this project:
 
 Python 3.5.1
-Django 1.9.5 (BSD License)
+
+Django 1.9.5 (BSD License) - `pip install Django==1.9.5`
+
+Chart.js (MIT License) - `npm install chart.js --save`
+
+Bootstrap (MIT License) - `npm install bootstrap@3 --save`
+
