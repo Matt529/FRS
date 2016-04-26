@@ -16,3 +16,4 @@ Chart.js (MIT License) - `npm install chart.js --save`
 
 Bootstrap (MIT License) - `npm install bootstrap@3 --save`
 
+[The Blue Alliance API v2](http://www.thebluealliance.com/apidocs)
