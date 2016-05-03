@@ -1,4 +1,6 @@
 from django.db import models
+import requests
+from . import TBAW_requester
 
 
 class Team(models.Model):
