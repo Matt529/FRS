@@ -42,3 +42,6 @@ Anytime `requirements.txt` is updated you will need to run the `pip` command abo
 ##### Reference in this project:
 
 [The Blue Alliance API v2](http://www.thebluealliance.com/apidocs)
+
+---
+###### Copyright (c) 2016 The FIRST Rating System Developers
