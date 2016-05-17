@@ -9,9 +9,7 @@ A statistics website for FRC.
 ##### Developing for this Project
 ---
 
-In order to develop for this project you will need to install a few
-development tools, namely `npm`, `bower`, `sass` and `typescript`. To install
- sass you will necessary need to install `ruby` to access `gem`.
+In order to develop for this project you will need to install a few development tools, namely `npm`, `bower`, `sass` and `typescript`. To install sass you will necessary need to install `ruby` to access `gem`.
 
 0. [`python3`](https://www.python.org/) : Python 3.x is required for this project, comes with the `pip` dependency manager
 0. [`ruby`](https://www.ruby-lang.org/en/) : Ruby comes with support for installing ruby gems (sass requires this)
@@ -20,39 +18,26 @@ development tools, namely `npm`, `bower`, `sass` and `typescript`. To install
 3. [`sass`](http://sass-lang.com/) : `gem install sass`
 4. [`typescript`](https://www.typescriptlang.org/) : `npm install -g typescript`
 
-After installing all the above dependencies you may proceed to execute the following commands to install
-python, javascript and css dependencies:
+After installing all the above dependencies you may proceed to execute the following commands to install python, javascript and css dependencies:
 
 `pip install -r requirements.txt`
 `npm install`
 `bower install`
 
-Anytime `requirements.txt` is updated you will need to run the `pip` command above if your IDE does not notify you of
-these changes. Anytime `package.json` is updated you will need to run the `npm install` again. Anytime `bower.json` is updated
-you will need to run `bower install` again.
+Anytime `requirements.txt` is updated you will need to run the `pip` command above if your IDE does not notify you of these changes. Anytime `package.json` is updated you will need to run the `npm install` again. Anytime `bower.json` is updated you will need to run `bower install` again.
 
-When adding `npm` dependencies, run your command as follows:
+***When adding `npm` dependencies,*** run your command as follows (one or the other, not both):
 
 `npm install <dependency_name> --save`
-
-or
-
 `npm install <dependency_name> --save-dev`
 
-for developer-only Dependencies (e.g. build tools like `gulp`).
-
-When adding `bower` dependencies, run your command as follows:
+***When adding `bower` dependencies*,** run your command as follows (one or the other, not both):
 
 `bower install <dependency_name> --save`
-
-or
-
 `bower install <dependency_name> --save-dev`
 
-for developer-only Dependencies (e.g. build tools like `gulp`).
 
-When adding `pip` dependencies, run `pip freeze > requirements.txt` afterwards
-so that these dependencies can be consistent between developers.
+***When adding `pip` dependencies,*** run `pip freeze > requirements.txt` afterwards so that these dependencies can be consistent between developers.
 
 ##### Reference in this project:
 
