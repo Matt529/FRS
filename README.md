@@ -20,23 +20,21 @@ In order to develop for this project you will need to install a few development 
 
 After installing all the above dependencies you may proceed to execute the following commands to install python, javascript and css dependencies:
 
-`pip install -r requirements.txt`
-`npm install`
-`bower install`
+- `pip install -r requirements.txt`
+- `npm install`
+- `bower install`
 
 Anytime `requirements.txt` is updated you will need to run the `pip` command above if your IDE does not notify you of these changes. Anytime `package.json` is updated you will need to run the `npm install` again. Anytime `bower.json` is updated you will need to run `bower install` again.
 
 ***When adding `npm` dependencies,*** run your command as follows (one or the other, not both):
 
-`npm install <dependency_name> --save`
-
-`npm install <dependency_name> --save-dev`
+- `npm install <dependency_name> --save`
+- `npm install <dependency_name> --save-dev`
 
 ***When adding `bower` dependencies*,** run your command as follows (one or the other, not both):
 
-`bower install <dependency_name> --save`
-
-`bower install <dependency_name> --save-dev`
+- `bower install <dependency_name> --save`
+- `bower install <dependency_name> --save-dev`
 
 
 ***When adding `pip` dependencies,*** run `pip freeze > requirements.txt` afterwards so that these dependencies can be consistent between developers.
