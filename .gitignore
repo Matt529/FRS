@@ -1,6 +1,5 @@
-# this is only temporary
-settings.py
-
+secret_key.py
+bower_components/
 
 # Created by https://www.gitignore.io/api/pycharm,python,django,virtualenv
 
