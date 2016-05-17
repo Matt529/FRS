@@ -29,11 +29,13 @@ Anytime `requirements.txt` is updated you will need to run the `pip` command abo
 ***When adding `npm` dependencies,*** run your command as follows (one or the other, not both):
 
 `npm install <dependency_name> --save`
+
 `npm install <dependency_name> --save-dev`
 
 ***When adding `bower` dependencies*,** run your command as follows (one or the other, not both):
 
 `bower install <dependency_name> --save`
+
 `bower install <dependency_name> --save-dev`
 
 
