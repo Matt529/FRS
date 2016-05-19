@@ -1,5 +1,6 @@
 secret_key.py
 bower_components/
+static/compiled
 
 # Created by https://www.gitignore.io/api/pycharm,python,django,virtualenv
 
