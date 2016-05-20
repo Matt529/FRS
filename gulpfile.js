@@ -5,7 +5,9 @@ var gulp = require('gulp'),
     sourcemaps = require('gulp-sourcemaps'),
     clean = require('gulp-clean'),
     typescript = require('gulp-typescript'),
-    concat = require('gulp-concat');
+    concat = require('gulp-concat'),
+    scsslint = require('gulp-scss-lint'),
+    tslint = require('gulp-tslint');
 
 var merge = require('merge2');  // Merging Gulp Streams
 var path = require('path');
@@ -46,6 +48,7 @@ function cleanTypescript() {
 
 function buildSass() {
     return gulp.src(SASS_SRC)
+        .pipe(scsslint())
         .pipe(sourcemaps.init())
         .pipe(sass().on('error', sass.logError))
         .pipe(sourcemaps.write())
@@ -61,6 +64,8 @@ function buildDefinitions() {
 
 function buildTypescript() {
     var tsResult = gulp.src(TS_SRC)
+        .pipe(tslint())
+        .pipe(tslint.report("verbose"))
         .pipe(sourcemaps.init())
         .pipe(typescript({
             declaration: true,

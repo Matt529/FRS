@@ -220,7 +220,7 @@ interface JQueryStatic {
 
     // Miscellaneous
     expr: any;
-    fn: any;  //TODO: Decide how we want to type this
+    fn: any;
     isReady: boolean;
 
     // Properties
@@ -262,7 +262,6 @@ interface JQueryStatic {
     parseHTML(data: string, context?: Element, keepScripts?: boolean): any[];
     parseJSON(json: string): any;
 
-    //FIXME: This should return an XMLDocument
     parseXML(data: string): any;
 
     queue(element: Element, queueName: string, newQueue: any[]): JQuery;
