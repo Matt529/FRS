@@ -16,7 +16,7 @@ In order to develop for this project you will need to install a few development 
 1. [`npm`](https://nodejs.org/en/) : Node.js comes with npm pre-packaged
 2. [`bower`](http://bower.io/) : `npm install -g bower`
 3. [`sass`](http://sass-lang.com/) : `gem install sass`
-4. [`scss-lint`](https://github.com/brigade/scss-lint) : `gem install scss_list`
+4. [`scss-lint`](https://github.com/brigade/scss-lint) : `gem install scss_lint`
 5. [`typescript`](https://www.typescriptlang.org/) : `npm install -g typescript`
 
 After installing all the above dependencies you may proceed to execute the following commands to install python, javascript and css dependencies:
@@ -27,18 +27,7 @@ After installing all the above dependencies you may proceed to execute the follo
 
 Anytime `requirements.txt` is updated you will need to run the `pip` command above if your IDE does not notify you of these changes. Anytime `package.json` is updated you will need to run the `npm install` again. Anytime `bower.json` is updated you will need to run `bower install` again.
 
-***When adding `npm` dependencies,*** run your command as follows (one or the other, not both):
-
-- `npm install <dependency_name> --save`
-- `npm install <dependency_name> --save-dev`
-
-***When adding `bower` dependencies*,** run your command as follows (one or the other, not both):
-
-- `bower install <dependency_name> --save`
-- `bower install <dependency_name> --save-dev`
-
-
-***When adding `pip` dependencies,*** run `pip freeze > requirements.txt` afterwards so that these dependencies can be consistent between developers.
+Want to contribute? [Read here!](https://github.com/FRC-RS/FRS/blob/master/CONTRIBUTING.md)
 
 ##### Reference in this project:
 
