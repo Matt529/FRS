@@ -1,14 +1,14 @@
-from .models import Team, Event
 import requests
+from .models import Team, Event
 
-api_key = {'X-TBA-App-Id': 'frs:frs:1'}
-tba_url = 'https://www.thebluealliance.com/api/v2/'
+__api_key = {'X-TBA-App-Id': 'frs:frs:1'}
+__tba_url = 'https://www.thebluealliance.com/api/v2/'
 
 
 # team_number is type int
 def make_team(team_number):
-    url = tba_url + 'team/frc{0}'.format(team_number)
-    req = requests.get(url, headers=api_key)
+    url = __tba_url + 'team/frc{0}'.format(team_number)
+    req = requests.get(url, headers=__api_key)
     resp = req.json()
 
     website = resp['website']
@@ -22,16 +22,16 @@ def make_team(team_number):
     rookie_year = resp['rookie_year']
     motto = resp['motto']
 
-    team = Team(website=website, name=name, locality=locality, region=region, country_name=country_name,
-                location=location, key=key, nickname=nickname, rookie_year=rookie_year, motto=motto,
-                team_number=team_number)
-    team.save()
+    team = Team.create(website=website, name=name, locality=locality, region=region, country_name=country_name,
+                       location=location, key=key, nickname=nickname, rookie_year=rookie_year, motto=motto,
+                       team_number=team_number)
+    return team
 
 
 # event_key should be yyyyKEY, e.g. 2016nyro
 def make_event(event_key):
-    url = tba_url + 'event/{0}'.format(event_key)
-    req = requests.get(url, headers=api_key)
+    url = __tba_url + 'event/{0}'.format(event_key)
+    req = requests.get(url, headers=__api_key)
     resp = req.json()
 
     name = resp['name']
