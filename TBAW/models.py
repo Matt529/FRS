@@ -5,7 +5,7 @@ MAX_DESCRIPTION_LENGTH = 500
 
 
 class Team(models.Model):
-    website = models.URLField()
+    website = models.URLField(null=True)
     name = models.TextField()  # longer name
 
     locality = models.CharField(max_length=MAX_NAME_LENGTH)  # e.g. city
@@ -16,8 +16,8 @@ class Team(models.Model):
     team_number = models.PositiveIntegerField()
     key = models.CharField(max_length=8)  # e.g. frc2791
     nickname = models.CharField(max_length=MAX_NAME_LENGTH)  # shorter name
-    rookie_year = models.PositiveIntegerField()
-    motto = models.TextField()
+    rookie_year = models.PositiveIntegerField(null=True)
+    motto = models.TextField(null=True)
 
     def __str__(self):
         return "{0} ({1})".format(self.name, self.team_number)
@@ -28,7 +28,6 @@ class Team(models.Model):
         team = cls(website=website, name=name, locality=locality, region=region, country_name=country_name,
                    location=location, team_number=team_number, key=key, nickname=nickname, rookie_year=rookie_year,
                    motto=motto)
-        team.save()
         return team
 
 
