@@ -8,10 +8,10 @@ class Team(models.Model):
     website = models.URLField(null=True)
     name = models.TextField()  # longer name
 
-    locality = models.CharField(max_length=MAX_NAME_LENGTH)  # e.g. city
-    region = models.CharField(max_length=MAX_NAME_LENGTH)  # e.g. state, province
-    country_name = models.CharField(max_length=MAX_NAME_LENGTH)
-    location = models.CharField(max_length=MAX_DESCRIPTION_LENGTH)  # full city + state + country
+    locality = models.CharField(max_length=MAX_NAME_LENGTH, null=True)  # e.g. city
+    region = models.CharField(max_length=MAX_NAME_LENGTH, null=True)  # e.g. state, province
+    country_name = models.CharField(max_length=MAX_NAME_LENGTH, null=True)
+    location = models.CharField(max_length=MAX_DESCRIPTION_LENGTH, null=True)  # full city + state + country
 
     team_number = models.PositiveIntegerField()
     key = models.CharField(max_length=8)  # e.g. frc2791
@@ -20,7 +20,7 @@ class Team(models.Model):
     motto = models.TextField(null=True)
 
     def __str__(self):
-        return "{0} ({1})".format(self.name, self.team_number)
+        return "{0} ({1})".format(self.nickname, self.team_number)
 
     @classmethod
     def create(cls, website, name, locality, region, country_name, location, team_number, key, nickname, rookie_year,
@@ -48,7 +48,7 @@ class Event(models.Model):
         (100, 'Preseason'),
         (-1, 'Unlabeled')
     )
-    event_type = models.IntegerField(choices=event_type_choices)
+    event_type = models.IntegerField(choices=event_type_choices, null=True)
 
     """https://github.com/the-blue-alliance/the-blue-alliance/blob/master/consts/district_type.py#L6"""
     event_district_choices = (
@@ -62,16 +62,16 @@ class Event(models.Model):
         (7, 'North Carolina'),
         (8, 'Georgia'),
     )
-    event_district = models.IntegerField(choices=event_district_choices)
+    event_district = models.IntegerField(choices=event_district_choices, null=True)
 
     year = models.PositiveIntegerField()
-    location = models.CharField(max_length=MAX_NAME_LENGTH)
-    venue_address = models.TextField()
-    timezone = models.CharField(max_length=20)
+    location = models.CharField(max_length=MAX_NAME_LENGTH, null=True)
+    venue_address = models.TextField(null=True)
+    timezone = models.CharField(max_length=20, null=True)
     website = models.URLField(null=True)
     official = models.BooleanField()
 
-    # teams = models.ManyToManyField(Team)
+    teams = models.ManyToManyField(Team)
 
     # webcast = my_webcast_model(), parse JSON data to model fields
 

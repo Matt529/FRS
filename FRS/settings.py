@@ -46,7 +46,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'FRS',
     'TBAW',
+    'util',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -87,6 +89,13 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        # todo: get mariaDB working...
+        # 'ENGINE': 'django.db.backends.mysql',
+        # 'NAME': 'FRS',
+        # 'USER': 'FRSuser',
+        # 'PASSWORD': 'password',
+        # 'HOST': 'localhost',
+        # 'PORT': '',
     }
 }
 
