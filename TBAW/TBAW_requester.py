@@ -35,3 +35,8 @@ def get_event_json(event_key):
 def get_list_of_events_json(year=2016):
     url = __tba_url + 'events/{0}'.format(year)
     return requests.get(url, headers=__api_key).json()
+
+
+def get_list_of_matches_json(event_key):
+    url = __tba_url + 'event/{0}/matches'.format(event_key)
+    return requests.get(url, headers=__api_key).json()

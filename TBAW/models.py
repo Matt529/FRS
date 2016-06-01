@@ -31,6 +31,16 @@ class Team(models.Model):
         return team
 
 
+class Alliance(models.Model):
+    # is this necessary? idk
+    color_choices = (
+        ('Red', 'Red'),
+        ('Blue', 'Blue')
+    )
+    teams = models.ManyToManyField(Team)
+    color = models.CharField(max_length=4, choices=color_choices, null=True)
+
+
 class Event(models.Model):
     key = models.CharField(max_length=10)  # e.g. 2016cmp
     name = models.CharField(max_length=MAX_DESCRIPTION_LENGTH)  # e.g. Finger Lakes Regional
@@ -75,7 +85,7 @@ class Event(models.Model):
 
     # webcast = my_webcast_model(), parse JSON data to model fields
 
-    # alliances = models.ManyToManyField(Alliance, null=True)
+    alliances = models.ManyToManyField(Alliance)
 
     # district_points = my_district_points_model(), parse JSON data to model fields
 
@@ -90,7 +100,7 @@ class Match(models.Model):
     set_number = models.CharField(null=True, max_length=20)
 
     match_number = models.CharField(max_length=20)  # e.g. 2016nyro_qm20
-    # alliances = models.ManyToManyField(Alliance)
+    alliances = models.ManyToManyField(Alliance)
     # score_breakdown = my_score_model(null=true), parse JSON data to model fields
     # videos = my_videos_model, parse JSON data to model fields
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
@@ -115,8 +125,3 @@ class Robot(models.Model):
     # team = models.ForeignKey(Team, on_delete=models.CASCADE)
     year = models.PositiveIntegerField()
     name = models.CharField(max_length=MAX_NAME_LENGTH)
-
-
-class Alliance(models.Model):
-    # teams = models.ManyToManyField(Team)
-    pass
