@@ -104,7 +104,7 @@ class Match(models.Model):
     # score_breakdown = my_score_model(null=true), parse JSON data to model fields
     # videos = my_videos_model, parse JSON data to model fields
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
-    time_string = models.CharField(max_length=25)
+    # time_string = models.CharField(max_length=25)
     # time = models.DateTimeField(), parse UNIX timestamp to DatetimeField
 
 
