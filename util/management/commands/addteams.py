@@ -17,6 +17,7 @@ def add_list():
     for team_data in teams:
         if team_data['name'] is None:
             teams_skipped += 1
+            print("Skipped team {0}".format(team_data['team_number']))
             continue
 
         add_team(team_data['team_number'], team_data=team_data)

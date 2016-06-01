@@ -8,6 +8,7 @@ from util.getters import get_team
 
 events_updated = 0
 events_created = 0
+events_skipped = 0
 
 
 def add_list():
@@ -17,8 +18,7 @@ def add_list():
 
 
 def add_event(event_key, event_data=None):
-    global events_updated, events_created
-    print("Starting event {0}... ".format(event_key), end="")
+    global events_updated, events_created, events_skipped
     if event_data is None:
         event_data = get_event_json(event_key)
 
@@ -33,7 +33,8 @@ def add_event(event_key, event_data=None):
                                                    official=event_data['official'])
         events_updated += 1
         print("Updated event {0}".format(event_key))
-    else:
+    # We only want to analyze data from official events or IRI/Cheezy Champs
+    elif event_data['official'] is True or event_data['event_code'] is 'iri' or event_data['event_code'] is 'cc':
         event = Event.objects.create(key=event_key, name=event_data['name'], short_name=event_data['short_name'],
                                      event_code=event_data['event_code'], event_type=event_data['event_type'],
                                      event_district=event_data['event_district'], year=event_data['year'],
@@ -48,6 +49,9 @@ def add_event(event_key, event_data=None):
 
         events_created += 1
         print("Created event {0}".format(event_key))
+    else:
+        events_skipped += 1
+        print("Skipped event {0}".format(event_key))
 
 
 class Command(BaseCommand):
@@ -67,5 +71,6 @@ class Command(BaseCommand):
         print("-------------")
         print("Events created:\t\t{0}".format(events_created))
         print("Events updated:\t\t{0}".format(events_updated))
+        print("Events skipped:\t\t{0}".format(events_skipped))
         print("Ran in {0} seconds.".format((time_end - time_start).__round__(3)))
         print("-------------")

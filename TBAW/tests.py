@@ -1,6 +1,7 @@
 from django.test import TestCase
 from .TBAW_requester import get_team_json, get_event_json
 from .models import Team, Event
+from util.getters import get_team
 
 
 # save() is intentionally left out of setUp() methods, see Django docs
@@ -78,3 +79,8 @@ class EventTestCase(TestCase):
         self.assertEqual(nyro.key, '2016nyro')
         self.assertEqual(nyro.year, 2016)
         self.assertEqual(nyro.get_event_type_display(), 'Regional')
+        self.assertEqual(nyro.get_event_district_display(), 'No District')
+        self.assertEqual(nyro.location, 'Rochester, NY, USA')
+        self.assertEqual(nyro.venue_address, 'Gordon Field House\nRochester Institute of Technology\n149 Lomb Memorial'
+                                             ' Drive\nRochester, NY 14623\nUSA')
+        self.assertEqual(nyro.official, True)
