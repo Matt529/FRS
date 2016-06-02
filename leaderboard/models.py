@@ -14,13 +14,14 @@ class AllianceLeaderboard:
         return count.most_common(5)
 
 
-# not working
 class TeamLeaderboard:
     @staticmethod
     def most_wins():
         matches = Match.objects.all()
         count = Counter()
         for m in matches:
-            for team in m.winner.objects.all():
+            if m.winner is None:
+                continue
+            for team in m.winner.teams.all():
                 count[team] += 1
         return count.most_common(5)

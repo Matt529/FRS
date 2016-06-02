@@ -49,6 +49,8 @@ INSTALLED_APPS = [
     'FRS',
     'TBAW',
     'util',
+    'leaderboard',
+    'polymorphic'
 ]
 
 MIDDLEWARE_CLASSES = [

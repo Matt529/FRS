@@ -1,4 +1,5 @@
 from django.db import models
+from .scoring_models import ScoringModel
 
 MAX_NAME_LENGTH = 120
 MAX_DESCRIPTION_LENGTH = 500
@@ -41,7 +42,6 @@ class Alliance(models.Model):
     color = models.CharField(max_length=4, choices=color_choices, null=True)
 
     def __str__(self):
-
         return "{0}".format(self.teams.all())
 
     def __repr__(self):
@@ -120,6 +120,7 @@ class Match(models.Model):
     """
 
     winner = models.ForeignKey(Alliance, null=True, related_name='winner')
+    scoring_model = models.ForeignKey(ScoringModel, null=True)
 
     def __str__(self):
         return "Match {0}".format(self.key)
