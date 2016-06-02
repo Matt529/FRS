@@ -5,8 +5,8 @@
 A statistics website for FRC.
 
 ---
-##### Do we have incorrect or missing data? [Read this!](https://github.com/FRC-RS/FRS/blob/master/bad-data.md)
-
+##### Do we have incorrect or missing data? [Read this!](https://github.com/FRC-RS/FRS/blob/master/bad_data.md)
+---
 ##### Developing for this Project
 ---
 
