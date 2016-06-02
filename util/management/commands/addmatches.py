@@ -53,12 +53,22 @@ def add_matches_from_event(event_key):
             red_score_breakdown = match['score_breakdown']['red']
             blue_score_breakdown = match['score_breakdown']['blue']
 
-            if red_score_breakdown['totalPoints'] == blue_score_breakdown['totalPoints']:
-                winner = None
-            elif red_score_breakdown['totalPoints'] > blue_score_breakdown['totalPoints']:
+            red_total_points = red_score_breakdown['totalPoints']
+            blue_total_points = blue_score_breakdown['totalPoints']
+            red_foul_points = red_score_breakdown['foulPoints']
+            blue_foul_points = blue_score_breakdown['foulPoints']
+
+            if red_total_points < blue_total_points:
+                winner = blue_alliance
+            elif red_total_points > blue_total_points:
                 winner = red_alliance
             else:
-                winner = blue_alliance
+                if red_total_points + red_foul_points > blue_total_points + blue_foul_points:
+                    winner = red_alliance
+                elif red_total_points + red_foul_points < blue_total_points + blue_foul_points:
+                    winner = blue_alliance
+                else:
+                    winner = None
 
             match_obj = Match.objects.create(key=match['key'], comp_level=match['comp_level'],
                                              set_number=match['set_number'], match_number=match['match_number'],

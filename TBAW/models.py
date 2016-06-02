@@ -14,10 +14,10 @@ class Team(models.Model):
     country_name = models.CharField(max_length=MAX_NAME_LENGTH, null=True)
     location = models.CharField(max_length=MAX_DESCRIPTION_LENGTH, null=True)  # full city + state + country
 
-    team_number = models.PositiveIntegerField()
+    team_number = models.PositiveSmallIntegerField()
     key = models.CharField(max_length=8)  # e.g. frc2791
     nickname = models.CharField(max_length=MAX_NAME_LENGTH)  # shorter name
-    rookie_year = models.PositiveIntegerField(null=True)
+    rookie_year = models.PositiveSmallIntegerField(null=True)
     motto = models.TextField(null=True)
 
     def __str__(self):
@@ -65,7 +65,7 @@ class Event(models.Model):
         (100, 'Preseason'),
         (-1, 'Unlabeled')
     )
-    event_type = models.IntegerField(choices=event_type_choices, null=True)
+    event_type = models.SmallIntegerField(choices=event_type_choices, null=True)
 
     """https://github.com/the-blue-alliance/the-blue-alliance/blob/master/consts/district_type.py#L6"""
     event_district_choices = (
@@ -79,9 +79,9 @@ class Event(models.Model):
         (7, 'North Carolina'),
         (8, 'Georgia'),
     )
-    event_district = models.IntegerField(choices=event_district_choices, null=True)
+    event_district = models.SmallIntegerField(choices=event_district_choices, null=True)
 
-    year = models.PositiveIntegerField()
+    year = models.PositiveSmallIntegerField()
     location = models.CharField(max_length=MAX_NAME_LENGTH, null=True)
     venue_address = models.TextField(null=True)
     timezone = models.CharField(max_length=20, null=True)
@@ -138,11 +138,11 @@ class Award(models.Model):
     award_type = models.CharField(choices=award_type_choices, max_length=MAX_NAME_LENGTH)
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     # recipient = models.ForeignKey(Team, on_delete=models.CASCADE)
-    year = models.PositiveIntegerField()
+    year = models.PositiveSmallIntegerField()
 
 
 class Robot(models.Model):
     key = models.CharField(max_length=13)  # e.g. frc2791_2016
     # team = models.ForeignKey(Team, on_delete=models.CASCADE)
-    year = models.PositiveIntegerField()
+    year = models.PositiveSmallIntegerField()
     name = models.CharField(max_length=MAX_NAME_LENGTH)

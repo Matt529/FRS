@@ -3,6 +3,8 @@ from polymorphic.models import PolymorphicModel
 
 
 class ScoringModel(PolymorphicModel):
+    json_data = models.TextField(default='')
+
     red_total_score = models.SmallIntegerField()
     red_auton_score = models.SmallIntegerField()
     red_teleop_score = models.SmallIntegerField()
@@ -14,6 +16,14 @@ class ScoringModel(PolymorphicModel):
     blue_teleop_score = models.SmallIntegerField()
     blue_foul_score = models.SmallIntegerField()
     blue_foul_count = models.SmallIntegerField(default=-1)
+
+    def get_json_data(self):
+        import json
+        return json.loads(self.json_data)
+
+    def set_json_data(self, data):
+        import json
+        self.json_data = json.dumps(data)
 
 
 class ScoringModel2016(ScoringModel):
