@@ -1,4 +1,4 @@
-from TBAW.models import Team, Event, Match
+from TBAW.models import Team, Event, Match, Alliance
 from .check import team_exists
 
 
@@ -20,3 +20,14 @@ def get_event(event_key):
 
 def get_match(event_key, match_key):
     return Match.objects.get(event_key=event_key, match_key=match_key)
+
+
+def get_alliance(teams):
+    if type(teams[0]) is int:
+        teams = [Team.objects.get(team_number=x) for x in teams]
+
+    set1 = set(Alliance.objects.filter(teams__team_number=teams[0].team_number))
+    set2 = set(Alliance.objects.filter(teams__team_number=teams[1].team_number))
+    set3 = set(Alliance.objects.filter(teams__team_number=teams[2].team_number))
+
+    return list(set1 & set2 & set3)[0]

@@ -40,6 +40,13 @@ class Alliance(models.Model):
     teams = models.ManyToManyField(Team)
     color = models.CharField(max_length=4, choices=color_choices, null=True)
 
+    def __str__(self):
+
+        return "{0}".format(self.teams.all())
+
+    def __repr__(self):
+        return "{0}".format(self.teams.all())
+
 
 class Event(models.Model):
     key = models.CharField(max_length=10)  # e.g. 2016cmp
@@ -106,6 +113,19 @@ class Match(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     # time_string = models.CharField(max_length=25)
     # time = models.DateTimeField(), parse UNIX timestamp to DatetimeField
+    """
+    todo:
+    Have a relationship to an an abstract class
+    Each year will have its own class that extends from that abstract class
+    """
+
+    winner = models.ForeignKey(Alliance, null=True, related_name='winner')
+
+    def __str__(self):
+        return "Match {0}".format(self.key)
+
+    def __repr__(self):
+        return "Match {0}".format(self.key)
 
 
 class Award(models.Model):
