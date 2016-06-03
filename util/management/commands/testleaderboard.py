@@ -1,25 +1,91 @@
+from pprint import pprint
+from time import clock
+
 from django.core.management.base import BaseCommand
-from leaderboard.models import AllianceLeaderboard, TeamLeaderboard
+from leaderboard.models import TeamLeaderboard, AllianceLeaderboard, EventLeaderboard
 
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        print("Most alliance match wins:")
-        print(AllianceLeaderboard.most_match_wins(5))
+        num = 10
+
+        print("Most 2-way alliance match wins:")
+        start = clock()
+        res = AllianceLeaderboard.most_match_wins_2(num)
+        end = clock()
+        pprint(res)
+        print("Operation took {0} seconds".format((end - start).__round__(3)))
         print("------------------------------------------")
 
-        print("Most 2-way alliance wins:")
-        print(AllianceLeaderboard.most_event_wins_2(5))
+        print("Most 3-way alliance match wins:")
+        start = clock()
+        res = AllianceLeaderboard.most_match_wins_3(num)
+        end = clock()
+        pprint(res)
+        print("Operation took {0} seconds".format((end - start).__round__(3)))
         print("------------------------------------------")
 
-        print("Most 3-way alliance wins:")
-        print(AllianceLeaderboard.most_event_wins_3(5))
+        print("Most 2-way alliance event wins:")
+        start = clock()
+        res = AllianceLeaderboard.most_event_wins_2(num)
+        end = clock()
+        pprint(res)
+        print("Operation took {0} seconds".format((end - start).__round__(3)))
+        print("------------------------------------------")
+
+        print("Most 3-way alliance event wins:")
+        start = clock()
+        res = AllianceLeaderboard.most_event_wins_3(num)
+        end = clock()
+        pprint(res)
+        print("Operation took {0} seconds".format((end - start).__round__(3)))
         print("------------------------------------------")
 
         print("Most team match wins:")
-        print(TeamLeaderboard.most_match_wins(5))
+        start = clock()
+        res = TeamLeaderboard.most_match_wins(num)
+        end = clock()
+        pprint(res)
+        print("Operation took {0} seconds".format((end - start).__round__(3)))
         print("------------------------------------------")
 
         print("Most team event wins:")
-        print(TeamLeaderboard.most_event_wins(5))
+        start = clock()
+        res = TeamLeaderboard.most_event_wins(num)
+        end = clock()
+        pprint(res)
+        print("Operation took {0} seconds".format((end - start).__round__(3)))
+        print("------------------------------------------")
+
+        print("Highest event average match scores:")
+        start = clock()
+        res = EventLeaderboard.highest_match_average_score(num * 2)
+        end = clock()
+        pprint(res)
+        print("Operation took {0} seconds".format((end - start).__round__(3)))
+        print("------------------------------------------")
+
+        exit(0)
+        print("Highest event average playoff match scores:")
+        start = clock()
+        res = EventLeaderboard.highest_playoff_match_average_score(num * 2)
+        end = clock()
+        pprint(res)
+        print("Operation took {0} seconds".format((end - start).__round__(3)))
+        print("------------------------------------------")
+
+        print("Highest event average qual match scores:")
+        start = clock()
+        res = EventLeaderboard.highest_qual_match_average_score(num * 2)
+        end = clock()
+        pprint(res)
+        print("Operation took {0} seconds".format((end - start).__round__(3)))
+        print("------------------------------------------")
+
+        print("Highest win rate teams:")
+        start = clock()
+        res = TeamLeaderboard.highest_win_rate(num * 5)
+        end = clock()
+        pprint(res)
+        print("Operation took {0} seconds".format((end - start).__round__(3)))
         print("------------------------------------------")

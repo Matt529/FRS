@@ -56,10 +56,10 @@ class ScoringModel2016(ScoringModel):
     blue_defense2 = models.CharField(max_length=20, default='', null=True)
     blue_defense3 = models.CharField(max_length=20, default='', null=True)
     blue_defense4 = models.CharField(max_length=20, default='', null=True)
-    blue_defense_1_cross_count = models.SmallIntegerField(default=0, null=True)
-    blue_defense_2_cross_count = models.SmallIntegerField(default=0, null=True)
-    blue_defense_3_cross_count = models.SmallIntegerField(default=0, null=True)
-    blue_defense_4_cross_count = models.SmallIntegerField(default=0, null=True)
+    blue_defense1_cross_count = models.SmallIntegerField(default=0, null=True)
+    blue_defense2_cross_count = models.SmallIntegerField(default=0, null=True)
+    blue_defense3_cross_count = models.SmallIntegerField(default=0, null=True)
+    blue_defense4_cross_count = models.SmallIntegerField(default=0, null=True)
     blue_defenses_breached = models.NullBooleanField(default=False)
     blue_low_bar_cross_count = models.SmallIntegerField(default=0, null=True)
     blue_robot1_auto = models.CharField(max_length=20, default='', null=True)
@@ -88,10 +88,10 @@ class ScoringModel2016(ScoringModel):
     red_defense2 = models.CharField(max_length=20, default='', null=True)
     red_defense3 = models.CharField(max_length=20, default='', null=True)
     red_defense4 = models.CharField(max_length=20, default='', null=True)
-    red_defense_1_cross_count = models.SmallIntegerField(default=0, null=True)
-    red_defense_2_cross_count = models.SmallIntegerField(default=0, null=True)
-    red_defense_3_cross_count = models.SmallIntegerField(default=0, null=True)
-    red_defense_4_cross_count = models.SmallIntegerField(default=0, null=True)
+    red_defense1_cross_count = models.SmallIntegerField(default=0, null=True)
+    red_defense2_cross_count = models.SmallIntegerField(default=0, null=True)
+    red_defense3_cross_count = models.SmallIntegerField(default=0, null=True)
+    red_defense4_cross_count = models.SmallIntegerField(default=0, null=True)
     red_defenses_breached = models.NullBooleanField(default=False)
     red_low_bar_cross_count = models.SmallIntegerField(default=0, null=True)
     red_robot1_auto = models.CharField(max_length=20, default='', null=True)
@@ -128,10 +128,10 @@ class ScoringModel2016(ScoringModel):
         self.blue_defense2 = blue_sb['position3']
         self.blue_defense3 = blue_sb['position4']
         self.blue_defense4 = blue_sb['position5']
-        self.blue_defense_1_cross_count = blue_sb['position2crossings']
-        self.blue_defense_2_cross_count = blue_sb['position3crossings']
-        self.blue_defense_3_cross_count = blue_sb['position4crossings']
-        self.blue_defense_4_cross_count = blue_sb['position5crossings']
+        self.blue_defense1_cross_count = blue_sb['position2crossings']
+        self.blue_defense2_cross_count = blue_sb['position3crossings']
+        self.blue_defense3_cross_count = blue_sb['position4crossings']
+        self.blue_defense4_cross_count = blue_sb['position5crossings']
         self.blue_defenses_breached = blue_sb['teleopDefensesBreached']
         self.blue_foul_count = blue_sb['foulCount']
         self.blue_foul_score = blue_sb['foulPoints']
@@ -166,10 +166,10 @@ class ScoringModel2016(ScoringModel):
         self.red_defense2 = red_sb['position3']
         self.red_defense3 = red_sb['position4']
         self.red_defense4 = red_sb['position5']
-        self.red_defense_1_cross_count = red_sb['position2crossings']
-        self.red_defense_2_cross_count = red_sb['position3crossings']
-        self.red_defense_3_cross_count = red_sb['position4crossings']
-        self.red_defense_4_cross_count = red_sb['position5crossings']
+        self.red_defense1_cross_count = red_sb['position2crossings']
+        self.red_defense2_cross_count = red_sb['position3crossings']
+        self.red_defense3_cross_count = red_sb['position4crossings']
+        self.red_defense4_cross_count = red_sb['position5crossings']
         self.red_defenses_breached = red_sb['teleopDefensesBreached']
         self.red_foul_count = red_sb['foulCount']
         self.red_foul_score = red_sb['foulPoints']

@@ -1,4 +1,5 @@
 from django.db import models
+from util.computations import average_match_score
 from .scoring_models import ScoringModel
 
 MAX_NAME_LENGTH = 120
@@ -95,6 +96,21 @@ class Event(models.Model):
     alliances = models.ManyToManyField(Alliance)
 
     # district_points = my_district_points_model(), parse JSON data to model fields
+
+    def __str__(self):
+        return "Event {0}".format(self.key)
+
+    def __repr__(self):
+        return "Event {0}".format(self.key)
+
+    def get_average_qual_match_score(self):
+        return average_match_score(self.match_set.filter(comp_level__exact='qm'))
+
+    def get_average_playoff_match_score(self):
+        return average_match_score(self.match_set.filter(comp_level__in=['ef', 'qf', 'sf', 'f']))
+
+    def get_average_overall_match_score(self):
+        return average_match_score(self.match_set.all())
 
 
 class Match(models.Model):
