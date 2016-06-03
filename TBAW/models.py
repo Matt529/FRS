@@ -108,7 +108,6 @@ class Match(models.Model):
 
     match_number = models.CharField(max_length=20)  # e.g. 2016nyro_qm20
     alliances = models.ManyToManyField(Alliance)
-    # score_breakdown = my_score_model(null=true), parse JSON data to model fields
     # videos = my_videos_model, parse JSON data to model fields
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     # time_string = models.CharField(max_length=25)

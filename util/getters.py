@@ -1,3 +1,4 @@
+from TBAW import scoring_models
 from TBAW.models import Team, Event, Match, Alliance
 from .check import team_exists
 
@@ -31,3 +32,12 @@ def get_alliance(teams):
     set3 = set(Alliance.objects.filter(teams__team_number=teams[2].team_number))
 
     return list(set1 & set2 & set3)[0]
+
+
+def get_instance_scoring_model(year):
+    return {
+        2016: scoring_models.ScoringModel2016,
+        2015: scoring_models.ScoringModel2015,
+        2014: scoring_models.ScoringModel2014,
+        # etc
+    }.get(year)

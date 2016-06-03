@@ -4,7 +4,7 @@ from TBAW.TBAW_requester import get_list_of_matches_json
 from TBAW.models import Match, Alliance, Event
 from django.core.management.base import BaseCommand
 from util.check import match_exists, alliance_exists
-from util.getters import get_team, get_event, get_alliance
+from util.getters import get_team, get_event, get_alliance, get_instance_scoring_model
 
 matches_created = 0
 matches_skipped = 0
@@ -72,7 +72,9 @@ def add_matches_from_event(event_key):
 
             match_obj = Match.objects.create(key=match['key'], comp_level=match['comp_level'],
                                              set_number=match['set_number'], match_number=match['match_number'],
-                                             event=get_event(event_key), winner=winner)
+                                             event=get_event(event_key), winner=winner,
+                                             scoring_model=parse_score_breakdown(match['key'][:4],
+                                                                                 match['score_breakdown']))
             match_obj.save()
             match_obj.alliances.add(red_alliance)
             match_obj.alliances.add(blue_alliance)
@@ -86,6 +88,16 @@ def add_matches_from_event(event_key):
                                                                               blue_alliance.teams.all()[1].team_number,
                                                                               blue_alliance.teams.all()[2].team_number,
                                                                               matches_created))
+
+
+def parse_score_breakdown(year, score_breakdown):
+    if type(year) is not int:
+        year = int(year)
+
+    model = get_instance_scoring_model(year).objects.create()
+    model.setup(score_breakdown)
+    model.save()
+    return model
 
 
 class Command(BaseCommand):
