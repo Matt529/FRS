@@ -109,7 +109,10 @@ class TeamLeaderboard:
                 wins[team] += 1
 
         for key, value in total.most_common():
-            total[key] = wins[key] / total[key]
+            if total[key] >= 14:
+                total[key] = wins[key] / total[key]
+            else:
+                del total[key]
 
         return total.most_common() if n is None else total.most_common(n)
 
@@ -122,37 +125,45 @@ class EventLeaderboard:
         for event in events:
             ranks[event] = event.get_average_overall_match_score()
 
-        # todo: add n
-        return sorted(ranks.items(), key=itemgetter(1))
+        return sorted(ranks.items(), key=itemgetter(1))[:n]
 
     @staticmethod
-    # todo: change to get_average_stuff_score()
     def highest_playoff_match_average_score(n=None):
-        events = Event.objects.all()
-        count = Counter()
+        events = Event.objects.exclude(event_code__exact='week0')  # todo: remove at next db flush
+        ranks = {}
         for event in events:
-            matches = event.match_set.filter(comp_level__in=['f', 'sf', 'qf', 'ef'])
-            if len(matches) == 0:
-                continue  # week0 sux
-            for match in matches:
-                count[event] += match.scoring_model.red_total_score + match.scoring_model.blue_total_score
+            ranks[event] = event.get_average_playoff_match_score()
 
-            count[event] /= len(matches)
-
-        return count.most_common() if n is None else count.most_common(n)
+        return sorted(ranks.items(), key=itemgetter(1))[:n]
 
     @staticmethod
-    # todo: change to get_average_stuff_score()
     def highest_qual_match_average_score(n=None):
-        events = Event.objects.all()
-        count = Counter()
+        events = Event.objects.exclude(event_code__exact='cmp')  # cmp doesn't have qualifiers
+        ranks = {}
         for event in events:
-            matches = event.match_set.filter(comp_level__exact='qm')
-            if len(matches) == 0:
-                continue  # einstein sux
-            for match in matches:
-                count[event] += match.scoring_model.red_total_score + match.scoring_model.blue_total_score
+            ranks[event] = event.get_average_qual_match_score()
 
-            count[event] /= len(matches)
+        return sorted(ranks.items(), key=itemgetter(1))[:n]
 
-        return count.most_common() if n is None else count.most_common(n)
+
+class OtherLeaderboard:
+    @staticmethod
+    def region_highest_average_score(n=None):
+        matches = Match.objects.all()
+        totals = Counter()
+        counts = Counter()
+        for match in matches:
+            for alliance in match.alliances.all():
+                for team in alliance.teams.all():
+                    counts['{0}, {1}'.format(team.region, team.country_name)] += 1
+                    if alliance.get_color_display() == 'Red':
+                        totals['{0}, {1}'.format(team.region, team.country_name)] += \
+                            match.scoring_model.red_total_score
+                    else:
+                        totals['{0}, {1}'.format(team.region, team.country_name)] += \
+                            match.scoring_model.blue_total_score
+
+        for key, value in totals.most_common():
+            totals[key] = totals[key] / counts[key]
+
+        return totals.most_common() if n is None else totals.most_common(n)

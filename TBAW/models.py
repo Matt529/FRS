@@ -41,12 +41,13 @@ class Alliance(models.Model):
     )
     teams = models.ManyToManyField(Team)
     color = models.CharField(max_length=4, choices=color_choices, null=True)
+    seed = models.SmallIntegerField(default=0, null=True)
 
     def __str__(self):
-        return "{0}".format(self.teams.all())
+        return "(Seed #{1}) {0}".format(self.teams.all(), self.seed)
 
     def __repr__(self):
-        return "{0}".format(self.teams.all())
+        return "(Seed #{1}) {0}".format(self.teams.all(), self.seed)
 
 
 class Event(models.Model):
@@ -128,11 +129,6 @@ class Match(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     # time_string = models.CharField(max_length=25)
     # time = models.DateTimeField(), parse UNIX timestamp to DatetimeField
-    """
-    todo:
-    Have a relationship to an an abstract class
-    Each year will have its own class that extends from that abstract class
-    """
 
     winner = models.ForeignKey(Alliance, null=True, related_name='winner')
     scoring_model = models.ForeignKey(ScoringModel, null=True)

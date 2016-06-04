@@ -2,7 +2,7 @@ from pprint import pprint
 from time import clock
 
 from django.core.management.base import BaseCommand
-from leaderboard.models import TeamLeaderboard, AllianceLeaderboard, EventLeaderboard
+from leaderboard.models import OtherLeaderboard, AllianceLeaderboard, TeamLeaderboard, EventLeaderboard
 
 
 class Command(BaseCommand):
@@ -87,5 +87,14 @@ class Command(BaseCommand):
         res = TeamLeaderboard.highest_win_rate(num * 5)
         end = clock()
         pprint(res)
+        print("Operation took {0} seconds".format((end - start).__round__(3)))
+        print("------------------------------------------")
+
+        print("Highest win rate regions:")
+        start = clock()
+        res = OtherLeaderboard.region_highest_average_score()
+        end = clock()
+        for reg in res:
+            print(str(reg).encode('utf-8'))
         print("Operation took {0} seconds".format((end - start).__round__(3)))
         print("------------------------------------------")
