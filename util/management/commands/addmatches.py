@@ -42,6 +42,7 @@ def add_matches_from_event(event_key):
                     for data_seg in event_json['alliances']:
                         if red_teams[0].key in data_seg['picks']:
                             red_alliance.seed = int(data_seg['name'][-1:])
+
                     red_alliance.save()
                     get_event(event_key).alliances.add(red_alliance)
                     for x in red_teams:
@@ -132,8 +133,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         event = options['event']
-        Match.objects.filter(event__key__exact=event).delete()
-        get_event(event).alliances.all().delete()
         time_start = clock()
         if event is not '':
             add_matches_from_event(event)
