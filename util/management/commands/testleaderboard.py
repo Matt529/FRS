@@ -65,7 +65,6 @@ class Command(BaseCommand):
         print("Operation took {0} seconds".format((end - start).__round__(3)))
         print("------------------------------------------")
 
-        exit(0)
         print("Highest event average playoff match scores:")
         start = clock()
         res = EventLeaderboard.highest_playoff_match_average_score(num * 2)

@@ -36,6 +36,7 @@ def add_matches_from_event(event_key):
                 event_json = None
                 if not alliance_exists(red_teams):
                     event_json = get_event_json(event_key)
+                    # print(event_json['alliances'])
                     red_alliance = Alliance.objects.create()
                     red_alliance.color = 'Red'
                     for data_seg in event_json['alliances']:
@@ -57,7 +58,7 @@ def add_matches_from_event(event_key):
                             blue_alliance.seed = int(data_seg['name'][-1:])
                     blue_alliance.save()
                     get_event(event_key).alliances.add(blue_alliance)
-                    for x in red_teams:
+                    for x in blue_teams:
                         blue_alliance.teams.add(x)
                 else:
                     blue_alliance = get_alliance(blue_teams)
@@ -131,6 +132,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         event = options['event']
+        Match.objects.filter(event__key__exact=event).delete()
+        get_event(event).alliances.all().delete()
         time_start = clock()
         if event is not '':
             add_matches_from_event(event)

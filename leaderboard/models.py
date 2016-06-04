@@ -125,16 +125,16 @@ class EventLeaderboard:
         for event in events:
             ranks[event] = event.get_average_overall_match_score()
 
-        return sorted(ranks.items(), key=itemgetter(1))[:n]
+        return sorted(ranks.items(), key=itemgetter(1), reverse=True)[:n]
 
     @staticmethod
     def highest_playoff_match_average_score(n=None):
-        events = Event.objects.exclude(event_code__exact='week0')  # todo: remove at next db flush
+        events = Event.objects.all()
         ranks = {}
         for event in events:
             ranks[event] = event.get_average_playoff_match_score()
 
-        return sorted(ranks.items(), key=itemgetter(1))[:n]
+        return sorted(ranks.items(), key=itemgetter(1), reverse=True)[:n]
 
     @staticmethod
     def highest_qual_match_average_score(n=None):
@@ -143,7 +143,7 @@ class EventLeaderboard:
         for event in events:
             ranks[event] = event.get_average_qual_match_score()
 
-        return sorted(ranks.items(), key=itemgetter(1))[:n]
+        return sorted(ranks.items(), key=itemgetter(1), reverse=True)[:n]
 
 
 class OtherLeaderboard:
