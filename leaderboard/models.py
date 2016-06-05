@@ -4,6 +4,7 @@ from TBAW.models import Match, Alliance, Team, Event
 from collections import Counter
 from operator import itemgetter
 from util.check import event_has_f3_match
+from util.generators import non_championship_teams
 
 
 class AllianceLeaderboard:
@@ -113,6 +114,38 @@ class TeamLeaderboard:
                 total[key] = wins[key] / total[key]
             else:
                 del total[key]
+
+        return total.most_common() if n is None else total.most_common(n)
+
+    @staticmethod
+    def highest_non_champs_win_rate(n=None):
+        # highest = highest_team_win_rate(Match.objects.filter(alliances__teams__in=non_championship_teams(2016)))
+        # for team in highest:
+        #     if team[0].went_to_champs(2016):
+        #         del team
+        #
+        # return highest[:n]
+
+        wins = Counter()
+        total = Counter()
+        teams = non_championship_teams(2016)
+        for team in teams:
+            matches = Match.objects.filter(alliances__teams__key=team.key)
+
+            if len(matches) < 10:
+                continue
+
+            for match in matches:
+                total[team] += 1
+
+                if match.winner is None:
+                    continue
+
+                if team in match.winner.teams.all():
+                    wins[team] += 1
+
+            if total[team] != 0:
+                total[team] = wins[team] / total[team]
 
         return total.most_common() if n is None else total.most_common(n)
 

@@ -41,7 +41,10 @@ def add_matches_from_event(event_key):
                     red_alliance.color = 'Red'
                     for data_seg in event_json['alliances']:
                         if red_teams[0].key in data_seg['picks']:
-                            red_alliance.seed = int(data_seg['name'][-1:])
+                            try:
+                                red_alliance.seed = int(data_seg['name'][-1:])
+                            except ValueError:
+                                print("Can't retrieve a seed from {}".format(data_seg['name']))
 
                     red_alliance.save()
                     get_event(event_key).alliances.add(red_alliance)
@@ -56,7 +59,10 @@ def add_matches_from_event(event_key):
                     blue_alliance.color = 'Blue'
                     for data_seg in event_json['alliances']:
                         if blue_teams[0].key in data_seg['picks']:
-                            blue_alliance.seed = int(data_seg['name'][-1:])
+                            try:
+                                blue_alliance.seed = int(data_seg['name'][-1:])
+                            except ValueError:
+                                print("Can't retrieve a seed from {}".format(data_seg['name']))
                     blue_alliance.save()
                     get_event(event_key).alliances.add(blue_alliance)
                     for x in blue_teams:

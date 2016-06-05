@@ -32,6 +32,10 @@ class Team(models.Model):
                    motto=motto)
         return team
 
+    def went_to_champs(self, year):
+        return self.event_set.filter(alliances__event__year=year,
+                                     event_code__in=['arc', 'cars', 'carv', 'cur', 'gal', 'hop', 'new', 'tes']).exists()
+
 
 class Alliance(models.Model):
     # is this necessary? idk

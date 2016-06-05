@@ -89,9 +89,9 @@ class Command(BaseCommand):
         print("Operation took {0} seconds".format((end - start).__round__(3)))
         print("------------------------------------------")
 
-        print("Highest win rate regions:")
+        print("Highest average score region per region:")
         start = clock()
-        res = OtherLeaderboard.region_highest_average_score()
+        res = OtherLeaderboard.region_highest_average_score(num)
         end = clock()
         for reg in res:
             print(str(reg).encode('utf-8'))
