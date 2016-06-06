@@ -1,5 +1,7 @@
 from django.db import models
+from polymorphic.models import PolymorphicModel
 from util.computations import average_match_score
+from .ranking_models import RankingModel
 from .scoring_models import ScoringModel
 
 MAX_NAME_LENGTH = 120
@@ -31,10 +33,6 @@ class Team(models.Model):
                    location=location, team_number=team_number, key=key, nickname=nickname, rookie_year=rookie_year,
                    motto=motto)
         return team
-
-    def went_to_champs(self, year):
-        return self.event_set.filter(alliances__event__year=year,
-                                     event_code__in=['arc', 'cars', 'carv', 'cur', 'gal', 'hop', 'new', 'tes']).exists()
 
 
 class Alliance(models.Model):
@@ -93,13 +91,10 @@ class Event(models.Model):
     timezone = models.CharField(max_length=20, null=True)
     website = models.URLField(null=True)
     official = models.BooleanField()
-
     teams = models.ManyToManyField(Team)
-
-    # webcast = my_webcast_model(), parse JSON data to model fields
-
     alliances = models.ManyToManyField(Alliance)
 
+    # webcast = my_webcast_model(), parse JSON data to model fields
     # district_points = my_district_points_model(), parse JSON data to model fields
 
     def __str__(self):
@@ -119,13 +114,9 @@ class Event(models.Model):
 
 
 class Match(models.Model):
-    key = models.CharField(max_length=20)  # yyyy{EVENT_CODE}_{COMP_LEVEL}m{MATCH_NUMBER}
+    key = models.CharField(max_length=20)  # yyyy{EVENT_CODE}_{COMP_LEVEL}m{MATCH_NUMBER}, e.g. 2016nyro_f1m2
     comp_level = models.CharField(max_length=6)  # e.g. qm, ef, qf, sf, f
-
-    """The set number in a series of matches where more than one match is required in the match series.
-    2010sc_qf1m2, would be match 2 in quarter finals 1.
-    -The Blue Alliance"""
-    set_number = models.CharField(null=True, max_length=20)
+    set_number = models.CharField(null=True, max_length=20)  # in 2016nyro_qf3m2, the set number is 3
 
     match_number = models.CharField(max_length=20)  # e.g. 2016nyro_qm20
     alliances = models.ManyToManyField(Alliance)

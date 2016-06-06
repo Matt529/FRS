@@ -1,3 +1,5 @@
+from json import dumps, loads
+
 from abc import ABCMeta, abstractmethod
 from django.db import models
 from polymorphic.models import PolymorphicModel
@@ -23,12 +25,10 @@ class ScoringModel(PolymorphicModel):
     blue_tech_foul_count = models.SmallIntegerField(default=0, null=True)
 
     def get_json_data(self):
-        import json
-        return json.loads(self.json_data)
+        return loads(self.json_data)
 
     def set_json_data(self, data):
-        import json
-        self.json_data = json.dumps(data)
+        self.json_data = dumps(data)
 
     @abstractmethod
     def setup(self, json):

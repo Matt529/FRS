@@ -1,9 +1,11 @@
-from TBAW import scoring_models
+from TBAW import scoring_models, ranking_models
 from TBAW.models import Team, Event, Match, Alliance
 from .check import team_exists
 
 
 def get_team(team_number):
+    if type(team_number) is not int:
+        team_number = int(team_number)
     return Team.objects.get(team_number=team_number)
 
 
@@ -45,5 +47,13 @@ def get_instance_scoring_model(year):
         2016: scoring_models.ScoringModel2016,
         2015: scoring_models.ScoringModel2015,
         2014: scoring_models.ScoringModel2014,
+        # etc
+    }.get(year)
+
+
+def get_instance_ranking_model(year):
+    return {
+        2016: ranking_models.RankingModel2016,
+        2015: ranking_models.RankingModel2015,
         # etc
     }.get(year)

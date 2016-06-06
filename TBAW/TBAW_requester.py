@@ -1,4 +1,5 @@
 import requests
+from util.getters import get_team
 
 __api_key = {'X-TBA-App-Id': 'frs:frs:1'}
 __tba_url = 'https://www.thebluealliance.com/api/v2/'
@@ -40,3 +41,23 @@ def get_list_of_events_json(year=2016):
 def get_list_of_matches_json(event_key):
     url = __tba_url + 'event/{0}/matches'.format(event_key)
     return requests.get(url, headers=__api_key).json()
+
+
+def get_event_rankings_json(event_key):
+    url = __tba_url + 'event/{0}/rankings'.format(event_key)
+    return requests.get(url, headers=__api_key).json()
+
+
+def get_event_statistics_json(event_key):
+    url = __tba_url + 'event/{0}/stats'.format(event_key)
+    return requests.get(url, headers=__api_key).json()
+
+
+def get_teams_at_event(event_key):
+    url = __tba_url + 'event/{0}/teams'.format(event_key)
+    teams = []
+    teams_json = requests.get(url, headers=__api_key).json()
+    for team in teams_json:
+        teams.append(get_team(team['team_number']))
+
+    return teams
