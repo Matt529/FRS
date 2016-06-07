@@ -3,6 +3,11 @@ from django.db import models
 from polymorphic.models import PolymorphicModel
 
 
+def parse_record(record_str):
+    """Quick little helper function to turn a string record, e.g. 5-4-1, to [5, 4, 1]"""
+    return [int(s) for s in record_str.split('-') if s.isdigit()]
+
+
 class RankingModel(PolymorphicModel):
     __metaclass__ = ABCMeta
 
@@ -38,15 +43,11 @@ class RankingModel2016(RankingModel):
                 self.scale_challenge_points = int(float(data_field[4]))
                 self.goals_points = int(float(data_field[5]))
                 self.defense_points = int(float(data_field[6]))
-                self.wins = int(data_field[7][0])
-                self.losses = int(data_field[7][2])
-                self.ties = int(data_field[7][4])
+                record = parse_record(data_field[7])
+                self.wins = record[0]
+                self.losses = record[1]
+                self.ties = record[2]
                 self.played = int(data_field[8])
-
-                print(
-                    'rank={0}, rp={1}, auto={2}, scp={3}, goals={4}, def={5}, rec={6}-{7}-{8}, #={9}'.format(
-                        self.rank, self.ranking_score, self.auton_points, self.scale_challenge_points,
-                        self.goals_points, self.defense_points, self.wins, self.losses, self.ties, self.played))
 
 
 class RankingModel2015(RankingModel):
