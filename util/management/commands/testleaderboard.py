@@ -2,7 +2,7 @@ from pprint import pprint
 from time import clock
 
 from django.core.management.base import BaseCommand
-from leaderboard.year_leaderboard_models import Leaderboard2016
+from leaderboard.models.years import Leaderboard2016
 
 
 class Command(BaseCommand):
@@ -100,7 +100,7 @@ class Command(BaseCommand):
 
         print("Ranking Points records")
         start = clock()
-        res = Leaderboard2016.highest_ranking_points(1.5 * num)
+        res = Leaderboard2016.highest_team_ranking_points(1.5 * num)
         end = clock()
         rs = []
         for r in res:
@@ -111,7 +111,7 @@ class Command(BaseCommand):
 
         print("Highest ranking points per game")
         start = clock()
-        res = Leaderboard2016.highest_ranking_points_per_game(int(1.5 * num))
+        res = Leaderboard2016.highest_team_ranking_points_per_game(int(1.5 * num))
         end = clock()
         pprint(res)
         print("Operation took {0} seconds".format((end - start).__round__(3)))
@@ -119,7 +119,7 @@ class Command(BaseCommand):
 
         print("Auton records")
         start = clock()
-        res = Leaderboard2016.highest_auton_points(1.5 * num)
+        res = Leaderboard2016.highest_team_auton_points(1.5 * num)
         end = clock()
         rs = []
         for r in res:
@@ -130,7 +130,7 @@ class Command(BaseCommand):
 
         print("Highest auton points per game")
         start = clock()
-        res = Leaderboard2016.highest_auton_points_per_game(int(1.5 * num))
+        res = Leaderboard2016.highest_team_auton_points_per_game(int(1.5 * num))
         end = clock()
         pprint(res)
         print("Operation took {0} seconds".format((end - start).__round__(3)))
@@ -138,7 +138,7 @@ class Command(BaseCommand):
 
         print("Scale/Challenge records")
         start = clock()
-        res = Leaderboard2016.highest_scale_challenge_points(1.5 * num)
+        res = Leaderboard2016.highest_team_scale_challenge_points(1.5 * num)
         end = clock()
         rs = []
         for r in res:
@@ -149,7 +149,7 @@ class Command(BaseCommand):
 
         print("Highest scale/challenge points per game")
         start = clock()
-        res = Leaderboard2016.highest_scale_challenge_points_per_game(int(1.5 * num))
+        res = Leaderboard2016.highest_team_scale_challenge_points_per_game(int(1.5 * num))
         end = clock()
         pprint(res)
         print("Operation took {0} seconds".format((end - start).__round__(3)))
@@ -157,7 +157,7 @@ class Command(BaseCommand):
 
         print("Goals records")
         start = clock()
-        res = Leaderboard2016.highest_goals_points(1.5 * num)
+        res = Leaderboard2016.highest_team_goals_points(1.5 * num)
         end = clock()
         rs = []
         for r in res:
@@ -168,7 +168,7 @@ class Command(BaseCommand):
 
         print("Highest goal points per game")
         start = clock()
-        res = Leaderboard2016.highest_goals_points_per_game(int(1.5 * num))
+        res = Leaderboard2016.highest_team_goals_points_per_game(int(1.5 * num))
         end = clock()
         pprint(res)
         print("Operation took {0} seconds".format((end - start).__round__(3)))
@@ -176,7 +176,7 @@ class Command(BaseCommand):
 
         print("Defense records")
         start = clock()
-        res = Leaderboard2016.highest_defense_points(1.5 * num)
+        res = Leaderboard2016.highest_team_defense_points(1.5 * num)
         end = clock()
         rs = []
         for r in res:
@@ -187,7 +187,7 @@ class Command(BaseCommand):
 
         print("Highest defense points per game")
         start = clock()
-        res = Leaderboard2016.highest_defense_points_per_game(int(1.5 * num))
+        res = Leaderboard2016.highest_team_defense_points_per_game(int(1.5 * num))
         end = clock()
         pprint(res)
         print("Operation took {0} seconds".format((end - start).__round__(3)))
@@ -195,7 +195,7 @@ class Command(BaseCommand):
 
         print("OPR records")
         start = clock()
-        res = Leaderboard2016.highest_opr(1.5 * num)
+        res = Leaderboard2016.highest_team_opr(1.5 * num)
         end = clock()
         rs = []
         for r in res:
@@ -206,7 +206,7 @@ class Command(BaseCommand):
 
         print("DPR records")
         start = clock()
-        res = Leaderboard2016.highest_dpr(1.5 * num)
+        res = Leaderboard2016.highest_team_dpr(1.5 * num)
         end = clock()
         rs = []
         for r in res:
@@ -217,7 +217,7 @@ class Command(BaseCommand):
 
         print("CCWMS records")
         start = clock()
-        res = Leaderboard2016.highest_ccwms(1.5 * num)
+        res = Leaderboard2016.highest_team_ccwms(1.5 * num)
         end = clock()
         rs = []
         for r in res:
