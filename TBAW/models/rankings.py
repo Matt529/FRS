@@ -1,18 +1,14 @@
 from abc import ABCMeta, abstractmethod
 from django.db import models
 from polymorphic.models import PolymorphicModel
-
-
-def parse_record(record_str):
-    """Quick little helper function to turn a string record, e.g. 5-4-1, to [5, 4, 1]"""
-    return [int(s) for s in record_str.split('-') if s.isdigit()]
+from TBAW.models import Team, Event
 
 
 class RankingModel(PolymorphicModel):
     __metaclass__ = ABCMeta
 
     rank = models.PositiveSmallIntegerField(null=True)
-    team = models.ForeignKey('TBAW.Team', null=True)
+    team = models.ForeignKey(Team, null=True)
     wins = models.PositiveSmallIntegerField(null=True)
     losses = models.PositiveSmallIntegerField(null=True)
     ties = models.PositiveSmallIntegerField(null=True)
@@ -20,7 +16,7 @@ class RankingModel(PolymorphicModel):
     tba_opr = models.FloatField(null=True)
     tba_dpr = models.FloatField(null=True)
     tba_ccwms = models.FloatField(null=True)
-    event = models.ForeignKey('TBAW.Event', null=True)
+    event = models.ForeignKey(Event, null=True)
 
     @abstractmethod
     def setup(self, rankings_json):
@@ -43,7 +39,7 @@ class RankingModel2016(RankingModel):
                 self.scale_challenge_points = int(float(data_field[4]))
                 self.goals_points = int(float(data_field[5]))
                 self.defense_points = int(float(data_field[6]))
-                record = parse_record(data_field[7])
+                record = [int(s) for s in data_field[7].split('-') if s.isdigit()]
                 self.wins = record[0]
                 self.losses = record[1]
                 self.ties = record[2]

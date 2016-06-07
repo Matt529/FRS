@@ -1,4 +1,4 @@
-from json import dumps, loads
+from json import loads, dumps
 
 from abc import ABCMeta, abstractmethod
 from django.db import models
@@ -200,5 +200,3 @@ class ScoringModel2015(ScoringModel):
 class ScoringModel2014(ScoringModel):
     def setup(self, json):
         pass
-
-# etc

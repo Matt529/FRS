@@ -1,25 +1,19 @@
 from django.db import models
-from polymorphic.models import PolymorphicModel
 from util.computations import average_match_score
-from .ranking_models import RankingModel
-from .scoring_models import ScoringModel
-
-MAX_NAME_LENGTH = 120
-MAX_DESCRIPTION_LENGTH = 500
 
 
 class Team(models.Model):
     website = models.URLField(null=True)
     name = models.TextField()  # longer name
 
-    locality = models.CharField(max_length=MAX_NAME_LENGTH, null=True)  # e.g. city
-    region = models.CharField(max_length=MAX_NAME_LENGTH, null=True)  # e.g. state, province
-    country_name = models.CharField(max_length=MAX_NAME_LENGTH, null=True)
-    location = models.CharField(max_length=MAX_DESCRIPTION_LENGTH, null=True)  # full city + state + country
+    locality = models.CharField(max_length=50, null=True)  # e.g. city
+    region = models.CharField(max_length=50, null=True)  # e.g. state, province
+    country_name = models.CharField(max_length=50, null=True)
+    location = models.CharField(max_length=50, null=True)  # full city + state + country
 
     team_number = models.PositiveSmallIntegerField()
     key = models.CharField(max_length=8)  # e.g. frc2791
-    nickname = models.CharField(max_length=MAX_NAME_LENGTH)  # shorter name
+    nickname = models.CharField(max_length=100)  # shorter name
     rookie_year = models.PositiveSmallIntegerField(null=True)
     motto = models.TextField(null=True)
 
@@ -54,8 +48,8 @@ class Alliance(models.Model):
 
 class Event(models.Model):
     key = models.CharField(max_length=10)  # e.g. 2016cmp
-    name = models.CharField(max_length=MAX_DESCRIPTION_LENGTH)  # e.g. Finger Lakes Regional
-    short_name = models.CharField(null=True, max_length=MAX_NAME_LENGTH)  # e.g. Finger Lakes
+    name = models.CharField(max_length=100)  # e.g. Finger Lakes Regional
+    short_name = models.CharField(null=True, max_length=50)  # e.g. Finger Lakes
     event_code = models.CharField(max_length=7)  # e.g. cmp
 
     """https://github.com/the-blue-alliance/the-blue-alliance/blob/master/consts/event_type.py"""
@@ -86,9 +80,9 @@ class Event(models.Model):
     event_district = models.SmallIntegerField(choices=event_district_choices, null=True)
 
     year = models.PositiveSmallIntegerField()
-    location = models.CharField(max_length=MAX_NAME_LENGTH, null=True)
+    location = models.CharField(max_length=50, null=True)
     venue_address = models.TextField(null=True)
-    timezone = models.CharField(max_length=20, null=True)
+    timezone = models.CharField(max_length=35, null=True)
     website = models.URLField(null=True)
     official = models.BooleanField()
     teams = models.ManyToManyField(Team)
@@ -126,7 +120,7 @@ class Match(models.Model):
     # time = models.DateTimeField(), parse UNIX timestamp to DatetimeField
 
     winner = models.ForeignKey(Alliance, null=True, related_name='winner')
-    scoring_model = models.ForeignKey(ScoringModel, null=True)
+    scoring_model = models.ForeignKey('TBAW.ScoringModel', null=True)
 
     def __str__(self):
         return "Match {0}".format(self.key)
@@ -136,12 +130,12 @@ class Match(models.Model):
 
 
 class Award(models.Model):
-    name = models.CharField(max_length=MAX_NAME_LENGTH)
+    name = models.CharField(max_length=100)
 
     # todo: https://github.com/the-blue-alliance/the-blue-alliance/blob/master/consts/award_type.py#L15
     award_type_choices = ()
 
-    award_type = models.CharField(choices=award_type_choices, max_length=MAX_NAME_LENGTH)
+    award_type = models.CharField(choices=award_type_choices, max_length=100)
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     # recipient = models.ForeignKey(Team, on_delete=models.CASCADE)
     year = models.PositiveSmallIntegerField()
@@ -151,4 +145,4 @@ class Robot(models.Model):
     key = models.CharField(max_length=13)  # e.g. frc2791_2016
     # team = models.ForeignKey(Team, on_delete=models.CASCADE)
     year = models.PositiveSmallIntegerField()
-    name = models.CharField(max_length=MAX_NAME_LENGTH)
+    name = models.CharField(max_length=100)

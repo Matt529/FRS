@@ -1,7 +1,6 @@
 from itertools import combinations
 
-from TBAW.models import Match, Alliance, Team, Event
-from TBAW.ranking_models import RankingModel2016
+from TBAW.models import Match, Alliance, Team, Event, RankingModel
 from collections import Counter
 from operator import itemgetter
 from util.check import event_has_f3_match

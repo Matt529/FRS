@@ -1,5 +1,5 @@
-from TBAW import scoring_models, ranking_models
-from TBAW.models import Team, Event, Match, Alliance
+from TBAW.models import Team, Event, Match, Alliance, ScoringModel2016, ScoringModel2015, ScoringModel2014, \
+    RankingModel2016, RankingModel2015
 from .check import team_exists
 
 
@@ -44,16 +44,16 @@ def get_alliance(teams, event_key=None):
 
 def get_instance_scoring_model(year):
     return {
-        2016: scoring_models.ScoringModel2016,
-        2015: scoring_models.ScoringModel2015,
-        2014: scoring_models.ScoringModel2014,
+        2016: ScoringModel2016,
+        2015: ScoringModel2015,
+        2014: ScoringModel2014,
         # etc
     }.get(year)
 
 
 def get_instance_ranking_model(year):
     return {
-        2016: ranking_models.RankingModel2016,
-        2015: ranking_models.RankingModel2015,
+        2016: RankingModel2016,
+        2015: RankingModel2015,
         # etc
     }.get(year)

@@ -1,4 +1,4 @@
-from TBAW.ranking_models import RankingModel2016
+from TBAW.models import RankingModel2016
 from collections import Counter
 
 
