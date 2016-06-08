@@ -20,14 +20,6 @@ class Team(models.Model):
     def __str__(self):
         return "{0} ({1})".format(self.nickname, self.team_number)
 
-    @classmethod
-    def create(cls, website, name, locality, region, country_name, location, team_number, key, nickname, rookie_year,
-               motto):
-        team = cls(website=website, name=name, locality=locality, region=region, country_name=country_name,
-                   location=location, team_number=team_number, key=key, nickname=nickname, rookie_year=rookie_year,
-                   motto=motto)
-        return team
-
 
 class Alliance(models.Model):
     # is this necessary? idk
@@ -40,10 +32,7 @@ class Alliance(models.Model):
     seed = models.SmallIntegerField(default=0, null=True)
 
     def __str__(self):
-        return "(Seed #{1}) {0}".format(self.teams.all(), self.seed)
-
-    def __repr__(self):
-        return "(Seed #{1}) {0}".format(self.teams.all(), self.seed)
+        return "Alliance (#{1}) {0}".format(self.teams.all(), self.seed)
 
 
 class Event(models.Model):
@@ -94,9 +83,6 @@ class Event(models.Model):
     def __str__(self):
         return "Event {0}".format(self.key)
 
-    def __repr__(self):
-        return "Event {0}".format(self.key)
-
     def get_average_qual_match_score(self):
         return average_match_score(self.match_set.filter(comp_level__exact='qm'))
 
@@ -123,9 +109,6 @@ class Match(models.Model):
     scoring_model = models.ForeignKey('TBAW.ScoringModel', null=True)
 
     def __str__(self):
-        return "Match {0}".format(self.key)
-
-    def __repr__(self):
         return "Match {0}".format(self.key)
 
 
