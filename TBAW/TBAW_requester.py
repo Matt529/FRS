@@ -61,3 +61,8 @@ def get_teams_at_event(event_key):
         teams.append(get_team(team['team_number']))
 
     return teams
+
+
+def get_team_robots_history(team_number):
+    url = __tba_url + 'team/frc{0}/history/robots'.format(team_number)
+    return requests.get(url, headers=__api_key).json()

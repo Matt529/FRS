@@ -125,7 +125,7 @@ class Award(models.Model):
 
 
 class Robot(models.Model):
-    key = models.CharField(max_length=13)  # e.g. frc2791_2016
-    # team = models.ForeignKey(Team, on_delete=models.CASCADE)
-    year = models.PositiveSmallIntegerField()
-    name = models.CharField(max_length=100)
+    key = models.CharField(max_length=13, null=True)  # e.g. frc2791_2016
+    team = models.ForeignKey(Team, null=True)
+    year = models.PositiveSmallIntegerField(null=True)
+    name = models.CharField(max_length=100, null=True)
