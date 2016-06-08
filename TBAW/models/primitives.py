@@ -1,3 +1,4 @@
+from FRS.settings import DEFAULT_MU, DEFAULT_SIGMA
 from django.db import models
 from util.computations import average_match_score
 
@@ -18,8 +19,8 @@ class Team(models.Model):
     motto = models.TextField(null=True)
 
     # Modeled after TrueSkill, which is a Gaussian distribution with mu=25.0 and sigma = 25/3.
-    elo_mu = models.FloatField(default=25.0)
-    elo_sigma = models.FloatField(default=8.33333)
+    elo_mu = models.FloatField(default=DEFAULT_MU)
+    elo_sigma = models.FloatField(default=DEFAULT_SIGMA)
 
     def __str__(self):
         return "{0} ({1})".format(self.nickname, self.team_number)
@@ -80,6 +81,7 @@ class Event(models.Model):
     official = models.BooleanField()
     teams = models.ManyToManyField(Team)
     alliances = models.ManyToManyField(Alliance)
+    end_date = models.DateField(null=True)
 
     # webcast = my_webcast_model(), parse JSON data to model fields
     # district_points = my_district_points_model(), parse JSON data to model fields

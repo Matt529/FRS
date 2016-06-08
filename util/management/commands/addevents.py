@@ -1,4 +1,5 @@
 from time import clock
+from datetime import date
 
 from TBAW.TBAW_requester import get_event_json, get_list_of_events_json
 from TBAW.models import Event
@@ -22,6 +23,11 @@ def add_event(event_key, event_data=None):
     if event_data is None:
         event_data = get_event_json(event_key)
 
+    year = int(event_data['end_date'][:4])
+    month = int(event_data['end_date'][5:7])
+    day = int(event_data['end_date'][8:10])
+    date_obj = date(year, month, day)
+
     if event_exists(event_key):
         Event.objects.filter(key=event_key).update(name=event_data['name'], short_name=event_data['short_name'],
                                                    event_code=event_data['event_code'],
@@ -30,7 +36,7 @@ def add_event(event_key, event_data=None):
                                                    location=event_data['location'],
                                                    venue_address=event_data['venue_address'],
                                                    timezone=event_data['timezone'], website=event_data['website'],
-                                                   official=event_data['official'])
+                                                   official=event_data['official'], end_date=date_obj)
         events_updated += 1
         print("Updated event {0}".format(event_key))
     # We only want to analyze data from official events or IRI/Cheezy Champs
@@ -41,7 +47,7 @@ def add_event(event_key, event_data=None):
                                      event_district=event_data['event_district'], year=event_data['year'],
                                      location=event_data['location'], venue_address=event_data['venue_address'],
                                      timezone=event_data['timezone'], website=event_data['website'],
-                                     official=event_data['official'])
+                                     official=event_data['official'], end_date=date_obj)
         event.save()
         # Add the teams at creation time. Don't update the team list at update time due to time cost
         teams = event_data['teams']

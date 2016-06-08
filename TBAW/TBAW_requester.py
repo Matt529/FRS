@@ -1,4 +1,5 @@
 import requests
+from operator import itemgetter
 from util.getters import get_team
 
 __api_key = {'X-TBA-App-Id': 'frs:frs:1'}
@@ -40,7 +41,30 @@ def get_list_of_events_json(year=2016):
 
 def get_list_of_matches_json(event_key):
     url = __tba_url + 'event/{0}/matches'.format(event_key)
-    return requests.get(url, headers=__api_key).json()
+    json = requests.get(url, headers=__api_key).json()
+    qm = []
+    ef = []
+    qf = []
+    sf = []
+    f = []
+    for match in json:
+        if match['comp_level'] == 'qm':
+            qm.append(match)
+        elif match['comp_level'] == 'ef':
+            ef.append(match)
+        elif match['comp_level'] == 'qf':
+            qf.append(match)
+        elif match['comp_level'] == 'sf':
+            sf.append(match)
+        elif match['comp_level'] == 'f':
+            f.append(match)
+        else:
+            raise ValueError("Can't determine the comp_level of this match:\n{0}".format(match))
+
+    key = itemgetter('match_number')
+    matches = sorted(qm, key=key) + sorted(ef, key=key) + sorted(qf, key=key) + sorted(sf, key=key) + sorted(f, key=key)
+
+    return matches
 
 
 def get_event_rankings_json(event_key):
