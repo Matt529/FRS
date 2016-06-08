@@ -110,6 +110,8 @@ def add_matches_from_event(event_key):
             match_obj.alliances.add(red_alliance)
             match_obj.alliances.add(blue_alliance)
 
+            handle_match_elo(match_obj)
+
             matches_created += 1
             print("({7}) Added match {0} ({1}/{2}/{3} vs {4}/{5}/{6})".format(match['key'],
                                                                               red_alliance.teams.all()[0].team_number,
@@ -129,6 +131,23 @@ def parse_score_breakdown(year, score_breakdown):
     model.setup(score_breakdown)
     model.save()
     return model
+
+
+def handle_match_elo(match):
+    winners = match.winner.teams.all()
+    losers = [x for x in match.alliances.all() if x != match.winner][0].teams.all()
+    import trueskill
+    winner_ts_pairs = [(t, trueskill.Rating(t.elo_mu, t.elo_sigma)) for t in winners]
+    loser_ts_pairs = [(t, trueskill.Rating(t.elo_mu, t.elo_sigma)) for t in losers]
+    results = trueskill.rate([[x[1] for x in winner_ts_pairs], [x[1] for x in loser_ts_pairs]])
+    for winner_result, winner_team, loser_result, loser_team in zip(results[0], winners, results[1], losers):
+        winner_team.elo_mu = winner_result.mu
+        winner_team.elo_sigma = winner_result.sigma
+        loser_team.elo_mu = loser_result.mu
+        loser_team.elo_sigma = loser_result.sigma
+
+        winner_team.save()
+        loser_team.save()
 
 
 class Command(BaseCommand):

@@ -17,6 +17,10 @@ class Team(models.Model):
     rookie_year = models.PositiveSmallIntegerField(null=True)
     motto = models.TextField(null=True)
 
+    # Modeled after TrueSkill, which is a Gaussian distribution with mu=25.0 and sigma = 25/3.
+    elo_mu = models.FloatField(default=25.0)
+    elo_sigma = models.FloatField(default=8.33333)
+
     def __str__(self):
         return "{0} ({1})".format(self.nickname, self.team_number)
 
