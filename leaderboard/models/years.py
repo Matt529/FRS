@@ -1,6 +1,6 @@
 from TBAW.models import RankingModel2016, Event, Match
 from collections import Counter
-from operator import itemgetter
+from django.db.models import F, ExpressionWrapper, FloatField, Sum, Count
 
 
 class Leaderboard2016:
@@ -10,12 +10,9 @@ class Leaderboard2016:
 
     @staticmethod
     def highest_team_auton_points_per_game(n=None):
-        auto = Counter()
-        # shave off some low auton performances for time
-        for rm in RankingModel2016.objects.exclude(auton_points=None).filter(auton_points__gt=200):
-            auto[(rm.team, rm.event)] = rm.auton_points / rm.played
-
-        return auto.most_common() if n is None else auto.most_common(n)
+        return RankingModel2016.objects.annotate(
+            avg_auton=ExpressionWrapper(F('auton_points') * 1.0 / F('played'), output_field=FloatField())).order_by(
+            '-avg_auton')[:n]
 
     @staticmethod
     def highest_team_ranking_points(n=None):
@@ -23,12 +20,9 @@ class Leaderboard2016:
 
     @staticmethod
     def highest_team_ranking_points_per_game(n=None):
-        rp = Counter()
-        # Shave off the bottom tier performances for time
-        for rm in RankingModel2016.objects.exclude(ranking_score=None).filter(ranking_score__gt=20):
-            rp[(rm.team, rm.event)] = rm.ranking_score / rm.played
-
-        return rp.most_common() if n is None else rp.most_common(n)
+        return RankingModel2016.objects.annotate(
+            avg_ranking=ExpressionWrapper(F('ranking_score') * 1.0 / F('played'), output_field=FloatField())).order_by(
+            '-avg_ranking')[:n]
 
     @staticmethod
     def highest_team_scale_challenge_points(n=None):
@@ -36,12 +30,9 @@ class Leaderboard2016:
 
     @staticmethod
     def highest_team_scale_challenge_points_per_game(n=None):
-        scp = Counter()
-        # shave off bottom tier performances to save time
-        for rm in RankingModel2016.objects.exclude(scale_challenge_points=None).filter(scale_challenge_points__gt=150):
-            scp[(rm.team, rm.event)] = rm.scale_challenge_points / rm.played
-
-        return scp.most_common() if n is None else scp.most_common(n)
+        return RankingModel2016.objects.annotate(
+            avg_scale=ExpressionWrapper(F('scale_challenge_points') * 1.0 / F('played'),
+                                        output_field=FloatField())).order_by('-avg_scale')[:n]
 
     @staticmethod
     def highest_team_goals_points(n=None):
@@ -49,11 +40,9 @@ class Leaderboard2016:
 
     @staticmethod
     def highest_team_goals_points_per_game(n=None):
-        gp = Counter()
-        for rm in RankingModel2016.objects.exclude(goals_points=None).filter(goals_points__gt=290):
-            gp[(rm.team, rm.event)] = rm.goals_points / rm.played
-
-        return gp.most_common() if n is None else gp.most_common(n)
+        return RankingModel2016.objects.annotate(
+            avg_goals=ExpressionWrapper(F('goals_points') * 1.0 / F('played'),
+                                        output_field=FloatField())).order_by('-avg_goals')[:n]
 
     @staticmethod
     def highest_team_defense_points(n=None):
@@ -61,11 +50,9 @@ class Leaderboard2016:
 
     @staticmethod
     def highest_team_defense_points_per_game(n=None):
-        df = Counter()
-        for rm in RankingModel2016.objects.exclude(defense_points=None).filter(defense_points__gt=550):
-            df[(rm.team, rm.event)] = rm.defense_points / rm.played
-
-        return df.most_common() if n is None else df.most_common(n)
+        return RankingModel2016.objects.annotate(
+            avg_defense=ExpressionWrapper(F('defense_points') * 1.0 / F('played'),
+                                          output_field=FloatField())).order_by('-avg_defense')[:n]
 
     @staticmethod
     def highest_team_opr(n=None):
@@ -81,33 +68,19 @@ class Leaderboard2016:
 
     @staticmethod
     def highest_event_match_average_score(n=None):
-        events = Event.objects.all()
-        ranks = {}
-        for event in events:
-            ranks[event] = event.get_average_overall_match_score()
-
-        return sorted(ranks.items(), key=itemgetter(1), reverse=True)[:n]
-
-    @staticmethod
-    def highest_event_playoff_match_average_score(n=None):
-        events = Event.objects.all()
-        ranks = {}
-        for event in events:
-            ranks[event] = event.get_average_playoff_match_score()
-
-        return sorted(ranks.items(), key=itemgetter(1), reverse=True)[:n]
-
-    @staticmethod
-    def highest_event_qual_match_average_score(n=None):
-        events = Event.objects.exclude(event_code__exact='cmp')  # cmp doesn't have qualifiers
-        ranks = {}
-        for event in events:
-            ranks[event] = event.get_average_qual_match_score()
-
-        return sorted(ranks.items(), key=itemgetter(1), reverse=True)[:n]
+        return Event.objects.annotate(
+            sum_blue=ExpressionWrapper(Sum('match__scoring_model__blue_total_score'), output_field=FloatField()),
+            sum_red=ExpressionWrapper(Sum('match__scoring_model__red_total_score'), output_field=FloatField()),
+            count_blue=ExpressionWrapper(Count('match__scoring_model__blue_total_score'), output_field=FloatField()),
+            count_red=ExpressionWrapper(Count('match__scoring_model__red_total_score'), output_field=FloatField())
+        ).annotate(
+            avg_score=ExpressionWrapper((F('sum_blue') + F('sum_red')) * 1.0 / (F('count_blue') + F('count_red')),
+                                        output_field=FloatField())
+        ).order_by('-avg_score')[:n]
 
     @staticmethod
     def highest_region_average_score(n=None):
+        # This takes forever, don't use it until we replace it with Django annotations
         matches = Match.objects.filter(event__year=2016)
         totals = Counter()
         counts = Counter()

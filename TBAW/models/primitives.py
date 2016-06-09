@@ -82,6 +82,7 @@ class Event(models.Model):
     teams = models.ManyToManyField(Team)
     alliances = models.ManyToManyField(Alliance)
     end_date = models.DateField(null=True)
+    winning_alliance = models.ForeignKey(Alliance, related_name='winning_alliance', null=True)
 
     # webcast = my_webcast_model(), parse JSON data to model fields
     # district_points = my_district_points_model(), parse JSON data to model fields

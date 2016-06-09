@@ -34,6 +34,9 @@ class ScoringModel(PolymorphicModel):
     def setup(self, json):
         return
 
+    def __repr__(self):
+        return "blue: {0}, red: {1}".format(self.blue_total_score, self.red_total_score)
+
 
 class ScoringModel2016(ScoringModel):
     # constant point values

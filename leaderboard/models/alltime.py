@@ -63,19 +63,8 @@ class TeamLeaderboard:
 
     @staticmethod
     def most_event_wins(n=None):
-        matches_of_3 = Match.objects.filter(comp_level__exact='f', match_number__exact=3, winner__isnull=False)
-        count = Counter()
-        for match in matches_of_3:
-            for team in match.winner.teams.all():
-                count[team] += 1
-        matches_of_2 = [x for x in
-                        Match.objects.filter(comp_level__exact='f', match_number__exact=2, winner__isnull=False) if
-                        not event_has_f3_match(x.event.key)]
-        for match in matches_of_2:
-            for team in match.winner.teams.all():
-                count[team] += 1
-
-        return count.most_common() if n is None else count.most_common(n)
+        return Team.objects.annotate(num_wins=Count('alliance__winning_alliance', distinct=True)).order_by('-num_wins')[
+               :n]
 
     @staticmethod
     def highest_win_rate(n=None):
@@ -90,3 +79,7 @@ class TeamLeaderboard:
             num_wins=ExpressionWrapper(Count('alliance__winner', distinct=True), output_field=FloatField())).annotate(
             win_rate=ExpressionWrapper(F('num_wins') * 1.0 / F('num_played'), output_field=FloatField())).order_by(
             '-win_rate')[:n]
+
+    @staticmethod
+    def highest_elo(n=None):
+        return Team.objects.order_by('-elo_mu')[:n]

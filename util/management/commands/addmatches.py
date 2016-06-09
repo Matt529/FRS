@@ -3,7 +3,7 @@ from time import clock
 from TBAW.TBAW_requester import get_list_of_matches_json, get_event_json
 from TBAW.models import Match, Alliance, Event
 from django.core.management.base import BaseCommand
-from util.check import match_exists, alliance_exists
+from util.check import match_exists, alliance_exists, event_has_f3_match
 from util.getters import get_team, get_event, get_alliance, get_instance_scoring_model
 
 matches_created = 0
@@ -158,6 +158,19 @@ def handle_match_elo(match):
         loser_team.save()
 
 
+def handle_event_winners():
+    matches_of_3 = Match.objects.filter(comp_level__exact='f', match_number__exact=3, winner__isnull=False)
+    matches_of_2 = Match.objects.filter(
+        key__in=[x.key for x in Match.objects.filter(comp_level__exact='f', match_number__exact=2,
+                                                     winner__isnull=False) if not event_has_f3_match(x.event.key)])
+    matches = (matches_of_2 | matches_of_3)
+
+    for m in matches:
+        print("{0} won {1}".format(m.winner, m))
+        m.event.winning_alliance = m.winner
+        m.event.save()
+
+
 class Command(BaseCommand):
     help = "Adds matches to the database"
 
@@ -171,6 +184,7 @@ class Command(BaseCommand):
             add_matches_from_event(event)
         else:
             add_all_matches()
+        handle_event_winners()
         time_end = clock()
         print("-------------")
         print("Matches created:\t\t{0}".format(matches_created))

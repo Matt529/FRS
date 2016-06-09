@@ -1,7 +1,7 @@
+from TBAW.models import Team, Event
 from abc import ABCMeta, abstractmethod
 from django.db import models
 from polymorphic.models import PolymorphicModel
-from TBAW.models import Team, Event
 
 
 class RankingModel(PolymorphicModel):
@@ -21,6 +21,10 @@ class RankingModel(PolymorphicModel):
     @abstractmethod
     def setup(self, rankings_json):
         pass
+
+    def __repr__(self):
+        return "{0}. {1} [{2}-{3}-{4}] ({5})".format(self.rank, self.team, self.wins, self.losses, self.ties,
+                                                     self.event)
 
 
 class RankingModel2016(RankingModel):
