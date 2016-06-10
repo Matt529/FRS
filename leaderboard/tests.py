@@ -4,7 +4,7 @@ from time import clock
 from leaderboard.models import Leaderboard2016, AllianceLeaderboard, TeamLeaderboard
 
 
-def test_leaderboard(num=10):
+def test_leaderboard(num=20):
     print("Most 2-way alliance match wins:")
     start = clock()
     res = AllianceLeaderboard.most_match_wins_2(num)

@@ -5,15 +5,19 @@ from TBAW.models import Match, Alliance, Event
 from django.core.management.base import BaseCommand
 from util.check import match_exists, alliance_exists, event_has_f3_match
 from util.getters import get_team, get_event, get_alliance, get_instance_scoring_model
+from .addelo import handle_match_elo
 
 matches_created = 0
 matches_skipped = 0
 
 
 def add_all_matches():
-    events = Event.objects.order_by('end_date')
+    events = Event.objects.exclude(key='2016cmp').order_by('end_date')
     for event in events:
         add_matches_from_event(event.key)
+
+    # force CMP to be the last event processed during the championship weekend
+    add_matches_from_event('2016cmp')
 
 
 def add_matches_from_event(event_key):
@@ -131,31 +135,6 @@ def parse_score_breakdown(year, score_breakdown):
     model.setup(score_breakdown)
     model.save()
     return model
-
-
-def handle_match_elo(match):
-    drawn = False
-    if match.winner is None:
-        drawn = True
-        winners = match.alliances.all()[0].teams.all()
-    else:
-        winners = match.winner.teams.all()
-    losers = [x for x in match.alliances.all() if x != match.winner][0].teams.all()
-    import trueskill
-    winner_ts_pairs = [(t, trueskill.Rating(t.elo_mu, t.elo_sigma)) for t in winners]
-    loser_ts_pairs = [(t, trueskill.Rating(t.elo_mu, t.elo_sigma)) for t in losers]
-    if drawn:
-        results = trueskill.rate([[x[1] for x in winner_ts_pairs], [x[1] for x in loser_ts_pairs]], ranks=[0, 0])
-    else:
-        results = trueskill.rate([[x[1] for x in winner_ts_pairs], [x[1] for x in loser_ts_pairs]])
-    for winner_result, winner_team, loser_result, loser_team in zip(results[0], winners, results[1], losers):
-        winner_team.elo_mu = winner_result.mu
-        winner_team.elo_sigma = winner_result.sigma
-        loser_team.elo_mu = loser_result.mu
-        loser_team.elo_sigma = loser_result.sigma
-
-        winner_team.save()
-        loser_team.save()
 
 
 def handle_event_winners():
