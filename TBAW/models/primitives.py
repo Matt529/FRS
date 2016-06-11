@@ -88,7 +88,7 @@ class Event(models.Model):
     # district_points = my_district_points_model(), parse JSON data to model fields
 
     def __str__(self):
-        return "Event {0}".format(self.key)
+        return "{0}".format(self.key)
 
     def get_average_qual_match_score(self):
         return average_match_score(self.match_set.filter(comp_level__exact='qm'))
@@ -116,7 +116,7 @@ class Match(models.Model):
     scoring_model = models.ForeignKey('TBAW.ScoringModel', null=True)
 
     def __str__(self):
-        return "Match {0}".format(self.key)
+        return "{0}".format(self.key)
 
 
 class Award(models.Model):

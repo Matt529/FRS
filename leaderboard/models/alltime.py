@@ -9,6 +9,15 @@ from util.check import event_has_f3_match
 class AllianceLeaderboard:
     @staticmethod
     def most_match_wins_3(n=None):
+        """
+
+        Args:
+            n: An optional argument that cuts the return to n elements.
+
+        Returns:
+            A list of which combinations of 3 teams have the most match wins together.
+
+        """
         matches = Match.objects.filter(winner__isnull=False)
         count = Counter()
         for match in matches:
@@ -17,6 +26,15 @@ class AllianceLeaderboard:
 
     @staticmethod
     def most_match_wins_2(n=None):
+        """
+
+        Args:
+            n: An optional argument that cuts the return to n elements.
+
+        Returns:
+            A list of which combinations of 2 teams have the most match wins together.
+
+        """
         matches = Match.objects.filter(winner__isnull=False)
         count = Counter()
         for match in matches:
@@ -28,6 +46,17 @@ class AllianceLeaderboard:
 
     @staticmethod
     def most_event_wins_3(n=None, get_counter_obj=False):
+        """
+
+        Args:
+            n: An optional argument that cuts the return to n elements.
+            get_counter_obj: I forget where I used it but I used it somewhere, you don't need it anywhere else.
+                                (This is the key to good software!)
+
+        Returns:
+            A list of which combinations of 3 teams have the most event wins together (ie won the finals).
+
+        """
         matches_of_3 = Match.objects.filter(comp_level__exact='f', match_number__exact=3)
         count = Counter()
         for match in matches_of_3:
@@ -44,6 +73,15 @@ class AllianceLeaderboard:
 
     @staticmethod
     def most_event_wins_2(n=None):
+        """
+
+        Args:
+            n: An optional argument that cuts the return to n elements.
+
+        Returns:
+            A list of which combinations of 2 teams have the most event wins together (ie won the finals).
+
+        """
         winning_alliances = AllianceLeaderboard.most_event_wins_3(get_counter_obj=True)
         count = Counter()
         for alliance in winning_alliances:
@@ -59,12 +97,30 @@ class AllianceLeaderboard:
 class TeamLeaderboard:
     @staticmethod
     def most_match_wins(n=None):
+        """
+
+        Args:
+            n: An optional argument that cuts the return to n elements.
+
+        Returns:
+            A list of which teams have the most match wins.
+
+        """
         return Team.objects.annotate(num_wins=Count('alliance__winner')).order_by('-num_wins')[:n]
 
     @staticmethod
     def most_event_wins(n=None):
-        return Team.objects.annotate(num_wins=Count('alliance__winning_alliance', distinct=True)).order_by('-num_wins')[
-               :n]
+        """
+
+        Args:
+            n: An optional argument that cuts the return to n elements.
+
+        Returns:
+            A list of which teams have the most event wins.
+
+        """
+        return Team.objects.annotate(num_wins=Count('alliance__winning_alliance',
+                                                    distinct=True)).order_by('-num_wins')[:n]
 
     @staticmethod
     def highest_win_rate(n=None):
@@ -73,6 +129,12 @@ class TeamLeaderboard:
         2. Counts how many times a team has appeared on a winning alliance and saves it to a float named num_wins
         3. Divides num_wins by num_played and saves it to a float named win_rate
         4. Orders the teams by win_rate
+
+        Args:
+            n: An optional argument that cuts the return to n elements.
+
+        Returns:
+            A list of which teams have the highest winrate.
         """
         return Team.objects.annotate(
             num_played=ExpressionWrapper(Count('alliance__match', distinct=True), output_field=FloatField()),
@@ -82,4 +144,26 @@ class TeamLeaderboard:
 
     @staticmethod
     def highest_elo(n=None):
+        """
+
+        Args:
+            n:  An optional argument that cuts the return to n elements.
+
+        Returns:
+            A list of which teams have the highest Elo rating.
+
+        """
         return Team.objects.order_by('-elo_mu')[:n]
+
+    @staticmethod
+    def highest_elo_scaled(n=None):
+        """
+
+        Args:
+            n: An optional argument that cuts the return to n elements.
+
+        Returns:
+            A list of which teams have the highest Elo rating (scaled to start at 1500 rather than 25).
+
+        """
+        return Team.objects.annotate(elo_scaled=F('elo_mu') * 60).order_by('-elo_scaled')[:n]

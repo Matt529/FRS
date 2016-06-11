@@ -12,12 +12,14 @@ matches_skipped = 0
 
 
 def add_all_matches():
-    events = Event.objects.exclude(key='2016cmp').order_by('end_date')
+    events = Event.objects.exclude(key__in=['2016cmp', '2016cc']).order_by('end_date')
     for event in events:
         add_matches_from_event(event.key)
 
     # force CMP to be the last event processed during the championship weekend
+    # ...except offseasons
     add_matches_from_event('2016cmp')
+    add_matches_from_event('2016cc')
 
 
 def add_matches_from_event(event_key):

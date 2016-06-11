@@ -2,6 +2,15 @@ from collections import Counter
 
 
 def average_match_score(query_set):
+    """
+
+    Args:
+        query_set: a type QuerySet (django.db.models.QuerySet) containing Match objects
+
+    Returns:
+        The average match score in the given query set
+
+    """
     if query_set.count() == 0:
         return 0
 
@@ -13,6 +22,15 @@ def average_match_score(query_set):
 
 
 def highest_team_win_rate(query_set):
+    """
+
+    Args:
+        query_set: a type QuerySet (django.db.models.QuerySet) containing Match objects
+
+    Returns:
+        A list of Team objects sorted by the highest winrate
+
+    """
     if query_set.count() == 0:
         return 0
 

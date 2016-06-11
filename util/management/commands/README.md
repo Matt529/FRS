@@ -33,3 +33,16 @@ added to the database. **This can take up to several hours to execute.**
 
 This command prints leaderboard statistics to the console. For non-HTML/
 view based testing. May take a few seconds to gather statistics.
+
+---
+
+`addrankings`
+
+This command gathers statistics and ranking information about events.
+
+---
+
+`addelo`
+
+This command performs calculations to generate Elo rankings for teams
+based on currently saved data for matches.
