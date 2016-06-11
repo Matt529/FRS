@@ -10,7 +10,7 @@ class Team(models.Model):
     locality = models.CharField(max_length=50, null=True)  # e.g. city
     region = models.CharField(max_length=50, null=True)  # e.g. state, province
     country_name = models.CharField(max_length=50, null=True)
-    location = models.CharField(max_length=50, null=True)  # full city + state + country
+    location = models.CharField(max_length=150, null=True)  # full city + state + country
 
     team_number = models.PositiveSmallIntegerField()
     key = models.CharField(max_length=8)  # e.g. frc2791
