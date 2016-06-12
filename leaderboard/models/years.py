@@ -1,4 +1,4 @@
-from TBAW.models import RankingModel2016, Event, Match
+from TBAW.models import RankingModel2016, Event, Match, ScoringModel2016
 from collections import Counter
 from django.db.models import F, ExpressionWrapper, FloatField, Sum, Count
 
@@ -209,6 +209,21 @@ class Leaderboard2016:
             avg_score=ExpressionWrapper((F('sum_blue') + F('sum_red')) * 1.0 / (F('count_blue') + F('count_red')),
                                         output_field=FloatField())
         ).order_by('-avg_score')[:n]
+
+    @staticmethod
+    def highest_score_matches(n=None):
+        """
+
+        Args:
+            n: An optional requirement that cuts the return to n elements.
+
+        Returns: A list of ScoringModel2016 objects that are sorted by the greatest of red total score and blue total
+        score. This is a high score list. Contains the extra field 'hs' (high score).
+
+        """
+        # Django doesn't have anything like SQL GREATEST function built in, so we have to do some "raw" SQL.
+        return ScoringModel2016.objects.extra(select={'hs': 'GREATEST(blue_total_score,red_total_score)'}).order_by(
+            '-hs')[:n]
 
     @staticmethod
     @DeprecationWarning

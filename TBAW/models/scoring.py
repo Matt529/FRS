@@ -30,11 +30,14 @@ class ScoringModel(PolymorphicModel):
     def set_json_data(self, data):
         self.json_data = dumps(data)
 
+    def get_higher_score(self):
+        return self.red_total_score if self.red_total_score > self.blue_total_score else self.blue_total_score
+
     @abstractmethod
     def setup(self, json):
         return
 
-    def __repr__(self):
+    def __str__(self):
         return "blue: {0}, red: {1}".format(self.blue_total_score, self.red_total_score)
 
 

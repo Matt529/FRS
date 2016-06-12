@@ -4,7 +4,7 @@ from time import clock
 from leaderboard.models import Leaderboard2016, AllianceLeaderboard, TeamLeaderboard
 
 
-def test_leaderboard(num=20):
+def test_leaderboard(num=10):
     print("Most 2-way alliance match wins:")
     start = clock()
     res = AllianceLeaderboard.most_match_wins_2(num)
@@ -196,5 +196,14 @@ def test_leaderboard(num=20):
     end = clock()
     for r in res:
         pprint((r, r.elo_mu))
+    print("Operation took {0} seconds".format((end - start).__round__(3)))
+    print("------------------------------------------")
+
+    print("High score matches")
+    start = clock()
+    res = Leaderboard2016.highest_score_matches(num * 1.5)
+    end = clock()
+    for r in res:
+        pprint((r, r.match_set.first(), r.hs))
     print("Operation took {0} seconds".format((end - start).__round__(3)))
     print("------------------------------------------")
