@@ -32,9 +32,9 @@ Anytime `requirements.txt` is updated you will need to run the `pip` command abo
 
 ##### Installing MariaDB / MySQL on Windows
 
-1. Install [`MariaDB 10.1`](https://downloads.mariadb.org/)
-2. Install [`Visual Studio Community 2015`](https://www.visualstudio.com/en-us/visual-studio-homepage-vs.aspx)
-3. Install [`MySQL Connector C 6.0.2`](https://dev.mysql.com/downloads/connector/c/6.0.html)
+1. Install [`MariaDB 10.1`](https://downloads.mariadb.org/).
+2. Install [`Visual Studio Community 2015`](https://www.visualstudio.com/en-us/visual-studio-homepage-vs.aspx). Make sure to install all C++ and Python components.
+3. Install [`MySQL Connector C 6.0.2`](https://dev.mysql.com/downloads/connector/c/6.0.html).
 4. If `MySQL Connector C 6.0.2` was installed in `C:\Program Files\MySQL`, then move it to `C:\Program Files (x86)\MySQL`. You can either manually move the files or you can create a link. Either works.
 5. Download [`mysqlclient-1.3.7-cp35-none-win_amd64.whl`](https://drive.google.com/file/d/0B5k0KOgTOwrhSk5JR3lkU1duREU/view?usp=sharing).
 6. Install it using `pip install mysqlclient-1.3.7-cp35-none-win_amd64`.
@@ -44,8 +44,7 @@ Anytime `requirements.txt` is updated you will need to run the `pip` command abo
 CREATE DATABASE `FRS` DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;
 CREATE USER 'FRS_user'@'localhost' IDENTIFIED BY 'password';
 USE 'mysql';
-GRANT ALL PRIVILEGES ON FRS.* TO 'FRS_user'@'localhost' IDENTIFIED BY 'password'
-WITH GRANT OPTION;
+GRANT ALL PRIVILEGES ON FRS.* TO 'FRS_user'@'localhost' IDENTIFIED BY 'password' WITH GRANT OPTION;
 FLUSH PRIVILEGES;
 ```
 9. Then finally `python manage.py makemigrations` and `python manage.py migrate`.

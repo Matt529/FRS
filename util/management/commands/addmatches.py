@@ -1,11 +1,10 @@
 from time import clock
 
 from TBAW.TBAW_requester import get_list_of_matches_json, get_event_json
-from TBAW.models import Match, Alliance, Event
+from TBAW.models import Match, Alliance, Event, AllianceAppearance
 from django.core.management.base import BaseCommand
-from util.check import match_exists, alliance_exists, event_has_f3_match
+from util.check import match_exists, alliance_exists, alliance_appearance_exists, event_has_f3_match
 from util.getters import get_team, get_event, get_alliance, get_instance_scoring_model
-from .addelo import handle_match_elo
 
 matches_created = 0
 matches_skipped = 0
@@ -28,59 +27,60 @@ def add_matches_from_event(event_key):
     print("\tAdding matches from event {0}...".format(event_key))
     for match in matches:
         if match_exists(event_key, match['key']):
-            print("Already did this match")
+            matches_skipped += 1
+            print("({1}) Already added {0}".format(match['key'], matches_skipped))
         else:
             red_teams = [get_team(int(x[3:])) for x in match['alliances']['red']['teams']]
             blue_teams = [get_team(int(x[3:])) for x in match['alliances']['blue']['teams']]
+            red_seed = None
+            blue_seed = None
 
             if match['score_breakdown'] is None:
                 print("Skipping match {0} from event {1} (scores not found)".format(match['key'], event_key))
                 matches_skipped += 1
                 continue
 
+            event_json = get_event_json(event_key)
+            event = get_event(event_key)
             if match['comp_level'] in ['ef', 'qf', 'sf', 'f']:
-                event_json = None
                 if not alliance_exists(red_teams):
-                    event_json = get_event_json(event_key)
                     # print(event_json['alliances'])
                     red_alliance = Alliance.objects.create()
-                    red_alliance.color = 'Red'
-                    for data_seg in event_json['alliances']:
-                        if red_teams[0].key in data_seg['picks']:
-                            try:
-                                red_alliance.seed = int(data_seg['name'][-1:])
-                            except ValueError:
-                                print("Can't retrieve a seed from {}".format(data_seg['name']))
-
                     red_alliance.save()
-                    get_event(event_key).alliances.add(red_alliance)
+                    event.alliances.add(red_alliance)
                     for x in red_teams:
                         red_alliance.teams.add(x)
                 else:
                     red_alliance = get_alliance(red_teams)
+
+                for data_seg in event_json['alliances']:
+                    if red_teams[0].key in data_seg['picks']:
+                        try:
+                            red_seed = int(data_seg['name'][-1:])
+                        except ValueError:
+                            print("Can't retrieve a seed from {}".format(data_seg['name']))
+
                 if not alliance_exists(blue_teams):
-                    if event_json is None:
-                        event_json = get_event_json(event_key)
                     blue_alliance = Alliance.objects.create()
-                    blue_alliance.color = 'Blue'
-                    for data_seg in event_json['alliances']:
-                        if blue_teams[0].key in data_seg['picks']:
-                            try:
-                                blue_alliance.seed = int(data_seg['name'][-1:])
-                            except ValueError:
-                                print("Can't retrieve a seed from {}".format(data_seg['name']))
+
                     blue_alliance.save()
-                    get_event(event_key).alliances.add(blue_alliance)
+                    event.alliances.add(blue_alliance)
                     for x in blue_teams:
                         blue_alliance.teams.add(x)
                 else:
                     blue_alliance = get_alliance(blue_teams)
+                    Alliance.objects.filter(teamkey)
+
+                for data_seg in event_json['alliances']:
+                    if blue_teams[0].key in data_seg['picks']:
+                        try:
+                            blue_seed = int(data_seg['name'][-1:])
+                        except ValueError:
+                            print("Can't retrieve a seed from {}".format(data_seg['name']))
             else:
                 red_alliance = Alliance.objects.create()
-                red_alliance.color = 'Red'
                 red_alliance.save()
                 blue_alliance = Alliance.objects.create()
-                blue_alliance.color = 'Blue'
                 blue_alliance.save()
 
                 for x, y in zip(red_teams, blue_teams):
@@ -99,24 +99,42 @@ def add_matches_from_event(event_key):
                 winner = blue_alliance
             elif red_total_points > blue_total_points:
                 winner = red_alliance
-            else:
+            elif match['comp_level'] in ['ef', 'qf', 'sf', 'f']:
                 if red_total_points + red_foul_points > blue_total_points + blue_foul_points:
                     winner = red_alliance
                 elif red_total_points + red_foul_points < blue_total_points + blue_foul_points:
                     winner = blue_alliance
                 else:
                     winner = None
+            else:
+                winner = None
 
             match_obj = Match.objects.create(key=match['key'], comp_level=match['comp_level'],
                                              set_number=match['set_number'], match_number=match['match_number'],
-                                             event=get_event(event_key), winner=winner,
+                                             event=event, winner=winner,
                                              scoring_model=parse_score_breakdown(match['key'][:4],
                                                                                  match['score_breakdown']))
             match_obj.save()
             match_obj.alliances.add(red_alliance)
             match_obj.alliances.add(blue_alliance)
 
-            handle_match_elo(match_obj)
+            if not alliance_appearance_exists(red_alliance, event):
+                red_appearance = AllianceAppearance.objects.create(alliance=red_alliance, event=event,
+                                                                   seed=red_seed)
+                red_alliance.allianceappearance_set.add(red_appearance)
+            else:
+                red_appearance = AllianceAppearance.objects.get(alliance=red_alliance, event=event)
+                red_appearance.seed = red_seed
+                red_appearance.save()
+
+            if not alliance_appearance_exists(blue_alliance, event):
+                blue_appearance = AllianceAppearance.objects.create(alliance=blue_alliance, event=event,
+                                                                    seed=blue_seed)
+                blue_alliance.allianceappearance_set.add(blue_appearance)
+            else:
+                blue_appearance = AllianceAppearance.objects.get(alliance=blue_alliance, event=event)
+                blue_appearance.seed = blue_seed
+                blue_appearance.save()
 
             matches_created += 1
             print("({7}) Added match {0} ({1}/{2}/{3} vs {4}/{5}/{6})".format(match['key'],
@@ -147,7 +165,6 @@ def handle_event_winners():
     matches = (matches_of_2 | matches_of_3)
 
     for m in matches:
-        print("{0} won {1}".format(m.winner, m))
         m.event.winning_alliance = m.winner
         m.event.save()
 

@@ -27,17 +27,10 @@ class Team(models.Model):
 
 
 class Alliance(models.Model):
-    # is this necessary? idk
-    color_choices = (
-        ('Red', 'Red'),
-        ('Blue', 'Blue')
-    )
     teams = models.ManyToManyField(Team)
-    color = models.CharField(max_length=4, choices=color_choices, null=True)
-    seed = models.SmallIntegerField(default=0, null=True)
 
     def __str__(self):
-        return "Alliance (#{1}) {0}".format(self.teams.all(), self.seed)
+        return "{0}".format(self.teams.all())
 
 
 class Event(models.Model):
@@ -136,3 +129,9 @@ class Robot(models.Model):
     team = models.ForeignKey(Team, null=True)
     year = models.PositiveSmallIntegerField(null=True)
     name = models.CharField(max_length=100, null=True)
+
+
+class AllianceAppearance(models.Model):
+    alliance = models.ForeignKey(Alliance, null=True)
+    event = models.ForeignKey(Event, null=True)
+    seed = models.PositiveSmallIntegerField(null=True)

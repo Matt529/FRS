@@ -1,4 +1,5 @@
 from TBAW.models import Team, Event, Match, Alliance
+from .getters import get_alliance
 
 
 def team_exists(team_number):
@@ -60,6 +61,14 @@ def alliance_exists(teams):
     set2 = set(Alliance.objects.filter(teams__team_number=teams[1].team_number))
     set3 = set(Alliance.objects.filter(teams__team_number=teams[2].team_number))
     return len(list(set1 & set2 & set3)) > 0
+
+
+def alliance_appearance_exists(alliance, event):
+    if alliance_exists(list(alliance.teams.all())):
+        alliance = get_alliance(list(alliance.teams.all()))
+        return alliance.allianceappearance_set.filter(event=event).exists()
+    else:
+        return False
 
 
 def event_has_f3_match(event_key):
