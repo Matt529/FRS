@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{% block team_details %}
+    <b>Team {{ team.team_number }} - {{ team.nickname }}</b><br>
+    {{ team.location }}<br>
+    First year: {{ team.rookie_year }}<br>
+    Rating: {{ team.elo_mu|floatformat:2 }} ± {{ team.elo_sigma|floatformat:2 }}<br>
+    Competed at
+    {% for event in events %}
+        {{ event.name }}{% if not forloop.last %},{% endif %}
+    {% endfor %}
+    <br>
+{% endblock %}
+</body>
+</html>

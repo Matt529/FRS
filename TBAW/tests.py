@@ -1,7 +1,6 @@
 from django.test import TestCase
 from .TBAW_requester import get_team_json, get_event_json
 from .models import Team, Event
-from util.getters import get_team
 
 
 # save() is intentionally left out of setUp() methods, see Django docs

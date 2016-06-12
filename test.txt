@@ -1,0 +1,452 @@
+Most 2-way alliance match wins:
+[((<Team: TechnoKats Robotics Team (45)>, <Team: Kil-A-Bytes (1024)>), 15),
+ ((<Team: HIGHROLLERS (987)>, <Team: TorBots (1197)>), 15),
+ ((<Team: The Cheesy Poofs (254)>, <Team: Citrus Circuits (1678)>), 14),
+ ((<Team: The Pascack PI-oneers (1676)>, <Team: Tiger Tech  (5624)>), 14),
+ ((<Team: CyberKnights (195)>, <Team: Operation PEACCE Robotics  (3461)>), 14),
+ ((<Team: TechnoKats Robotics Team (45)>,
+   <Team: Harrison Boiler Robotics (1747)>),
+  14),
+ ((<Team: Kil-A-Bytes (1024)>, <Team: Harrison Boiler Robotics (1747)>), 13),
+ ((<Team: Walton Robotics (2974)>, <Team: East Cobb Robotics (4910)>), 13),
+ ((<Team: The RoboBees (836)>, <Team: Vae Victis (1418)>), 13),
+ ((<Team: Cleveland's Team (120)>, <Team: The Beach Bots (330)>), 12)]
+Operation took 23.404 seconds
+------------------------------------------
+Most 3-way alliance match wins:
+[(<Alliance: [<Team: TechnoKats Robotics Team (45)>, <Team: Kil-A-Bytes (1024)>, <Team: Harrison Boiler Robotics (1747)>]>,
+  12),
+ (<Alliance: [<Team: Cleveland's Team (120)>, <Team: The Beach Bots (330)>, <Team: Roboteers (2481)>]>,
+  12),
+ (<Alliance: [<Team: The Rocketeers (20)>, <Team: Code Red Robotics (639)>, <Team: Finney Falcons (1405)>]>,
+  7),
+ (<Alliance: [<Team: Black Hawk Robotics (3310)>, <Team: TriKzR4Kidz (4063)>, <Team: SM Energy New Tech Narcissists (4301)>]>,
+  7),
+ (<Alliance: [<Team: TORC (2137)>, <Team: Hybrid Hornets (5150)>, <Team: Strike Zone (5460)>]>,
+  7),
+ (<Alliance: [<Team: Team RUSH (27)>, <Team: The HOT Team (67)>, <Team: The Fighting Pi (1718)>]>,
+  7),
+ (<Alliance: [<Team: Team THRUST (1501)>, <Team: Team Titanium (1986)>, <Team: Cow Town Robotics (5050)>]>,
+  7),
+ (<Alliance: [<Team: RoboCats (379)>, <Team: StuyPulse (694)>, <Team: BumbleB (3339)>]>,
+  7),
+ (<Alliance: [<Team: CyberKnights (195)>, <Team: HIGHROLLERS (987)>, <Team: TorBots (1197)>]>,
+  7),
+ (<Alliance: [<Team: Children of the Swamp (179)>, <Team: Minotaur (1369)>, <Team: ROBOTZ Garage (4451)>]>,
+  6)]
+Operation took 9.117 seconds
+------------------------------------------
+Most 2-way alliance event wins:
+[((<Team: The RoboBees (836)>, <Team: Vae Victis (1418)>), 2),
+ ((<Team: Walton Robotics (2974)>, <Team: East Cobb Robotics (4910)>), 2),
+ ((<Team: CyberKnights (195)>, <Team: Operation PEACCE Robotics  (3461)>), 2),
+ ((<Team: The Cheesy Poofs (254)>, <Team: Citrus Circuits (1678)>), 2),
+ ((<Team: The Pascack PI-oneers (1676)>, <Team: Tiger Tech  (5624)>), 2),
+ ((<Team: HIGHROLLERS (987)>, <Team: TorBots (1197)>), 2),
+ ((<Team: Triple Strange (1533)>, <Team: Techno Wolves (5518)>), 1),
+ ((<Team: TechnoKats Robotics Team (45)>, <Team: Kil-A-Bytes (1024)>), 1),
+ ((<Team: Hawaiian Kids (359)>, <Team: Nuts and Bots (4508)>), 1),
+ ((<Team: Rosie Robotics (839)>, <Team: Robo Chiefs (1768)>), 1)]
+Operation took 0.882 seconds
+------------------------------------------
+Most 3-way alliance event wins:
+[(<Alliance: [<Team: Cleveland's Team (120)>, <Team: The Beach Bots (330)>, <Team: Roboteers (2481)>]>,
+  2),
+ (<Alliance: [<Team: TechnoKats Robotics Team (45)>, <Team: Kil-A-Bytes (1024)>, <Team: Harrison Boiler Robotics (1747)>]>,
+  2),
+ (<Alliance: [<Team: RoboMos (3602)>, <Team: BraveBots (4391)>, <Team: ChiefBots (5692)>]>,
+  1),
+ (<Alliance: [<Team: Walton Robotics (2974)>, <Team: Global Dynamics (4026)>, <Team: East Cobb Robotics (4910)>]>,
+  1),
+ (<Alliance: [<Team: NASA Knights (122)>, <Team: A.R.T. (5546)>, <Team: TORCH (5804)>]>,
+  1),
+ (<Alliance: [<Team: Blue Cheese (1086)>, <Team: Royal Robotics (3359)>, <Team: Bionic Eagles (5279)>]>,
+  1),
+ (<Alliance: [<Team: S.P.A.M. (180)>, <Team: The Moose (1065)>, <Team: The Dirty Mechanics (3932)>]>,
+  1),
+ (<Alliance: [<Team: Skunk Works Robotics (1983)>, <Team: Cyborg Ferrets (3238)>, <Team: Chargers (3786)>]>,
+  1),
+ (<Alliance: [<Team: Swartdogs (525)>, <Team: Metool Brigade (1208)>, <Team: Gators (5172)>]>,
+  1),
+ (<Alliance: [<Team: UPS (Ultimate Protection Squad) (1675)>, <Team: PWNAGE (2451)>, <Team: Rambunction (4330)>]>,
+  1)]
+Operation took 0.342 seconds
+------------------------------------------
+Most team match wins:
+(<Team: NUTRONs (125)>, 72)
+(<Team: Kil-A-Bytes (1024)>, 69)
+(<Team: Team RUSH (27)>, 68)
+(<Team: Team THRUST (1501)>, 68)
+(<Team: Bedford Express (1023)>, 64)
+(<Team: OP Robotics (2056)>, 64)
+(<Team: CyberKnights (195)>, 63)
+(<Team: The HOT Team (67)>, 62)
+(<Team: Skunk Works Robotics (1983)>, 62)
+(<Team: HIGHROLLERS (987)>, 61)
+Operation took 0.0 seconds
+------------------------------------------
+Most team event wins:
+(<Team: CyberKnights (195)>, 4)
+(<Team: HIGHROLLERS (987)>, 4)
+(<Team: Kil-A-Bytes (1024)>, 4)
+(<Team: Citrus Circuits (1678)>, 4)
+(<Team: Roboteers (2481)>, 4)
+(<Team: The HOT Team (67)>, 3)
+(<Team: Robonauts (118)>, 3)
+(<Team: Robowranglers (148)>, 3)
+(<Team: The Beach Bots (330)>, 3)
+(<Team: The RoboBees (836)>, 3)
+Operation took 0.0 seconds
+------------------------------------------
+Highest event average match scores:
+(<Event: 2016cmp>, 210.6944)
+(<Event: 2016micmp>, 125.6556)
+(<Event: 2016incmp>, 124.6923)
+(<Event: 2016new>, 124.4823)
+(<Event: 2016necmp>, 121.6479)
+(<Event: 2016carv>, 119.4437)
+(<Event: 2016hop>, 119.0827)
+(<Event: 2016cars>, 118.5532)
+(<Event: 2016tes>, 114.7143)
+(<Event: 2016onwa>, 114.6566)
+(<Event: 2016cur>, 114.2289)
+(<Event: 2016gal>, 113.0461)
+(<Event: 2016pncmp>, 109.1952)
+(<Event: 2016arc>, 108.9036)
+(<Event: 2016mrcmp>, 108.8029)
+(<Event: 2016inpmh>, 105.4573)
+(<Event: 2016chcmp>, 100.9254)
+(<Event: 2016miken>, 98.0052)
+(<Event: 2016cthar>, 97.3557)
+(<Event: 2016inwch>, 97.2722)
+Operation took 0.001 seconds
+------------------------------------------
+Highest win rate teams:
+(<Team: Citrus Circuits (1678)>, 0.9077)
+(<Team: The Cheesy Poofs (254)>, 0.8958)
+(<Team: Mechanical Mayhem (1519)>, 0.8769)
+(<Team: Robo-Rams (256)>, 0.875)
+(<Team: Istech Robotic Society (5993)>, 0.875)
+(<Team: Roboteers (2481)>, 0.8667)
+(<Team: The HOT Team (67)>, 0.8611)
+(<Team: HIGHROLLERS (987)>, 0.8592)
+(<Team: Alberta Tech Alliance (ATA) (4334)>, 0.8571)
+(<Team: Team Titanium (1986)>, 0.8431)
+(<Team: Robowranglers (148)>, 0.8429)
+(<Team: Spartan Robotics (971)>, 0.8409)
+(<Team: B.E.R.T. (133)>, 0.8406)
+(<Team: CyberKnights (195)>, 0.84)
+(<Team: Team Kika Mana (368)>, 0.8387)
+(<Team: Robonauts (118)>, 0.8305)
+(<Team: S.W.A.T. (1806)>, 0.8261)
+(<Team: THEORY6 (1241)>, 0.8219)
+(<Team: TechFire (225)>, 0.8169)
+(<Team: The Beach Bots (330)>, 0.8167)
+(<Team: Bomb Squad (16)>, 0.814)
+(<Team: PWNAGE (2451)>, 0.8125)
+(<Team: OP Robotics (2056)>, 0.8101)
+(<Team: Gators (5172)>, 0.7955)
+(<Team: Hawaiian Kids (359)>, 0.7937)
+(<Team: Team Tators (2122)>, 0.7925)
+(<Team: Greybots (973)>, 0.7872)
+(<Team: Walton Robotics (2974)>, 0.7846)
+(<Team: Black Hawk Robotics (3310)>, 0.7826)
+(<Team: Orbit (1690)>, 0.7805)
+(<Team: Jersey Voltage (4587)>, 0.7805)
+(<Team: Swartdogs (525)>, 0.7778)
+(<Team: MacBotics (3457)>, 0.7778)
+(<Team: Milton Mustangs (3571)>, 0.7778)
+(<Team: Stormbots (4778)>, 0.7778)
+(<Team: Killer Bees (33)>, 0.7761)
+(<Team: Team RUSH (27)>, 0.7727)
+(<Team: The East Ridge Robotic Ominous RaptorS - the ERRORS (3130)>, 0.7727)
+(<Team: S.P.A.M. (180)>, 0.7708)
+(<Team: Children of the Swamp (179)>, 0.7692)
+(<Team: General Angels (2230)>, 0.7692)
+(<Team: Cyborg Ferrets (3238)>, 0.7692)
+(<Team: The Automatons (2823)>, 0.7632)
+(<Team: Stryke Force (2767)>, 0.7619)
+(<Team: Orange Chaos (4564)>, 0.7612)
+(<Team: Rogue Robotics (2987)>, 0.76)
+(<Team: Team Dave (3683)>, 0.76)
+(<Team: OTTO (1746)>, 0.7581)
+(<Team: Team THRUST (1501)>, 0.7556)
+(<Team: Bedford Express (1023)>, 0.7529)
+Operation took 0.001 seconds
+------------------------------------------
+Ranking Points records
+(1. Orange Chaos (4564) [11-1-0] (2016necmp), 45)
+(1. Stryke Force (2767) [12-0-0] (2016micmp), 44)
+(1. Simbotics (1114) [11-2-0] (2016onwa), 44)
+(1. Team THRUST (1501) [11-1-0] (2016incmp), 43)
+(1. Team Hammond (71) [11-1-0] (2016inpmh), 43)
+(1. HIGHROLLERS (987) [11-1-0] (2016azpx), 42)
+(1. CyberKnights (195) [11-1-0] (2016cthar), 42)
+(1. Fernbank LINKS (4468) [11-1-0] (2016gacmp), 42)
+(1. TechFire (225) [12-0-0] (2016mrcmp), 42)
+(2. NUTRONs (125) [11-1-0] (2016necmp), 42)
+(4. B.E.R.T. (133) [10-2-0] (2016necmp), 42)
+(3. Mechanical Mayhem (1519) [11-1-0] (2016necmp), 42)
+(1. THEORY6 (1241) [12-0-0] (2016onnb), 42)
+(1. Flaming Chickens (1540) [12-0-0] (2016orore), 42)
+(2. Roborioles (4103) [10-2-0] (2016incmp), 41)
+Operation took 0.0 seconds
+------------------------------------------
+Highest ranking points per game
+(1. Greybots (973) [10-0-0] (2016cars), 3.8)
+(1. Orange Chaos (4564) [11-1-0] (2016necmp), 3.75)
+(1. OP Robotics (2056) [9-1-0] (2016tes), 3.7)
+(1. Stryke Force (2767) [12-0-0] (2016micmp), 3.6667)
+(1. Citrus Circuits (1678) [8-0-0] (2016casj), 3.625)
+(2. The Cheesy Poofs (254) [8-0-0] (2016casj), 3.625)
+(2. Error Code Xero (1425) [9-1-0] (2016hop), 3.6)
+(2. PWNAGE (2451) [10-0-0] (2016tes), 3.6)
+(1. Bomb Squad (16) [9-1-0] (2016alhu), 3.6)
+(1. Robowranglers (148) [9-1-0] (2016hop), 3.6)
+(1. Team THRUST (1501) [11-1-0] (2016incmp), 3.5833)
+(1. Team Hammond (71) [11-1-0] (2016inpmh), 3.5833)
+(4. B.E.R.T. (133) [10-2-0] (2016necmp), 3.5)
+(1. THEORY6 (1241) [12-0-0] (2016onnb), 3.5)
+(2. NUTRONs (125) [11-1-0] (2016necmp), 3.5)
+Operation took 0.0 seconds
+------------------------------------------
+Auton records
+(1. Simbotics (1114) [11-2-0] (2016onwa), 506)
+(12. Sir Lancerbot (4917) [8-5-0] (2016onwa), 494)
+(13. Apple Pi (2067) [9-3-0] (2016necmp), 457)
+(11. Code Red Robotics the Stray Dogs (2771) [10-2-0] (2016micmp), 456)
+(21. BraveBots (4391) [7-5-0] (2016micmp), 452)
+(14. Gaelhawks (230) [8-4-0] (2016necmp), 438)
+(53. Petoskey Paladins (3618) [6-6-0] (2016micmp), 437)
+(7. More Martians (70) [9-2-1] (2016micmp), 437)
+(5. LigerBots (2877) [9-3-0] (2016mabos), 431)
+(3. TechHOUNDS (868) [10-2-0] (2016incmp), 429)
+(52. LigerBots (2877) [6-6-0] (2016necmp), 429)
+(1. Greybots (973) [10-0-0] (2016cars), 426)
+(9. Chop Shop (166) [9-3-0] (2016necmp), 425)
+(11. CyberKnights (195) [9-3-0] (2016necmp), 425)
+(7. Big Bad Bob (319) [8-4-0] (2016necmp), 424)
+Operation took 0.0 seconds
+------------------------------------------
+Highest auton points per game
+(1. Greybots (973) [10-0-0] (2016cars), 42.6)
+(3. Citrus Circuits (1678) [9-1-0] (2016hop), 42.0)
+(1. THEORY6 (1241) [9-1-0] (2016new), 41.5)
+(4. Spartan Robotics (971) [8-2-0] (2016hop), 41.0)
+(1. CyberKnights (195) [9-1-0] (2016gal), 41.0)
+(10. Chop Shop (166) [7-3-0] (2016cur), 40.9)
+(10. Gators (5172) [7-3-0] (2016new), 40.4)
+(3. Mechanical Mayhem (1519) [9-1-0] (2016new), 40.4)
+(45. The Foley Freeze (910) [4-6-0] (2016carv), 39.6)
+(1. B.E.R.T. (133) [9-1-0] (2016carv), 39.4)
+(1. Simbotics (1114) [11-2-0] (2016onwa), 38.9231)
+(4. The HOT Team (67) [9-1-0] (2016new), 38.8)
+(18. AIR STRIKE (78) [7-3-0] (2016carv), 38.6)
+(2. The Cheesy Poofs (254) [9-1-0] (2016new), 38.4)
+(13. Apple Pi (2067) [9-3-0] (2016necmp), 38.0833)
+Operation took 0.001 seconds
+------------------------------------------
+Scale/Challenge records
+(11. Las Pumas (2197) [6-6-0] (2016incmp), 340)
+(28. Goon Squad (3604) [8-4-0] (2016micmp), 325)
+(5. Team Hammond (71) [8-4-0] (2016incmp), 315)
+(20. House of Cards (3534) [7-5-0] (2016micmp), 310)
+(6. Gael Force (126) [8-4-0] (2016necmp), 310)
+(2. Skunk Works Robotics (1983) [10-2-0] (2016pncmp), 310)
+(25. Spartronics (5048) [7-5-0] (2016micmp), 305)
+(13. The HOT Team (67) [9-3-0] (2016micmp), 305)
+(4. B.E.R.T. (133) [10-2-0] (2016necmp), 305)
+(1. Team THRUST (1501) [11-1-0] (2016incmp), 300)
+(35. BlitzCreek (3770) [6-6-0] (2016micmp), 300)
+(18. The Panther Project (2064) [7-5-0] (2016necmp), 300)
+(11. Raider Robotix (25) [8-4-0] (2016mrcmp), 295)
+(27. Robo Chiefs (1768) [6-6-0] (2016necmp), 295)
+(16. Munster HorsePower (3147) [6-6-0] (2016incmp), 290)
+Operation took 0.0 seconds
+------------------------------------------
+Highest scale/challenge points per game
+(11. Las Pumas (2197) [6-6-0] (2016incmp), 28.3333)
+(28. Goon Squad (3604) [8-4-0] (2016micmp), 27.0833)
+(3. Raider Robotix (25) [8-2-0] (2016cur), 27.0)
+(5. Celt-X (5406) [8-2-0] (2016cur), 27.0)
+(5. Children of the Swamp (179) [8-2-0] (2016new), 26.5)
+(5. Team Hammond (71) [8-4-0] (2016incmp), 26.25)
+(6. Gael Force (126) [8-4-0] (2016necmp), 25.8333)
+(2. Skunk Works Robotics (1983) [10-2-0] (2016pncmp), 25.8333)
+(20. House of Cards (3534) [7-5-0] (2016micmp), 25.8333)
+(19. A.R.T. (5546) [6-4-0] (2016hop), 25.5)
+(8. Elm City Robo Squad (558) [7-3-0] (2016gal), 25.5)
+(4. B.E.R.T. (133) [10-2-0] (2016necmp), 25.4167)
+(25. Spartronics (5048) [7-5-0] (2016micmp), 25.4167)
+(13. The HOT Team (67) [9-3-0] (2016micmp), 25.4167)
+(18. The Panther Project (2064) [7-5-0] (2016necmp), 25.0)
+Operation took 0.0 seconds
+------------------------------------------
+Goals records
+(11. Code Red Robotics the Stray Dogs (2771) [10-2-0] (2016micmp), 804)
+(9. Average Joes (3620) [9-2-1] (2016micmp), 780)
+(6. That ONE Team (4967) [10-2-0] (2016micmp), 712)
+(10. Killer Bees (33) [9-3-0] (2016micmp), 709)
+(4. THEORY6 (1241) [9-4-0] (2016onwa), 696)
+(3. Gaelhawks (230) [8-2-0] (2016carv), 693)
+(4. Orbit (1690) [9-1-0] (2016tes), 681)
+(3. Mechanical Mayhem (1519) [11-1-0] (2016necmp), 680)
+(10. Gators (5172) [7-3-0] (2016new), 673)
+(3. Mechanical Mayhem (1519) [9-1-0] (2016new), 671)
+(11. CyberKnights (195) [9-3-0] (2016necmp), 669)
+(2. NUTRONs (125) [11-1-0] (2016necmp), 668)
+(14. Gaelhawks (230) [8-4-0] (2016necmp), 660)
+(2. The Cheesy Poofs (254) [9-1-0] (2016new), 660)
+(17. Bedford Express (1023) [9-3-0] (2016micmp), 659)
+Operation took 0.0 seconds
+------------------------------------------
+Highest goal points per game
+(3. Gaelhawks (230) [8-2-0] (2016carv), 69.3)
+(4. Orbit (1690) [9-1-0] (2016tes), 68.1)
+(10. Gators (5172) [7-3-0] (2016new), 67.3)
+(3. Mechanical Mayhem (1519) [9-1-0] (2016new), 67.1)
+(11. Code Red Robotics the Stray Dogs (2771) [10-2-0] (2016micmp), 67.0)
+(2. The Cheesy Poofs (254) [9-1-0] (2016new), 66.0)
+(1. THEORY6 (1241) [9-1-0] (2016new), 65.7)
+(3. Citrus Circuits (1678) [9-1-0] (2016hop), 65.5)
+(9. Average Joes (3620) [9-2-1] (2016micmp), 65.0)
+(4. Spartan Robotics (971) [8-2-0] (2016hop), 64.1)
+(5. Children of the Swamp (179) [8-2-0] (2016new), 63.9)
+(1. CyberKnights (195) [9-1-0] (2016gal), 63.2)
+(1. Robowranglers (148) [9-1-0] (2016hop), 62.6)
+(1. OP Robotics (2056) [9-1-0] (2016tes), 60.3)
+(1. Greybots (973) [10-0-0] (2016cars), 60.0)
+Operation took 0.0 seconds
+------------------------------------------
+Defense records
+(52. Mech Cadets (4456) [4-8-0] (2016chcmp), 750)
+(2. Roborioles (4103) [10-2-0] (2016incmp), 745)
+(5. Robo-Rebels (1153) [9-3-0] (2016necmp), 745)
+(29. Lion Robotics (2907) [5-7-0] (2016pncmp), 745)
+(37. Buc'n'Gears (3546) [6-6-0] (2016micmp), 740)
+(16. MORT Beta (193) [6-5-1] (2016mrcmp), 740)
+(12. Andromeda One (4905) [7-5-0] (2016necmp), 740)
+(14. Knight Vision (4940) [7-6-0] (2016onwa), 740)
+(18. Prometheus (2785) [6-6-0] (2016cthar), 735)
+(2. OTTO (1746) [11-1-0] (2016gacmp), 735)
+(10. Celt-X (5406) [7-6-0] (2016onwa), 735)
+(13. PantherTech (292) [6-6-0] (2016incmp), 730)
+(20. Conductors (4580) [5-7-0] (2016incmp), 730)
+(24. Aluminosity (5403) [3-9-0] (2016incmp), 730)
+(7. More Martians (70) [9-2-1] (2016micmp), 730)
+Operation took 0.0 seconds
+------------------------------------------
+Highest defense points per game
+(12. the STAGS (1262) [7-3-0] (2016carv), 63.0)
+(52. Mech Cadets (4456) [4-8-0] (2016chcmp), 62.5)
+(29. Lion Robotics (2907) [5-7-0] (2016pncmp), 62.0833)
+(2. Roborioles (4103) [10-2-0] (2016incmp), 62.0833)
+(5. Robo-Rebels (1153) [9-3-0] (2016necmp), 62.0833)
+(16. MORT Beta (193) [6-5-1] (2016mrcmp), 61.6667)
+(37. Buc'n'Gears (3546) [6-6-0] (2016micmp), 61.6667)
+(12. Andromeda One (4905) [7-5-0] (2016necmp), 61.6667)
+(21. Phantom Catz (2637) [7-3-0] (2016arc), 61.5)
+(2. OTTO (1746) [11-1-0] (2016gacmp), 61.25)
+(18. Prometheus (2785) [6-6-0] (2016cthar), 61.25)
+(21. Bearbotics (2439) [5-5-0] (2016gal), 61.0)
+(39. Cruisin' Crusaders (238) [5-7-0] (2016necmp), 60.8333)
+(13. PantherTech (292) [6-6-0] (2016incmp), 60.8333)
+(24. Aluminosity (5403) [3-9-0] (2016incmp), 60.8333)
+Operation took 0.0 seconds
+------------------------------------------
+OPR records
+(1. Robowranglers (148) [9-1-0] (2016hop), 79.4560067336837)
+(2. The Cheesy Poofs (254) [8-0-0] (2016casj), 78.9221417481598)
+(1. OP Robotics (2056) [10-0-0] (2016onto), 77.158596370947)
+(1. Spartan Robotics (971) [7-1-0] (2016cada), 77.1261046892321)
+(1. Robonauts (118) [7-1-0] (2016txho), 75.1440622940467)
+(3. Gaelhawks (230) [8-2-0] (2016carv), 74.844456330033)
+(10. Gators (5172) [7-3-0] (2016new), 73.8546916857672)
+(3. OP Robotics (2056) [7-2-0] (2016onwi), 72.2572017193152)
+(3. Robowranglers (148) [9-2-0] (2016txda), 71.0093046986621)
+(4. Spartan Robotics (971) [8-2-0] (2016hop), 70.766651507613)
+(5. Children of the Swamp (179) [8-2-0] (2016new), 70.7212156705859)
+(1. CyberKnights (195) [9-1-0] (2016gal), 70.6630415402099)
+(2. The Cheesy Poofs (254) [9-1-0] (2016new), 70.5620690411183)
+(3. Citrus Circuits (1678) [9-1-0] (2016hop), 70.4769079986691)
+(9. Average Joes (3620) [7-3-0] (2016new), 70.3956657811987)
+Operation took 0.0 seconds
+------------------------------------------
+DPR records
+(63. V2 Robotics (5505) [3-7-0] (2016new), 67.914034398435)
+(58. Team Paradox (2102) [3-7-0] (2016new), 63.9340001577032)
+(75. St. Helens Robotics and Engineering Club (SHREC) (5450) [1-9-0] (2016new),
+ 61.6385228398344)
+(51. Blizzard (188) [3-7-0] (2016new), 60.7251488762572)
+(26. Mechanical Mustangs (3314) [5-5-0] (2016new), 59.8256404660511)
+(34. Breakaway (3937) [5-5-0] (2016new), 59.2310490039674)
+(74. Klein Bots (3735) [1-9-0] (2016carv), 59.1207173567105)
+(62. Punchers (3288) [3-7-0] (2016new), 58.2518188531819)
+(60. Technical Terminators (1051) [0-8-0] (2016scmb), 57.5111157042429)
+(98. Twisted Devils (4381) [2-10-0] (2016micmp), 56.1037021853358)
+(41. Blue Ops Robotics (4216) [4-6-0] (2016hop), 55.7507369246186)
+(48. Robostangs (548) [4-6-0] (2016tes), 54.8361580682288)
+(66. Titanium Tigers (5114) [3-9-0] (2016micmp), 54.5194917171652)
+(88. Volatile Chaos Inhibitors (5203) [3-9-0] (2016micmp), 54.3785169594783)
+(69. Villanova WiredCats (5885) [2-8-0] (2016new), 53.825111635872)
+Operation took 0.0 seconds
+------------------------------------------
+CCWMS records
+(1. OP Robotics (2056) [10-0-0] (2016onto), 58.4632979965809)
+(3. Robowranglers (148) [9-2-0] (2016txda), 57.9623739414125)
+(1. Spartan Robotics (971) [7-1-0] (2016cada), 54.1638440735509)
+(2. The Cheesy Poofs (254) [8-0-0] (2016casj), 53.7240958628369)
+(1. Flaming Chickens (1540) [12-0-0] (2016orore), 50.9443988682159)
+(2. MadTown Robotics (1323) [8-0-0] (2016cada), 50.383262035934)
+(4. Citrus Circuits (1678) [6-1-1] (2016cada), 49.4943087637291)
+(1. HIGHROLLERS (987) [10-1-0] (2016nvlv), 48.9946594176447)
+(1. Gators (5172) [10-0-0] (2016iacf), 48.8635313896638)
+(1. Alberta Tech Alliance (ATA) (4334) [11-0-0] (2016abca), 48.4513731895078)
+(1. Black Hawk Robotics (3310) [11-0-0] (2016txlu), 48.4125720805567)
+(1. HIGHROLLERS (987) [11-1-0] (2016azpx), 48.4056925196563)
+(1. Citrus Circuits (1678) [8-0-0] (2016casj), 47.9943924937126)
+(3. Spartan Robotics (971) [8-0-0] (2016casj), 47.9616994017003)
+(10. Gators (5172) [7-3-0] (2016new), 45.279510114046)
+Operation took 0.0 seconds
+------------------------------------------
+Elo Leaders
+(<Team: Citrus Circuits (1678)>, 52.0244618701428)
+(<Team: Roboteers (2481)>, 51.1777775072412)
+(<Team: CyberKnights (195)>, 47.2656170651206)
+(<Team: The HOT Team (67)>, 46.6029370486182)
+(<Team: OP Robotics (2056)>, 46.547996358553)
+(<Team: The Beach Bots (330)>, 46.2878702108725)
+(<Team: The Cheesy Poofs (254)>, 46.1795107802072)
+(<Team: Mechanical Mayhem (1519)>, 45.9941072187491)
+(<Team: Robowranglers (148)>, 45.7288096923069)
+(<Team: Robonauts (118)>, 45.4079570796682)
+(<Team: THEORY6 (1241)>, 45.4070419576177)
+(<Team: B.E.R.T. (133)>, 45.1227007405075)
+(<Team: Alberta Tech Alliance (ATA) (4334)>, 44.9431821723055)
+(<Team: Orbit (1690)>, 44.9390440739506)
+(<Team: BumbleB (3339)>, 44.3136312324973)
+(<Team: HIGHROLLERS (987)>, 44.3087532667766)
+(<Team: TechFire (225)>, 44.2072607467928)
+(<Team: Spartan Robotics (971)>, 43.6870671196469)
+(<Team: Swartdogs (525)>, 42.9594212314301)
+(<Team: Team Dave (3683)>, 42.7177818946974)
+Operation took 0.0 seconds
+------------------------------------------
+High score matches
+(<ScoringModel2016: blue: 155, red: 275>, <Match: 2016carv_qf3m2>, 275)
+(<ScoringModel2016: blue: 130, red: 270>, <Match: 2016hop_qf1m2>, 270)
+(<ScoringModel2016: blue: 260, red: 190>, <Match: 2016new_qf3m1>, 260)
+(<ScoringModel2016: blue: 220, red: 260>, <Match: 2016hop_sf1m2>, 260)
+(<ScoringModel2016: blue: 178, red: 257>, <Match: 2016necmp_qf4m2>, 257)
+(<ScoringModel2016: blue: 229, red: 255>, <Match: 2016cmp_qf2m2>, 255)
+(<ScoringModel2016: blue: 191, red: 255>, <Match: 2016carv_qf3m1>, 255)
+(<ScoringModel2016: blue: 142, red: 252>, <Match: 2016gal_f1m1>, 252)
+(<ScoringModel2016: blue: 151, red: 250>, <Match: 2016new_qf4m1>, 250)
+(<ScoringModel2016: blue: 180, red: 250>, <Match: 2016hop_sf1m1>, 250)
+(<ScoringModel2016: blue: 130, red: 250>, <Match: 2016tes_qf1m1>, 250)
+(<ScoringModel2016: blue: 135, red: 245>, <Match: 2016gal_qf1m1>, 245)
+(<ScoringModel2016: blue: 111, red: 245>, <Match: 2016new_qf1m1>, 245)
+(<ScoringModel2016: blue: 144, red: 245>, <Match: 2016new_qf1m2>, 245)
+(<ScoringModel2016: blue: 245, red: 170>, <Match: 2016necmp_f1m3>, 245)
+Operation took 0.0 seconds
+------------------------------------------

@@ -15,7 +15,10 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
+from TBAW import views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    url(r'^t/(?P<team_number>[0-9]+)/$', views.team_view, name='team_view'),
+    url(r'^leaderboard/$', views.leaderboard, name='leaderboard')
 ]

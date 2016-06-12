@@ -50,8 +50,7 @@ class AllianceLeaderboard:
 
         Args:
             n: An optional argument that cuts the return to n elements.
-            get_counter_obj: I forget where I used it but I used it somewhere, you don't need it anywhere else.
-                                (This is the key to good software!)
+            get_counter_obj: This is just a helper argument for the most_event_wins_2 function.
 
         Returns:
             A list of which combinations of 3 teams have the most event wins together (ie won the finals).

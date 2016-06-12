@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Leaderboard</title>
+
+    <style>
+        table {
+            table-layout: fixed;
+        }
+
+        td {
+            word-wrap: break-word;
+            border: 1px solid #cccccc;
+        }
+
+        tr:nth-child(even) {
+            background: #eeeeee;
+        }
+    </style>
+
+</head>
+<body>
+{% block leaderboard %}
+    <table style="width: 40%;">
+        <tr>
+            <th>Team</th>
+            <th>Elo</th>
+            <th>Uncertainty</th>
+        </tr>
+        {% for team in elo_leaders %}
+            <tr>
+                <td>{{ team }}</td>
+                <td>{{ team.elo_mu|floatformat:2 }}</td>
+                <td>{{ team.elo_sigma|floatformat:2 }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}
+</body>
+</html>
