@@ -87,6 +87,11 @@ def get_teams_at_event(event_key):
     return teams
 
 
-def get_team_robots_history(team_number):
+def get_team_robots_history_json(team_number):
     url = __tba_url + 'team/frc{0}/history/robots'.format(team_number)
+    return requests.get(url, headers=__api_key).json()
+
+
+def get_awards_from_event_json(event_key=None):
+    url = __tba_url + 'event/{0}/awards'.format(event_key)
     return requests.get(url, headers=__api_key).json()

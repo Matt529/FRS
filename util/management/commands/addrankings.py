@@ -18,7 +18,7 @@ def add_all():
 
 def add_event(key):
     global teams_added, events_added, teams_skipped
-    print("\t({1}) Processing stats for event {0}...".format(key, events_added + 1))
+    print("({1}) Adding stats for event {0}...".format(key, events_added + 1))
     stats = get_event_statistics_json(key)
     rankings = get_event_rankings_json(key)
     event = get_event(key)
@@ -31,7 +31,7 @@ def add_event(key):
             teams_skipped += 1
             continue
 
-        print("({1}) Stats for {0}...".format(team, teams_added + 1).encode('utf-8'))
+        # print("({1}) Stats for {0}...".format(team, teams_added + 1).encode('utf-8'))
         new_model = model.objects.create()
         new_model.team = team
         new_model.save()

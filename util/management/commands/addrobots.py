@@ -1,6 +1,6 @@
 from time import clock
 
-from TBAW.TBAW_requester import get_team_robots_history
+from TBAW.TBAW_requester import get_team_robots_history_json
 from TBAW.models import Robot, Team
 from django.core.management.base import BaseCommand
 from util.getters import get_team
@@ -15,7 +15,7 @@ def add_all_robots():
 
 def add_team_robots(team_number):
     global robots_created
-    robots = get_team_robots_history(team_number)
+    robots = get_team_robots_history_json(team_number)
     team = get_team(team_number)
     for year in robots:
         if Robot.objects.filter(year=robots[year]['year'], team=team, key=robots[year]['key'],

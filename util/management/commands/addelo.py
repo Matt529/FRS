@@ -33,7 +33,7 @@ def handle_match_elo(match):
         loser_team.save()
 
     matches_added += 1
-    print("({1}) Handled {0}".format(match, matches_added))
+    # print("({1}) Handled {0}".format(match, matches_added))
 
 
 def add_all_elo():
@@ -45,6 +45,7 @@ def add_all_elo():
 
 
 def add_event_elo(event):
+    print("Adding Elo for event {0}".format(event.key))
     for match in event.match_set.all():
         handle_match_elo(match)
 

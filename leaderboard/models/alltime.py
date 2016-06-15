@@ -1,8 +1,8 @@
 from itertools import combinations
 
-from TBAW.models import Match, Team
+from TBAW.models import Match, Team, Award
 from collections import Counter
-from django.db.models import Count, F, ExpressionWrapper, FloatField
+from django.db.models import Count, F, ExpressionWrapper, FloatField, When, Case, Sum, PositiveSmallIntegerField
 from util.check import event_has_f3_match
 
 
@@ -166,3 +166,39 @@ class TeamLeaderboard:
 
         """
         return Team.objects.annotate(elo_scaled=F('elo_mu') * 60).order_by('-elo_scaled')[:n]
+
+    @staticmethod
+    def most_award_wins(n=None):
+        """
+
+        Args:
+            n: An optional argument that cuts the return to n elements.
+
+        Returns:
+            A query set of which teams have the most total awards. Has the extra field 'num_awards'.
+
+
+        """
+        return Team.objects.annotate(num_awards=Count('award')).order_by('-num_awards')[:n]
+
+    @staticmethod
+    def most_blue_banners(n=None):
+        """
+
+        Args:
+            n: An optional argument that cuts the return to n elements.
+
+        Returns:
+            A query set of which teams have the most blue banners. Has the extra field 'num_blue_banners'.
+
+        """
+        blue_banner_reverse = dict((v, k) for k, v in Award.blue_banner_choices)
+        return Team.objects.filter(award__award_type__in=blue_banner_reverse.values()).annotate(
+            num_blue_banners=Sum(
+                Case(
+                    When(award__award_type__in=blue_banner_reverse.values(), then=1),
+                    default=0,
+                    output_field=PositiveSmallIntegerField(),
+                )
+            )
+        ).order_by('-num_blue_banners')[:n]

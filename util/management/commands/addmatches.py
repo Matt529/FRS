@@ -24,7 +24,7 @@ def add_all_matches():
 def add_matches_from_event(event_key):
     global matches_created, matches_skipped
     matches = get_list_of_matches_json(event_key)
-    print("\tAdding matches from event {0}...".format(event_key))
+    print("Adding matches from event {0}...".format(event_key))
     for match in matches:
         if match_exists(event_key, match['key']):
             matches_skipped += 1
@@ -69,7 +69,6 @@ def add_matches_from_event(event_key):
                         blue_alliance.teams.add(x)
                 else:
                     blue_alliance = get_alliance(blue_teams)
-                    Alliance.objects.filter(teamkey)
 
                 for data_seg in event_json['alliances']:
                     if blue_teams[0].key in data_seg['picks']:
@@ -137,14 +136,14 @@ def add_matches_from_event(event_key):
                 blue_appearance.save()
 
             matches_created += 1
-            print("({7}) Added match {0} ({1}/{2}/{3} vs {4}/{5}/{6})".format(match['key'],
-                                                                              red_alliance.teams.all()[0].team_number,
-                                                                              red_alliance.teams.all()[1].team_number,
-                                                                              red_alliance.teams.all()[2].team_number,
-                                                                              blue_alliance.teams.all()[0].team_number,
-                                                                              blue_alliance.teams.all()[1].team_number,
-                                                                              blue_alliance.teams.all()[2].team_number,
-                                                                              matches_created))
+            # print("({7}) Added match {0} ({1}/{2}/{3} vs {4}/{5}/{6})".format(match['key'],
+            #                                                                   red_alliance.teams.all()[0].team_number,
+            #                                                                   red_alliance.teams.all()[1].team_number,
+            #                                                                   red_alliance.teams.all()[2].team_number,
+            #                                                                   blue_alliance.teams.all()[0].team_number,
+            #                                                                   blue_alliance.teams.all()[1].team_number,
+            #                                                                   blue_alliance.teams.all()[2].team_number,
+            #                                                                   matches_created))
 
 
 def parse_score_breakdown(year, score_breakdown):

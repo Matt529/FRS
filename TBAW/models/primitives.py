@@ -113,14 +113,98 @@ class Match(models.Model):
 
 
 class Award(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=150)
 
-    # todo: https://github.com/the-blue-alliance/the-blue-alliance/blob/master/consts/award_type.py#L15
-    award_type_choices = ()
+    # https://github.com/the-blue-alliance/the-blue-alliance/blob/master/consts/award_type.py#L15
+    award_type_choices = (
+        (0, "Chairman's"),
+        (1, "Winner"),
+        (2, "Finalist"),
+        (3, "Woodie Flowers"),
+        (4, "Dean's List"),
+        (5, "Volunteer"),
+        (6, "Founders"),
+        (7, "Bart Kamen Memorial"),
+        (8, "Make It Loud"),
+        (9, "Engineering Inspiration"),
+        (10, "Rookie All Star"),
+        (11, "Gracious Professionalism"),
+        (12, "Coopertition"),
+        (13, "Judges"),
+        (14, "Highest Rookie Seed"),
+        (15, "Rookie Inspiration"),
+        (16, "Industrial Design"),
+        (17, "Quality"),
+        (18, "Safety"),
+        (19, "Sportsmanship"),
+        (20, "Creativity"),
+        (21, "Engineering Excellence"),
+        (22, "Entrepreneurship"),
+        (23, "Excellence in Design"),
+        (24, "Excellence in Design (CAD)"),
+        (25, "Excellence in Design (Animation)"),
+        (26, "Driving Tomorrow's Technology"),
+        (27, "Imagery"),
+        (28, "Media and Technology"),
+        (29, "Innovation in Control"),
+        (30, "Spirit"),
+        (31, "Website"),
+        (32, "Visualization"),
+        (33, "Autodesk Inventor"),
+        (34, "Future Innovator"),
+        (35, "Recognition of Extraordinary Service"),
+        (36, "Outstanding Cart"),
+        (37, "WSU Aim Higher"),
+        (38, "Leadership in Control"),
+        (39, "Number 1 Seed"),
+        (40, "Incredible Play"),
+        (41, "People's Choice Animation"),
+        (42, "Rising Star Visualization"),
+        (43, "Best Offensive Round"),
+        (44, "Best Play of the Day"),
+        (45, "Featherweight in the Finals"),
+        (46, "Most Photogenic"),
+        (47, "Outstanding Defense"),
+        (48, "Power to Simplify"),
+        (49, "Against All Odds"),
+        (50, "Rising Star"),
+        (51, "Chairman's Honorable Mention"),
+        (52, "Content Communication Honorable Mention"),
+        (53, "Technical Execution Honorable Mention"),
+        (54, "Realization"),
+        (55, "Realization Honorable Mention"),
+        (56, "Design Your Future"),
+        (57, "Design Your Future Honorable Mention"),
+        (58, "Special Recognition Character Animation"),
+        (59, "High Score"),
+        (60, "Teacher Pioneer"),
+        (61, "Best Craftsmanship"),
+        (62, "Best Defensive Match"),
+        (63, "Play of the Day"),
+        (64, "Programming"),
+        (65, "Professionalism"),
+        (66, "Golden Corndog"),
+        (67, "Most Improved Team"),
+        (68, "Wildcard"),
+    )
+
+    blue_banner_choices = (
+        (0, "Chairman's"),
+        (1, "Winner")
+    )
+
+    non_district_point_choices = (
+        (1, "Winner"),
+        (2, "Finalist"),
+        (3, "Woodie Flowers"),
+        (4, "Dean's List"),
+        (5, "Volunteer"),
+        (14, "Highest Rookie Seed"),
+    )
 
     award_type = models.CharField(choices=award_type_choices, max_length=100)
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
-    # recipient = models.ForeignKey(Team, on_delete=models.CASCADE)
+    recipients = models.ManyToManyField(Team)
     year = models.PositiveSmallIntegerField()
 
 

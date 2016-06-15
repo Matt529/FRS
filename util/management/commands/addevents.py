@@ -23,6 +23,8 @@ def add_event(event_key, event_data=None):
     if event_data is None:
         event_data = get_event_json(event_key)
 
+    print("Adding event {0}".format(event_key))
+
     year = int(event_data['end_date'][:4])
     month = int(event_data['end_date'][5:7])
     day = int(event_data['end_date'][8:10])
@@ -38,7 +40,7 @@ def add_event(event_key, event_data=None):
                                                    timezone=event_data['timezone'], website=event_data['website'],
                                                    official=event_data['official'], end_date=date_obj)
         events_updated += 1
-        print("Updated event {0}".format(event_key))
+        # print("Updated event {0}".format(event_key))
     # We only want to analyze data from official events or IRI/Cheezy Champs
     elif (event_data['official'] is True and event_data['event_type_string'] != 'Offseason') or \
             event_data['event_code'] == 'iri' or event_data['event_code'] == 'cc':
@@ -55,7 +57,7 @@ def add_event(event_key, event_data=None):
             event.teams.add(get_team(t['team_number']))
 
         events_created += 1
-        print("Created event {0}".format(event_key))
+        # print("Created event {0}".format(event_key))
     else:
         events_skipped += 1
         print("Skipped event {0}".format(event_key))

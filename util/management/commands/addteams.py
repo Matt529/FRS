@@ -28,6 +28,8 @@ def add_team(team_number, team_data=None):
     if team_data is None:
         team_data = get_team_json(team_number)
 
+    print("Adding team {0}".format(team_number))
+
     website = team_data['website']
     name = team_data['name']
     locality = team_data['locality']
@@ -52,7 +54,7 @@ def add_team(team_number, team_data=None):
                                                             key=key, nickname=nickname, rookie_year=rookie_year,
                                                             motto=motto)
         teams_updated += 1
-        print("Updated team {0}".format(team_number))
+        # print("Updated team {0}".format(team_number))
     # But if it doesn't exist, then create a new db entry
     else:
         team = Team.objects.create(website=website, name=name, locality=locality, region=region,
@@ -60,7 +62,7 @@ def add_team(team_number, team_data=None):
                                    rookie_year=rookie_year, motto=motto, team_number=team_number)
         team.save()
         teams_created += 1
-        print("Created team {0}".format(team_number))
+        # print("Created team {0}".format(team_number))
 
 
 class Command(BaseCommand):
@@ -71,6 +73,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         team_num = options['team_number']
+        print("Adding teams...")
         time_start = clock()
         if team_num != -1:
             add_team(team_number=team_num)
