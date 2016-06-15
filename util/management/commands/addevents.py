@@ -1,7 +1,7 @@
 from time import clock
 from datetime import date
 
-from TBAW.TBAW_requester import get_event_json, get_list_of_events_json
+from TBAW.requester import get_event_json, get_list_of_events_json
 from TBAW.models import Event
 from django.core.management.base import BaseCommand
 from util.check import event_exists

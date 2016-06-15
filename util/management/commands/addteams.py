@@ -1,6 +1,6 @@
 from time import clock
 
-from TBAW.TBAW_requester import get_list_of_teams_json, get_team_json
+from TBAW.requester import get_list_of_teams_json, get_team_json
 from TBAW.models import Team
 from django.core.management.base import BaseCommand
 from util.check import team_exists

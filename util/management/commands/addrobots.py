@@ -1,6 +1,6 @@
 from time import clock
 
-from TBAW.TBAW_requester import get_team_robots_history_json
+from TBAW.requester import get_team_robots_history_json
 from TBAW.models import Robot, Team
 from django.core.management.base import BaseCommand
 from util.getters import get_team

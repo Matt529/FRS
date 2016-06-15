@@ -1,6 +1,6 @@
 from time import clock
 
-from TBAW.TBAW_requester import get_list_of_matches_json, get_event_json
+from TBAW.requester import get_list_of_matches_json, get_event_json
 from TBAW.models import Match, Alliance, Event, AllianceAppearance
 from django.core.management.base import BaseCommand
 from util.check import match_exists, alliance_exists, alliance_appearance_exists, event_has_f3_match

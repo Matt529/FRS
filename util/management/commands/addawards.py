@@ -1,6 +1,6 @@
 from time import clock
 
-from TBAW.TBAW_requester import get_awards_from_event_json
+from TBAW.requester import get_awards_from_event_json
 from TBAW.models import Event, Award
 from django.core.management.base import BaseCommand
 from util.getters import get_event, get_team

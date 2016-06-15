@@ -1,6 +1,6 @@
 from time import clock
 
-from TBAW.TBAW_requester import get_event_statistics_json, get_event_rankings_json, get_teams_at_event
+from TBAW.requester import get_event_statistics_json, get_event_rankings_json, get_teams_at_event
 from TBAW.models import Event, RankingModel
 from django.core.management.base import BaseCommand
 from util.getters import get_event, get_instance_ranking_model

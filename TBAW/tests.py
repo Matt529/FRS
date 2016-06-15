@@ -1,5 +1,5 @@
 from django.test import TestCase
-from .TBAW_requester import get_team_json, get_event_json
+from .requester import get_team_json, get_event_json
 from .models import Team, Event
 
 
