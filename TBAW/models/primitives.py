@@ -26,7 +26,7 @@ class Team(models.Model):
         return "{0} ({1})".format(self.nickname, self.team_number)
 
 
-class Alliance(models.Model):
+class  Alliance(models.Model):
     teams = models.ManyToManyField(Team)
 
     def __str__(self):

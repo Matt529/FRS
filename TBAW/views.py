@@ -1,7 +1,7 @@
-from django.shortcuts import render
-from util.getters import get_team
 from TBAW.models import Event
+from django.shortcuts import render
 from leaderboard.models import TeamLeaderboard
+from util.getters import get_team, get_event
 
 
 def team_view(request, team_number):
@@ -11,6 +11,15 @@ def team_view(request, team_number):
                   context={
                       'team': team,
                       'events': events,
+                  })
+
+
+def event_view(request, event_key):
+    event = get_event(event_key)
+
+    return render(request, 'TBAW/event_view.html',
+                  context={
+                      'event': event,
                   })
 
 
