@@ -26,8 +26,9 @@ class Team(models.Model):
         return "{0} ({1})".format(self.nickname, self.team_number)
 
 
-class  Alliance(models.Model):
+class Alliance(models.Model):
     teams = models.ManyToManyField(Team)
+    color = models.CharField(max_length=4, null=True)
 
     def __str__(self):
         return "{0}".format(self.teams.all())
@@ -105,6 +106,8 @@ class Match(models.Model):
     # time_string = models.CharField(max_length=25)
     # time = models.DateTimeField(), parse UNIX timestamp to DatetimeField
 
+    blue_alliance = models.ForeignKey(Alliance, null=True, related_name='blue_alliance')
+    red_alliance = models.ForeignKey(Alliance, null=True, related_name='red_alliance')
     winner = models.ForeignKey(Alliance, null=True, related_name='winner')
     scoring_model = models.ForeignKey('TBAW.ScoringModel', null=True)
 
