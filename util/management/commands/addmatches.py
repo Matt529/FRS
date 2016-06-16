@@ -8,6 +8,7 @@ from util.getters import get_team, get_event, get_alliance, get_instance_scoring
 
 matches_created = 0
 matches_skipped = 0
+event_matches = 0
 
 
 def add_all_matches():
@@ -26,7 +27,7 @@ def add_matches_from_event(event_key):
     Looking to clean this up. This is really gross.
 
     """
-    global matches_created, matches_skipped
+    global matches_created, matches_skipped, event_matches
     matches = get_list_of_matches_json(event_key)
     print("Adding matches from event {0}...".format(event_key))
     for match in matches:
@@ -146,6 +147,7 @@ def add_matches_from_event(event_key):
                 blue_appearance.save()
 
             matches_created += 1
+            event_matches += 1
             # print("({7}) Added match {0} ({1}/{2}/{3} vs {4}/{5}/{6})".format(match['key'],
             #                                                                   red_alliance.teams.all()[0].team_number,
             #                                                                   red_alliance.teams.all()[1].team_number,
@@ -154,6 +156,8 @@ def add_matches_from_event(event_key):
             #                                                                   blue_alliance.teams.all()[1].team_number,
             #                                                                   blue_alliance.teams.all()[2].team_number,
             #                                                                   matches_created))
+
+    print("\tSuccessfully added {0} matches".format(event_matches))
 
 
 def parse_score_breakdown(year, score_breakdown):
