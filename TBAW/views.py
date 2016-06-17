@@ -6,7 +6,7 @@ from util.getters import get_team, get_event
 
 def team_view(request, team_number):
     team = get_team(team_number)
-    events = Event.objects.filter(teams__team_number=team.team_number)
+    events = Event.objects.filter(teams__team_number=team.team_number).order_by('end_date')
     return render(request, 'TBAW/team_view.html',
                   context={
                       'team': team,

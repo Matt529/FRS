@@ -51,7 +51,6 @@ def add_matches_from_event(event_key):
                 if not alliance_exists(red_teams):
                     # print(event_json['alliances'])
                     red_alliance = Alliance.objects.create()
-                    red_alliance.save()
                     event.alliances.add(red_alliance)
                     for x in red_teams:
                         red_alliance.teams.add(x)
@@ -67,8 +66,6 @@ def add_matches_from_event(event_key):
 
                 if not alliance_exists(blue_teams):
                     blue_alliance = Alliance.objects.create()
-
-                    blue_alliance.save()
                     event.alliances.add(blue_alliance)
                     for x in blue_teams:
                         blue_alliance.teams.add(x)
@@ -83,9 +80,7 @@ def add_matches_from_event(event_key):
                             print("Can't retrieve a seed from {}".format(data_seg['name']))
             else:
                 red_alliance = Alliance.objects.create()
-                red_alliance.save()
                 blue_alliance = Alliance.objects.create()
-                blue_alliance.save()
 
                 for x, y in zip(red_teams, blue_teams):
                     red_alliance.teams.add(x)
@@ -123,8 +118,6 @@ def add_matches_from_event(event_key):
                                              scoring_model=parse_score_breakdown(match['key'][:4],
                                                                                  match['score_breakdown']),
                                              blue_alliance=blue_alliance, red_alliance=red_alliance)
-
-            match_obj.save()
             match_obj.alliances.add(red_alliance)
             match_obj.alliances.add(blue_alliance)
 
@@ -157,7 +150,8 @@ def add_matches_from_event(event_key):
             #                                                                   blue_alliance.teams.all()[2].team_number,
             #                                                                   matches_created))
 
-    print("\tSuccessfully added {0} matches".format(event_matches))
+    print("\tSuccessfully added {0} matches from event ({1}% of total added)".format(event_matches, round(
+        event_matches / matches_created * 100, 2)))
 
 
 def parse_score_breakdown(year, score_breakdown):

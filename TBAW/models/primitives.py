@@ -33,6 +33,9 @@ class Alliance(models.Model):
     def __str__(self):
         return "{0}".format(self.teams.all())
 
+    def to_html(self):
+        return "{0}\n{1}\n{2}".format(self.teams.first(), self.teams.all()[1], self.teams.all()[2])
+
 
 class Event(models.Model):
     key = models.CharField(max_length=10)  # e.g. 2016cmp
