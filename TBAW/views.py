@@ -1,6 +1,5 @@
 from TBAW.models import Event
 from django.shortcuts import render
-from leaderboard.models import TeamLeaderboard
 from util.getters import get_team, get_event
 
 
@@ -20,11 +19,4 @@ def event_view(request, event_key):
     return render(request, 'TBAW/event_view.html',
                   context={
                       'event': event,
-                  })
-
-
-def leaderboard(request):
-    return render(request, 'TBAW/leaderboard.html',
-                  context={
-                      'elo_leaders': TeamLeaderboard.highest_elo(100)
                   })
