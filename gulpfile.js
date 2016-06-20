@@ -14,10 +14,10 @@ var path = require('path');
 
 // Directory Root Constants
 const STATIC_ROOT = path.join('.', 'static');
-const STATIC_FRS_ROOT = path.join(STATIC_ROOT, 'frs');
+const STATIC_FRS_ROOT = path.join(STATIC_ROOT, 'global');
 
 const COMPILED_ROOT = path.join(STATIC_ROOT, 'compiled');
-const COMPILED_FRS_ROOT = path.join(COMPILED_ROOT, 'frs');
+const COMPILED_FRS_ROOT = path.join(COMPILED_ROOT, 'global');
 
 // TypeScript Constants
 const TS_SRC = path.join(STATIC_FRS_ROOT, 'ts', '**', '*.ts');       // Glob for selecting .ts files (for compilation)

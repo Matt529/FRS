@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
+{% load staticfiles %}
+{% load static from staticfiles %}
 {% block head %}
     <head>
         <meta charset="UTF-8">
@@ -10,6 +12,7 @@
         {% endblock %}
 
         {% block css %}
+            <link rel="stylesheet" href="{% static 'global/css/scss/main.css' %}">
         {% endblock %}
         {% block scripts %}
         {% endblock %}
@@ -17,8 +20,6 @@
 {% endblock %}
 {% block body %}
     <body>
-
-
     </body>
 {% endblock %}
 </html>

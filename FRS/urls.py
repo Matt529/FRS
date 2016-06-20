@@ -13,13 +13,18 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
+from TBAW import views
 from django.conf.urls import url
 from django.contrib import admin
-from TBAW import views
+from leaderboard import views as leaderboard_views
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^t/(?P<team_number>[0-9]+)/$', views.team_view, name='team_view'),
-    url(r'^leaderboard/$', views.leaderboard, name='leaderboard'),
+    url(r'^leaderboard/$', leaderboard_views.leaderboard, name='leaderboard'),
     url(r'^e/(?P<event_key>\d{4}[a-zA-Z]*)', views.event_view, name='event_view'),
 ]
+
+
+urlpatterns += staticfiles_urlpatterns()

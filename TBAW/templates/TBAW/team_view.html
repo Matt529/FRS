@@ -1,12 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-{% block team_details %}
+{% extends 'FRS/base_template.html' %}
+{% load staticfiles %}
+{% load static %}
+{% static 'out.css' %}
+{% block body %}
     <b>Team {{ team.team_number }} - {{ team.nickname }}</b><br>
+    <blockquote>{{ team.motto }}</blockquote>
     {{ team.location }}<br>
     First year: {{ team.rookie_year }}<br>
     Rating: {{ team.elo_mu|floatformat:2 }} ± {{ team.elo_sigma|floatformat:2 }}<br>
@@ -16,5 +14,3 @@
     {% endfor %}
     <br>
 {% endblock %}
-</body>
-</html>
