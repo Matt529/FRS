@@ -13,12 +13,12 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
+from FRS import views
 from TBAW import views as tbaw_views
 from django.conf.urls import url
 from django.contrib import admin
-from leaderboard import views as leaderboard_views
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-from FRS import views
+from leaderboard import views as leaderboard_views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -27,6 +27,5 @@ urlpatterns = [
     url(r'^e/(?P<event_key>\d{4}[a-zA-Z]*)', tbaw_views.event_view, name='event_view'),
     url(r'^$', views.landing, name='landing')
 ]
-
 
 urlpatterns += staticfiles_urlpatterns()

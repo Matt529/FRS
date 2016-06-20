@@ -3,23 +3,31 @@
 {% load staticfiles %}
 {% load static from staticfiles %}
 {% block head %}
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="x-ua-compatible" content="ie=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        {% block title %}
-            <title>FRS</title>
-        {% endblock %}
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% block title %}
+        <title>FRS</title>
+    {% endblock %}
 
-        {% block css %}
-            <link rel="stylesheet" href="{% static 'global/css/scss/main.css' %}">
-        {% endblock %}
-        {% block scripts %}
-        {% endblock %}
-    </head>
+    {% block css %}
+        <link rel="stylesheet" href="{% static 'global/css/scss/main.css' %}">
+    {% endblock %}
+    {% block scripts %}
+    {% endblock %}
+</head>
 {% endblock %}
-{% block body %}
-    <body>
-    </body>
-{% endblock %}
+{#{% block body %}#}
+{#    <body>#}
+{#    </body>#}
+{#{% endblock %}#}
+<body>
+<div class="wrapper">
+    {% block body %}
+    {% endblock %}
+
+</div>
+</body>
+
 </html>

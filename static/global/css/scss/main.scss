@@ -1,4 +1,9 @@
 @import '../../../../bower_components/uikit/scss/uikit-mixins.scss';
-// code here
+body {
+  .wrapper {
+    width: 1024px;
+    margin: 0 auto;
+  }
+}
 @import '../../../../bower_components/uikit/scss/uikit.scss';
 @import '../../../../bower_components/uikit/scss/components/autocomplete.scss';
