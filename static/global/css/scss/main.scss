@@ -1,7 +1,7 @@
 @import '../../../../bower_components/uikit/scss/uikit-mixins.scss';
 body {
   .wrapper {
-    width: 1024px;
+    max-width: 1024px;
     margin: 0 auto;
   }
 }
