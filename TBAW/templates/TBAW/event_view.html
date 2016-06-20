@@ -1,6 +1,6 @@
 {% extends 'FRS/base_template.html' %}
 {% block body %}
-    <strong>{{ event.name }} {{ event.year }}</strong><br>
+    <h1>{{ event.name }} {{ event.year }}</h1><br>
     {% if event.event_district != 0 %}
         <em>Part of the {{ event.get_event_district_display }} District</em><br>
     {% endif %}
@@ -16,7 +16,7 @@
         <tbody>
         {% for team in event.teams.all %}
             <tr>
-                <td class="uk-width-1-5"><a href="{% url 'team_view' team.team_number %}">{{ team }}</a></td>
+                <td><a href="{% url 'team_view' team.team_number %}">{{ team }}</a></td>
                 <td>{{ team.elo_mu|floatformat:2 }}</td>
             </tr>
         {% endfor %}
@@ -38,11 +38,11 @@
         {% for match in event.match_set.all %}
             <tr>
                 <td>{{ match.comp_level }}{{ match.set_number }}_{{ match.match_number }}</td>
-                <td style="background-color: lightcoral;">{{ match.red_alliance.to_html|linebreaks }}</td>
-                <td style="background-color: cornflowerblue;">{{ match.blue_alliance.to_html|linebreaks }}</td>
+                <td style="background-color: #ff9999;">{{ match.red_alliance.to_html|linebreaks }}</td>
+                <td style="background-color: #1976D2;">{{ match.blue_alliance.to_html|linebreaks }}</td>
 
-                <td style="background-color: lightcoral;">{{ match.scoring_model.red_total_score }}</td>
-                <td style="background-color: cornflowerblue;">{{ match.scoring_model.blue_total_score }}</td>
+                <td style="background-color: #ff9999;">{{ match.scoring_model.red_total_score }}</td>
+                <td style="background-color: #1976D2;">{{ match.scoring_model.blue_total_score }}</td>
             </tr>
         {% endfor %}
         </tbody>

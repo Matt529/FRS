@@ -1,16 +1,17 @@
 {% extends 'FRS/base_template.html' %}
-{% load staticfiles %}
-{% load static %}
-{% static 'out.css' %}
 {% block body %}
-    <b>Team {{ team.team_number }} - {{ team.nickname }}</b><br>
-    <blockquote>{{ team.motto }}</blockquote>
-    {{ team.location }}<br>
-    First year: {{ team.rookie_year }}<br>
-    Rating: {{ team.elo_mu|floatformat:2 }} ± {{ team.elo_sigma|floatformat:2 }}<br>
+    <h1>Team {{ team.team_number }} - {{ team.nickname }}</h1>
+    <h3>Rating: {{ team.elo_mu|floatformat:2 }} ± {{ team.elo_sigma|floatformat:2 }}</h3>
+    <h5>Rookie year: {{ team.rookie_year }}<br>
+    {{ team.location }}<br></h5>
+
+    {% if team.motto != None %}
+        <blockquote>{{ team.motto }}</blockquote>
+    {% endif %}
+
     Competed at
     {% for event in events %}
-        {{ event.name }}{% if not forloop.last %},{% endif %}
+        <a href="{% url 'event_view' event.key %}">{{ event.name }}{% if not forloop.last %},{% endif %}</a>
     {% endfor %}
     <br>
 {% endblock %}
