@@ -3,7 +3,7 @@ from .models import TeamLeaderboard
 
 
 def leaderboard(request):
-    return render(request, 'TBAW/leaderboard.html',
+    return render(request, 'leaderboard.html',
                   context={
                       'elo_leaders': TeamLeaderboard.highest_elo(100)
                   })
