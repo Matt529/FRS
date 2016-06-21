@@ -15,16 +15,15 @@ Including another URLconf
 """
 from FRS import views
 from TBAW import views as tbaw_views
-from django.conf.urls import url
+from django.conf.urls import url, include
 from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from leaderboard import views as leaderboard_views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^t/(?P<team_number>[0-9]+)/$', tbaw_views.team_view, name='team_view'),
-    url(r'^leaderboard/$', leaderboard_views.leaderboard, name='leaderboard'),
-    url(r'^e/(?P<event_key>\d{4}[a-zA-Z]*)', tbaw_views.event_view, name='event_view'),
+    url(r'^', include('TBAW.urls')),
+    url(r'^', include('leaderboard.urls')),
     url(r'^$', views.landing, name='landing')
 ]
 
