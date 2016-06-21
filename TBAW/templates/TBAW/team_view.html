@@ -9,9 +9,10 @@
         <blockquote>{{ team.motto }}</blockquote>
     {% endif %}
 
-    Competed at
+    Competed in {{ events.count }} event{{ events.count|pluralize }} in {{ events.first.year }}:
     {% for event in events %}
-        <a href="{% url 'event_view' event.key %}">{{ event.name }}{% if not forloop.last %},{% endif %}</a>
+        <a href="{% url 'event_view' event.key %}">{{ event.name.strip }}{% if not forloop.last %},{% endif %}</a>
     {% endfor %}
+
     <br>
 {% endblock %}
