@@ -7,3 +7,11 @@ body {
 }
 @import '../../../../bower_components/uikit/scss/uikit.scss';
 @import '../../../../bower_components/uikit/scss/components/autocomplete.scss';
+
+.uk-navbar {
+  background-color: slategrey;
+
+  a, h1, h2, h3, h4, h5, h6 {
+    color: white;
+  }
+}
