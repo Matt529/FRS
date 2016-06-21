@@ -2,6 +2,7 @@ secret_key.py
 bower_components/
 static/compiled
 *.sqlite3
+static/global/js/d3*.js
 
 # Created by https://www.gitignore.io/api/pycharm,python,django,virtualenv
 
@@ -198,7 +199,6 @@ build/Release
 # Dependency directories
 node_modules
 jspm_packages
-node_modules/**/d3*.js
 
 # Optional npm cache directory
 .npm
