@@ -15,6 +15,7 @@
             <link rel="stylesheet" href="{% static 'global/css/scss/main.css' %}">
         {% endblock %}
         {% block scripts %}
+            <script src="{% static 'global/js/d3/d3.min.js' %}"></script>
         {% endblock %}
     </head>
 {% endblock %}
@@ -23,7 +24,7 @@
     <nav class="uk-navbar">
         <div class="wrapper">
             <a href="{% url 'FRS.views.landing' %}" class="uk-navbar-brand">FRS</a>
-            </div>
+        </div>
     </nav>
 {% endblock %}
 <div class="wrapper">
