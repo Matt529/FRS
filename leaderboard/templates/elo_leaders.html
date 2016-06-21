@@ -16,7 +16,7 @@
         {% for team in elo_leaders %}
             <tr>
                 <td>{{ forloop.counter }}</td>
-                <td><a href="{% url 'team_view' team.team_number %}">{{ team }}</a></td>
+                <td><a href="{% url 'TBAW.views.team_view' team.team_number %}">{{ team }}</a></td>
                 <td>{{ team.elo_mu|floatformat:2 }}</td>
                 <td>{{ team.elo_sigma|floatformat:2 }}</td>
                 <td>{{ team.elo_min|floatformat:2 }}</td>

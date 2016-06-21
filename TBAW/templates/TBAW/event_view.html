@@ -22,7 +22,7 @@
         <tbody>
         {% for team in event.teams.all %}
             <tr>
-                <td><a href="{% url 'team_view' team.team_number %}">{{ team }}</a></td>
+                <td><a href="{% url 'TBAW.views.team_view' team.team_number %}">{{ team }}</a></td>
                 <td>{{ team.elo_mu|floatformat:2 }}</td>
             </tr>
         {% endfor %}
