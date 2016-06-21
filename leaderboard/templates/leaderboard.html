@@ -4,17 +4,23 @@
         <caption>Elo Leaders</caption>
         <thead>
         <tr>
+            <th>Rank</th>
             <th>Team</th>
             <th>Elo</th>
             <th>Uncertainty</th>
+            <th>Min Elo</th>
+            <th>Max Elo</th>
         </tr>
         </thead>
         <tbody>
         {% for team in elo_leaders %}
             <tr>
+                <td>{{ forloop.counter }}</td>
                 <td><a href="{% url 'team_view' team.team_number %}">{{ team }}</a></td>
                 <td>{{ team.elo_mu|floatformat:2 }}</td>
                 <td>{{ team.elo_sigma|floatformat:2 }}</td>
+                <td>{{ team.elo_min|floatformat:2 }}</td>
+                <td>{{ team.elo_max|floatformat:2 }}</td>
             </tr>
         {% endfor %}
         </tbody>

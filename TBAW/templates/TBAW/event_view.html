@@ -3,7 +3,7 @@
 {% block body %}
     <h1>{{ event.name }} {{ event.year }}</h1><br>
     {% if event.event_district != 0 %}
-        <em>Part of the {{ event.get_event_district_display }} District</em><br>
+        <strong>Part of the {{ event.get_event_district_display }} District</strong><br>
     {% endif %}
 
     <table class="uk-table uk-table-condensed">
