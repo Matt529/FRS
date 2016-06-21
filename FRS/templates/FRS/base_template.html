@@ -19,12 +19,14 @@
     </head>
 {% endblock %}
 <body>
-<div class="wrapper">
-    {% block navbar %}
-        <nav class="uk-navbar">
+{% block navbar %}
+    <nav class="uk-navbar">
+        <div class="wrapper">
             <a href="{% url 'landing' %}" class="uk-navbar-brand">FRS</a>
-        </nav>
-    {% endblock %}
+            </div>
+    </nav>
+{% endblock %}
+<div class="wrapper">
     {% block body %}
     {% endblock %}
 </div>
