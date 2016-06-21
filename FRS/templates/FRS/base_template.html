@@ -18,15 +18,15 @@
         {% endblock %}
     </head>
 {% endblock %}
-{#{% block body %}#}
-{#    <body>#}
-{#    </body>#}
-{#{% endblock %}#}
 <body>
 <div class="wrapper">
+    {% block navbar %}
+        <nav class="uk-navbar">
+            <a href="{% url 'landing' %}" class="uk-navbar-brand">FRS</a>
+        </nav>
+    {% endblock %}
     {% block body %}
     {% endblock %}
 </div>
 </body>
-
 </html>
