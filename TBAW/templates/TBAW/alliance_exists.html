@@ -1,0 +1,10 @@
+{% extends 'FRS/base_template.html' %}
+
+{% block body %}
+    <h1>{% for item in alliance.teams.all %}{% if not forloop.first %}{% if forloop.last %} and {% else %},
+    {% endif %}{% endif %}<a href="{% url 'team_view' item.team_number %}">{{ item }}</a>{% endfor %}</h1>
+
+    <p>Appeared in {{ alliance.allianceappearance_set.count }}
+        event{{ alliance.allianceappearance_set.count|pluralize }} all-time.</p>
+    <p>Played {{ alliance.match_set.count }} match{{ alliance.match_set.count|pluralize:"es" }} all-time.</p>
+{% endblock %}
