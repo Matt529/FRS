@@ -1,9 +1,8 @@
 from django.core.urlresolvers import reverse
-from django.db.models import F
 from django.shortcuts import render
 from .models import TeamLeaderboard
 
-DEFAULT_SHOW = 100
+DEFAULT_SHOW = 200
 
 
 def leaderboard(request):
@@ -22,10 +21,8 @@ def leaderboard(request):
 
 
 def team_elo(request):
-    annotated_queryset = TeamLeaderboard.highest_elo_scaled(DEFAULT_SHOW).annotate(elo_max=F('elo_mu') + F('elo_sigma'),
-                                                                                   elo_min=F('elo_mu') - F('elo_sigma'))
     return render(request, 'leaderboard/alltime/team/elo_leaders.html', context={
-        'team_elo': annotated_queryset
+        'team_elo': TeamLeaderboard.highest_elo_scaled(DEFAULT_SHOW)
     })
 
 
