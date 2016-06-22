@@ -6,10 +6,10 @@ from .models import TeamLeaderboard
 
 def leaderboard(request):
     top = {
-        'All-time Match Wins': (TeamLeaderboard.most_match_wins(1).first(), ''),
+        'All-time Match Wins': (TeamLeaderboard.most_match_wins(1).first(), reverse('team_matches')),
         'All-time Event Wins': (TeamLeaderboard.most_event_wins(1).first(), ''),
         'All-time Highest Win Rate': (TeamLeaderboard.highest_win_rate(1).first(), ''),
-        'All-time Elo Leader': (TeamLeaderboard.highest_elo_scaled(1).first(), '{}'.format(reverse('elo_leaders'))),
+        'All-time Elo Leader': (TeamLeaderboard.highest_elo_scaled(1).first(), reverse('team_elo')),
         'All-time Award Wins': (TeamLeaderboard.most_award_wins(1).first(), ''),
         'All-time Blue Banners': (TeamLeaderboard.most_blue_banners(1).first(), ''),
     }
@@ -19,10 +19,16 @@ def leaderboard(request):
     })
 
 
-def elo_leaders(request):
+def team_elo(request):
     annotated_queryset = TeamLeaderboard.highest_elo_scaled(100).annotate(elo_max=F('elo_mu') + F('elo_sigma'),
                                                                           elo_min=F('elo_mu') - F('elo_sigma'))
-    return render(request, 'leaderboard/elo_leaders.html',
+    return render(request, 'leaderboard/alltime/team/elo_leaders.html',
                   context={
-                      'elo_leaders': annotated_queryset
+                      'team_elo': annotated_queryset
                   })
+
+
+def team_match_wins(request):
+    return render(request, 'leaderboard/alltime/team/match_wins.html', context={
+        'team_matches': TeamLeaderboard.most_match_wins(100)
+    })

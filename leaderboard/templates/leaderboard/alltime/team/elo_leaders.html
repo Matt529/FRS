@@ -18,7 +18,7 @@
         </tr>
         </thead>
         <tbody>
-        {% for team in elo_leaders %}
+        {% for team in team_elo %}
             <tr>
                 <td>{{ forloop.counter }}</td>
                 <td><a href="{% url 'team_view' team.team_number %}">{{ team }}</a></td>
