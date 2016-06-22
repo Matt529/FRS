@@ -11,7 +11,7 @@
 
     Competed in {{ events.count }} event{{ events.count|pluralize }} in {{ events.first.year }}:
     {% for event in events %}
-        <a href="{% url 'TBAW.views.event_view' event.key %}">{{ event.name.strip }}{% if not forloop.last %},{% endif %}</a>
+        <a href="{% url 'event_view' event.key %}">{{ event.name.strip }}{% if not forloop.last %},{% endif %}</a>
     {% endfor %}
 
     <br>
