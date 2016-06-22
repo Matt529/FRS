@@ -139,7 +139,7 @@ class TeamLeaderboard:
             num_played=ExpressionWrapper(Count('alliance__match', distinct=True), output_field=FloatField()),
             num_wins=ExpressionWrapper(Count('alliance__winner', distinct=True), output_field=FloatField())
         ).annotate(
-            stat=ExpressionWrapper(F('num_wins') * 1.0 / F('num_played'), output_field=FloatField())
+            stat=ExpressionWrapper(F('num_wins') * 100.0 / F('num_played'), output_field=FloatField())
         ).order_by('-stat')[:n]
 
     @staticmethod

@@ -10,7 +10,7 @@ def leaderboard(request):
     top = {
         'All-time Match Wins': (TeamLeaderboard.most_match_wins(1).first(), reverse('team_matches')),
         'All-time Event Wins': (TeamLeaderboard.most_event_wins(1).first(), reverse('team_events')),
-        'All-time Highest Win Rate': (TeamLeaderboard.highest_win_rate(1).first(), ''),
+        'All-time Highest Win Rate': (TeamLeaderboard.highest_win_rate(1).first(), reverse('team_winrate')),
         'All-time Elo Leader': (TeamLeaderboard.highest_elo_scaled(1).first(), reverse('team_elo')),
         'All-time Award Wins': (TeamLeaderboard.most_award_wins(1).first(), ''),
         'All-time Blue Banners': (TeamLeaderboard.most_blue_banners(1).first(), ''),
@@ -38,4 +38,10 @@ def team_match_wins(request):
 def team_event_wins(request):
     return render(request, 'leaderboard/alltime/team/event_wins.html', context={
         'team_events': TeamLeaderboard.most_event_wins(DEFAULT_SHOW)
+    })
+
+
+def team_win_rate(request):
+    return render(request, 'leaderboard/alltime/team/winrate.html', context={
+        'team_winrate': TeamLeaderboard.highest_win_rate(DEFAULT_SHOW)
     })
