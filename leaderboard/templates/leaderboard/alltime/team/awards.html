@@ -1,0 +1,23 @@
+{% extends 'FRS/base_template.html' %}
+
+{% block body %}
+    <table class="uk-table uk-table-condensed">
+        <caption>Most Team Award Wins All Time</caption>
+        <thead>
+        <tr>
+            <th>Rank</th>
+            <th>Team</th>
+            <th>Award Wins</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for team in team_awards %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td><a href="{% url 'team_view' team.team_number %}">{{ team }}</a></td>
+                <td>{{ team.stat }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
