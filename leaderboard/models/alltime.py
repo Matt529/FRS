@@ -102,7 +102,7 @@ class TeamLeaderboard:
             n: An optional argument that cuts the return to n elements.
 
         Returns:
-            A list of which teams have the most match wins.
+            A list of which teams have the most match wins. Has the extra field 'stat'.
 
         """
         return Team.objects.annotate(stat=Count('alliance__winner')).order_by('-stat')[:n]
@@ -115,7 +115,7 @@ class TeamLeaderboard:
             n: An optional argument that cuts the return to n elements.
 
         Returns:
-            A list of which teams have the most event wins.
+            A list of which teams have the most event wins. Has the extra field 'stat'.
 
         """
         return Team.objects.annotate(stat=Count('alliance__winning_alliance',
@@ -133,7 +133,7 @@ class TeamLeaderboard:
             n: An optional argument that cuts the return to n elements.
 
         Returns:
-            A list of which teams have the highest winrate.
+            A list of which teams have the highest winrate. Has the extra field 'stat'.
         """
         return Team.objects.annotate(
             num_played=ExpressionWrapper(Count('alliance__match', distinct=True), output_field=FloatField()),
@@ -150,7 +150,7 @@ class TeamLeaderboard:
             n:  An optional argument that cuts the return to n elements.
 
         Returns:
-            A list of which teams have the highest Elo rating.
+            A list of which teams have the highest Elo rating. Has the extra field 'stat'.
 
         """
         return Team.objects.order_by('-elo_mu').annotate(stat='elo_mu')[:n]
@@ -176,7 +176,7 @@ class TeamLeaderboard:
             n: An optional argument that cuts the return to n elements.
 
         Returns:
-            A query set of which teams have the most total awards. Has the extra field 'num_awards'.
+            A query set of which teams have the most total awards. Has the extra field 'stat'.
 
 
         """
@@ -190,7 +190,7 @@ class TeamLeaderboard:
             n: An optional argument that cuts the return to n elements.
 
         Returns:
-            A query set of which teams have the most blue banners. Has the extra field 'num_blue_banners'.
+            A query set of which teams have the most blue banners. Has the extra field 'stat'.
 
         """
         blue_banner_reverse = dict((v, k) for k, v in Award.blue_banner_choices)

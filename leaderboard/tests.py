@@ -42,7 +42,7 @@ def test_leaderboard(num=10):
     res = TeamLeaderboard.most_match_wins(num)
     end = clock()
     for r in res:
-        pprint((r, r.num_wins))
+        pprint((r, r.stat))
     print("Operation took {0} seconds".format((end - start).__round__(3)))
     print("------------------------------------------")
 
@@ -51,7 +51,7 @@ def test_leaderboard(num=10):
     res = TeamLeaderboard.most_event_wins(num)
     end = clock()
     for r in res:
-        pprint((r, r.num_wins))
+        pprint((r, r.stat))
     print("Operation took {0} seconds".format((end - start).__round__(3)))
     print("------------------------------------------")
 
@@ -69,7 +69,7 @@ def test_leaderboard(num=10):
     res = TeamLeaderboard.highest_win_rate(num * 5)
     end = clock()
     for r in res:
-        pprint((r, r.win_rate))
+        pprint((r, r.stat))
     print("Operation took {0} seconds".format((end - start).__round__(3)))
     print("------------------------------------------")
 
@@ -187,15 +187,6 @@ def test_leaderboard(num=10):
     end = clock()
     for r in res:
         pprint((r, r.tba_ccwms))
-    print("Operation took {0} seconds".format((end - start).__round__(3)))
-    print("------------------------------------------")
-
-    print("Elo Leaders")
-    start = clock()
-    res = TeamLeaderboard.highest_elo(num * 2)
-    end = clock()
-    for r in res:
-        pprint((r, r.elo_mu))
     print("Operation took {0} seconds".format((end - start).__round__(3)))
     print("------------------------------------------")
 
