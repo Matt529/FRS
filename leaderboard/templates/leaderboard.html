@@ -1,0 +1,32 @@
+{% extends 'FRS/base_template.html' %}
+
+{% block body %}
+    <table class="uk-table">
+        <thead>
+        <tr>
+            <th>Stat</th>
+            <th>Leader</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for key, value in top.items %}
+            {% if value.0 != None %}
+                <tr>
+                    <td>
+                        {% if value.1 != '' %}
+                            <a href="{{ value.1 }}">{{ key }}</a>
+                        {% else %}
+                            {{ key }}
+                        {% endif %}
+                    </td>
+                    <td><a href="{% url 'team_view' value.0.team_number %}">{{ value.0 }}</a></td>
+                    <td>{{ value.0.stat|floatformat:"-3" }}</td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+        </tbody>
+    </table>
+
+
+{% endblock %}
