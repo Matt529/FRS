@@ -14,7 +14,7 @@ def leaderboard(request):
         'All-time Blue Banners': (TeamLeaderboard.most_blue_banners(1).first(), ''),
     }
 
-    return render(request, 'leaderboard.html', context={
+    return render(request, 'leaderboard/leaderboard.html', context={
         'top': top,
     })
 
@@ -22,7 +22,7 @@ def leaderboard(request):
 def elo_leaders(request):
     annotated_queryset = TeamLeaderboard.highest_elo_scaled(100).annotate(elo_max=F('elo_mu') + F('elo_sigma'),
                                                                           elo_min=F('elo_mu') - F('elo_sigma'))
-    return render(request, 'elo_leaders.html',
+    return render(request, 'leaderboard/elo_leaders.html',
                   context={
                       'elo_leaders': annotated_queryset
                   })
