@@ -84,10 +84,10 @@ class AllianceLeaderboard:
         winning_alliances = AllianceLeaderboard.most_event_wins_3(get_counter_obj=True)
         count = Counter()
         for alliance in winning_alliances.most_common():
-            teams = alliance.teams.all()
+            teams = alliance[0].teams.all()
             combos = combinations(teams, 2)
             for combo in set(combos):
-                if combo.issubset(set(teams)):
+                if set(combo).issubset(set(teams)):
                     count[combo] += 1
 
         return count.most_common() if n is None else count.most_common(n)
