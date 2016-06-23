@@ -1,23 +1,7 @@
-from django.core.urlresolvers import reverse
 from django.shortcuts import render
-from .models import TeamLeaderboard
+from leaderboard.models import TeamLeaderboard
 
 DEFAULT_SHOW = 200
-
-
-def leaderboard(request):
-    top = {
-        'All-time Match Wins': (TeamLeaderboard.most_match_wins(1).first(), reverse('team_matches')),
-        'All-time Event Wins': (TeamLeaderboard.most_event_wins(1).first(), reverse('team_events')),
-        'All-time Highest Win Rate': (TeamLeaderboard.highest_win_rate(1).first(), reverse('team_winrate')),
-        'All-time Elo Leader': (TeamLeaderboard.highest_elo_scaled(1).first(), reverse('team_elo')),
-        'All-time Award Wins': (TeamLeaderboard.most_award_wins(1).first(), reverse('team_awards')),
-        'All-time Blue Banners': (TeamLeaderboard.most_blue_banners(1).first(), reverse('team_blue_banners')),
-    }
-
-    return render(request, 'leaderboard/leaderboard.html', context={
-        'top': top,
-    })
 
 
 def team_elo(request):

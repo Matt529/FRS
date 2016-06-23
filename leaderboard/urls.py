@@ -1,8 +1,7 @@
 from django.conf.urls import url
 from leaderboard import views
 
-urlpatterns = [
-    url(r'^leaderboard/$', views.leaderboard, name='leaderboard'),
+teams = [
     url(r'^leaderboard/teams/elo/$', views.team_elo, name='team_elo'),
     url(r'^leaderboard/teams/matches/$', views.team_match_wins, name='team_matches'),
     url(r'^leaderboard/teams/events/$', views.team_event_wins, name='team_events'),
@@ -10,3 +9,9 @@ urlpatterns = [
     url(r'^leaderboard/teams/awards/$', views.team_award_wins, name='team_awards'),
     url(r'^leaderboard/teams/banners/$', views.team_blue_banners, name='team_blue_banners'),
 ]
+
+alliances = [
+    url(r'^leaderboard/alliances/events3/$', views.alliance_event_wins_3, name='alliance_events_3'),
+]
+
+urlpatterns = [url(r'^leaderboard/$', views.leaderboard, name='leaderboard')] + teams + alliances

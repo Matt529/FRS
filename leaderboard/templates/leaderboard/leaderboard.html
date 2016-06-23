@@ -2,15 +2,16 @@
 
 {% block body %}
     <table class="uk-table">
+        <caption>Team Leaderboard</caption>
         <thead>
         <tr>
             <th>Stat</th>
             <th>Leader</th>
-            <th></th>
+            <th>Value</th>
         </tr>
         </thead>
         <tbody>
-        {% for key, value in top.items %}
+        {% for key, value in team_top.items %}
             {% if value.0 != None %}
                 <tr>
                     <td>
@@ -21,9 +22,36 @@
                         {% endif %}
                     </td>
                     <td><a href="{% url 'team_view' value.0.team_number %}">{{ value.0 }}</a></td>
-                    <td>{{ value.0.stat|floatformat:"-3" }}</td>
+                    <td>{{ value.0.stat|floatformat:"-2" }}</td>
                 </tr>
             {% endif %}
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <table class="uk-table">
+        <caption>Alliance Leaderboard</caption>
+        <thead>
+        <tr>
+            <th>Stat</th>
+            <th>Leader</th>
+            <th>Value</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for key, value in alliance_top.items %}
+            <tr>
+                <td><a href="{{ value.1 }}">{{ key }}</a></td>
+                <td>
+                    {% comment %}
+                    I'm not proud of this one, but it "has" to be done this way because of how the user can input 3 team
+                    numbers as a URL for the alliance view. There is probably a way around this but it's not on my
+                    immediate radar.
+                    {% endcomment %}
+                    <a href="{% url 'alliance_view' value.0.0.0.teams.all.0.team_number value.0.0.0.teams.all.1.team_number value.0.0.0.teams.all.2.team_number %}">
+                        {{ value.0.0.0.teams.all|join:", " }}</a></td>
+                <td>{{ value.0.0.1 }}</td>
+            </tr>
         {% endfor %}
         </tbody>
     </table>
