@@ -1,0 +1,36 @@
+{% extends 'FRS/base_template.html' %}
+
+{% block body %}
+    <table>
+        <thead>
+        <tr>
+            <th>Rank</th>
+            <th>Pairing</th>
+            <th>Event Wins</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for pairing in alliance_events_2 %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>
+                    <a href="{% url 'team_view' pairing.0.0.team_number %}">{{ pairing.0.0 }}</a>,
+                    <a href="{% url 'team_view' pairing.0.1.team_number %}">{{ pairing.0.1 }}</a>
+                </td>
+                <td>{{ pairing.1 }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+
+
+    {#    <tr>#}
+    {#        <td><a href="{{ value.1 }}">All-time Event Wins (2)</a></td>#}
+    {#        <td>#}
+    {#            <a href="{% url 'team_view' value.0.0.0.0.team_number %}">{{ value.0.0.0.0 }}</a>,#}
+    {#            <a href="{% url 'team_view' value.0.0.0.1.team_number %}">{{ value.0.0.0.1 }}</a>#}
+    {#        </td>#}
+    {#        <td>{{ value.0.0.1 }}</td>#}
+    {#    </tr>#}
+{% endblock %}
