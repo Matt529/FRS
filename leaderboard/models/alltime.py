@@ -1,9 +1,5 @@
-from itertools import combinations
-
-from TBAW.models import Match, Team, Award
-from collections import Counter
+from TBAW.models import Team, Award, Alliance
 from django.db.models import Count, F, ExpressionWrapper, FloatField, When, Case, Sum, PositiveSmallIntegerField
-from util.check import event_has_f3_match
 
 
 class AllianceLeaderboard:
@@ -18,11 +14,7 @@ class AllianceLeaderboard:
             A list of which combinations of 3 teams have the most match wins together.
 
         """
-        matches = Match.objects.filter(winner__isnull=False)
-        count = Counter()
-        for match in matches:
-            count[match.winner] += 1
-        return count.most_common() if n is None else count.most_common(n)
+        return Alliance.objects.annotate(stat=Count('match__winner')).order_by('-stat')[:n]
 
     @staticmethod
     def most_match_wins_2(n=None):
@@ -35,40 +27,28 @@ class AllianceLeaderboard:
             A list of which combinations of 2 teams have the most match wins together.
 
         """
-        matches = Match.objects.filter(winner__isnull=False)
-        count = Counter()
-        for match in matches:
-            combos = combinations(match.winner.teams.all(), 2)
-            for combo in combos:
-                count[combo] += 1
-
-        return count.most_common() if n is None else count.most_common(n)
+        # matches = Match.objects.filter(winner__isnull=False)
+        # count = Counter()
+        # for match in matches:
+        #     combos = combinations(match.winner.teams.all(), 2)
+        #     for combo in combos:
+        #         count[combo] += 1
+        #
+        # return count.most_common() if n is None else count.most_common(n)
+        raise NotImplementedError
 
     @staticmethod
-    def most_event_wins_3(n=None, get_counter_obj=False):
+    def most_event_wins_3(n=None):
         """
 
         Args:
             n: An optional argument that cuts the return to n elements.
-            get_counter_obj: This is just a helper argument for the most_event_wins_2 function.
 
         Returns:
             A list of which combinations of 3 teams have the most event wins together (ie won the finals).
 
         """
-        matches_of_3 = Match.objects.filter(comp_level__exact='f', match_number__exact=3)
-        count = Counter()
-        for match in matches_of_3:
-            count[match.winner] += 1
-
-        matches_of_2 = [x for x in Match.objects.filter(comp_level__exact='f', match_number__exact=2) if
-                        not event_has_f3_match(x.event.key)]
-
-        for match in matches_of_2:
-            count[match.winner] += 1
-
-        del count[None]
-        return (count.most_common() if n is None else count.most_common(n)) if get_counter_obj is False else count
+        return Alliance.objects.annotate(stat=Count('winning_alliance')).order_by('-stat')[:n]
 
     @staticmethod
     def most_event_wins_2(n=None):
@@ -81,16 +61,17 @@ class AllianceLeaderboard:
             A list of which combinations of 2 teams have the most event wins together (ie won the finals).
 
         """
-        winning_alliances = AllianceLeaderboard.most_event_wins_3(get_counter_obj=True)
-        count = Counter()
-        for alliance in winning_alliances.most_common():
-            teams = alliance[0].teams.all()
-            combos = combinations(teams, 2)
-            for combo in set(combos):
-                if set(combo).issubset(set(teams)):
-                    count[combo] += 1
-
-        return count.most_common() if n is None else count.most_common(n)
+        # winning_alliances = AllianceLeaderboard.most_event_wins_3(get_counter_obj=True)
+        # count = Counter()
+        # for alliance in winning_alliances.most_common():
+        #     teams = alliance[0].teams.all()
+        #     combos = combinations(teams, 2)
+        #     for combo in set(combos):
+        #         if set(combo).issubset(set(teams)):
+        #             count[combo] += 1
+        #
+        # return count.most_common() if n is None else count.most_common(n)
+        raise NotImplementedError
 
 
 class TeamLeaderboard:

@@ -11,22 +11,16 @@
         </thead>
         <tbody>
         {% for alliance in alliance_events_3 %}
-            <tr>
-                <td>{{ forloop.counter }}</td>
-                <td>
-                    {% comment %}
-                    I'm not proud of this one, but it "has" to be done this way because of how the user can input 3 team
-                    numbers as a URL for the alliance view. There is probably a way around this but it's not on my
-                    immediate radar.
-                    {% endcomment %}
-                    <a href="{% url 'alliance_view' alliance.0.teams.all.0.team_number alliance.0.teams.all.1.team_number alliance.0.teams.all.2.team_number %}">
-                        {{ alliance.0.teams.all|join:", " }}</a>
-                </td>
-                <td>{{ alliance.1 }}</td>
-            </tr>
+            {% with alliance.teams.all as teams %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>
+                        <a href="{% url 'alliance_view' teams.0.team_number teams.1.team_number teams.2.team_number %}">{{ teams|join:", " }}</a>
+                    </td>
+                    <td>{{ alliance.stat }}</td>
+                </tr>
+            {% endwith %}
         {% endfor %}
         </tbody>
-
-
     </table>
 {% endblock %}

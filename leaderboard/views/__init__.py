@@ -15,7 +15,7 @@ def leaderboard(request):
 
     alliance_top = {
         'All-time Event Wins (3)': (AllianceLeaderboard.most_event_wins_3(1), reverse('alliance_events_3')),
-        'All-time Event Wins (2)': (AllianceLeaderboard.most_event_wins_2(1), reverse('alliance_events_2')),
+        # 'All-time Event Wins (2)': (AllianceLeaderboard.most_event_wins_2(1), reverse('alliance_events_2')),
     }
 
     return render(request, 'leaderboard/leaderboard.html', context={

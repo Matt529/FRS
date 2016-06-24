@@ -40,35 +40,27 @@
         </tr>
         </thead>
         <tbody>
-
-        {% comment %}
-            I'm not proud of any of this. To fix this, we need to find a way to use annotation in
-            leaderboard.models.alltime.AllianceLeaderboard functions.
-        {% endcomment %}
-        {# All time event wins (3), this needs serious overhaul #}
-        {% with alliance_top|get_from_dict:"All-time Event Wins (3)" as value %}
-            <tr>
-                <td><a href="{{ value.1 }}">All-time Event Wins (3)</a></td>
-                <td>
-                    {% comment %}
-                    It "has" to be done this way because of how the user can input 3 team numbers as a URL for the
-                    alliance view. There is probably a way around this but it's not on my immediate radar.
-                    {% endcomment %}
-                    <a href="{% url 'alliance_view' value.0.0.0.teams.all.0.team_number value.0.0.0.teams.all.1.team_number value.0.0.0.teams.all.2.team_number %}">
-                        {{ value.0.0.0.teams.all|join:", " }}</a></td>
-                <td>{{ value.0.0.1 }}</td>
-            </tr>
-        {% endwith %}
-        {% with alliance_top|get_from_dict:"All-time Event Wins (2)" as value %}
-            <tr>
-                <td><a href="{{ value.1 }}">All-time Event Wins (2)</a></td>
-                <td>
-                    <a href="{% url 'team_view' value.0.0.0.0.team_number %}">{{ value.0.0.0.0 }}</a>,
-                    <a href="{% url 'team_view' value.0.0.0.1.team_number %}">{{ value.0.0.0.1 }}</a>
-                </td>
-                <td>{{ value.0.0.1 }}</td>
-            </tr>
-        {% endwith %}
+        {% for key, value in alliance_top.items %}
+            {% with value.0.0.teams.all as teams %}
+                <tr>
+                    <td><a href="{{ value.1 }}">{{ key }}</a></td>
+                    <td>
+                        <a href="{% url 'alliance_view' teams.0.team_number teams.1.team_number teams.2.team_number %}">{{ teams|join:", " }}</a>
+                    </td>
+                    <td>{{ value.0.0.stat|floatformat:"-2" }}</td>
+                </tr>
+            {% endwith %}
+        {% endfor %}
+        {#        {% with alliance_top|get_from_dict:"All-time Event Wins (2)" as value %}#}
+        {#            <tr>#}
+        {#                <td><a href="{{ value.1 }}">All-time Event Wins (2)</a></td>#}
+        {#                <td>#}
+        {#                    <a href="{% url 'team_view' value.0.0.0.0.team_number %}">{{ value.0.0.0.0 }}</a>,#}
+        {#                    <a href="{% url 'team_view' value.0.0.0.1.team_number %}">{{ value.0.0.0.1 }}</a>#}
+        {#                </td>#}
+        {#                <td>{{ value.0.0.1 }}</td>#}
+        {#            </tr>#}
+        {#        {% endwith %}#}
         </tbody>
     </table>
 

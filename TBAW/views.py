@@ -37,6 +37,11 @@ def alliance_view(request, team1, team2, team3):
         return alliance_does_not_exist_view(request, [team1, team2, team3])
 
 
+def alliance_view_alliance_obj(request, alliance_obj):
+    teams = alliance_obj.teams.all()
+    return alliance_view(request, teams[0].team_number, teams[1].team_number, teams[2].team_number)
+
+
 def alliance_exists_view(request, alliance):
     return render(request, 'TBAW/alliance_exists.html', context={
         'alliance': alliance
