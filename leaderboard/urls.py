@@ -13,6 +13,7 @@ teams = [
 alliances = [
     url(r'^leaderboard/alliances/events3/$', views.alliance_event_wins_3, name='alliance_events_3'),
     # url(r'^leaderboard/alliances/events2/$', views.alliance_event_wins_2, name='alliance_events_2'),
+    url(r'^leaderboard/alliances/matches3/$', views.alliance_match_wins_3, name='alliance_matches_3'),
 ]
 
 urlpatterns = [url(r'^leaderboard/$', views.leaderboard, name='leaderboard')] + teams + alliances
