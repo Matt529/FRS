@@ -14,7 +14,7 @@ class AllianceLeaderboard:
             A list of which combinations of 3 teams have the most match wins together.
 
         """
-        return Alliance.objects.annotate(stat=Count('match__winner')).order_by('-stat')[:n]
+        return Alliance.objects.annotate(stat=Count('winner')).order_by('-stat')[:n]
 
     @staticmethod
     def most_match_wins_2(n=None):
@@ -71,6 +71,7 @@ class AllianceLeaderboard:
         #             count[combo] += 1
         #
         # return count.most_common() if n is None else count.most_common(n)
+
         raise NotImplementedError
 
 
