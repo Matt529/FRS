@@ -3,7 +3,6 @@
 
 {% block body %}
     <table class="uk-table">
-        <caption>Team Leaderboard</caption>
         <thead>
         <tr>
             <th>Stat</th>
@@ -12,57 +11,13 @@
         </tr>
         </thead>
         <tbody>
-        {% for key, value in team_top.items %}
-            {% if value.0 != None %}
-                <tr>
-                    <td>
-                        {% if value.1 != '' %}
-                            <a href="{{ value.1 }}">{{ key }}</a>
-                        {% else %}
-                            {{ key }}
-                        {% endif %}
-                    </td>
-                    <td><a href="{% url 'team_view' value.0.team_number %}">{{ value.0 }}</a></td>
-                    <td>{{ value.0.stat|floatformat:"-2" }}</td>
-                </tr>
-            {% endif %}
+        {% for record in leaderboard %}
+            <tr>
+                <td><a href="{{ record.url }}">{{ record.name }}</a></td>
+                <td><a href="{{ record.holder_url }}">{{ record.holder }}</a></td>
+                <td>{{ record.stat }}</td>
+            </tr>
         {% endfor %}
         </tbody>
     </table>
-
-    <table class="uk-table">
-        <caption>Alliance Leaderboard</caption>
-        <thead>
-        <tr>
-            <th>Stat</th>
-            <th>Leader</th>
-            <th>Value</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for key, value in alliance_top.items %}
-            {% with value.0.0.teams.all as teams %}
-                <tr>
-                    <td><a href="{{ value.1 }}">{{ key }}</a></td>
-                    <td>
-                        <a href="{% url 'alliance_view' teams.0.team_number teams.1.team_number teams.2.team_number %}">{{ teams|join:", " }}</a>
-                    </td>
-                    <td>{{ value.0.0.stat|floatformat:"-2" }}</td>
-                </tr>
-            {% endwith %}
-        {% endfor %}
-        {#        {% with alliance_top|get_from_dict:"All-time Event Wins (2)" as value %}#}
-        {#            <tr>#}
-        {#                <td><a href="{{ value.1 }}">All-time Event Wins (2)</a></td>#}
-        {#                <td>#}
-        {#                    <a href="{% url 'team_view' value.0.0.0.0.team_number %}">{{ value.0.0.0.0 }}</a>,#}
-        {#                    <a href="{% url 'team_view' value.0.0.0.1.team_number %}">{{ value.0.0.0.1 }}</a>#}
-        {#                </td>#}
-        {#                <td>{{ value.0.0.1 }}</td>#}
-        {#            </tr>#}
-        {#        {% endwith %}#}
-        </tbody>
-    </table>
-
-
 {% endblock %}

@@ -14,7 +14,7 @@ class AllianceLeaderboard:
             A list of which combinations of 3 teams have the most match wins together.
 
         """
-        return Alliance.objects.annotate(stat=Count('winner')).order_by('-stat')[:n]
+        return Alliance.objects.annotate(match_wins=Count('winner')).order_by('-match_wins')[:n]
 
     @staticmethod
     def most_match_wins_2(n=None):
@@ -48,7 +48,7 @@ class AllianceLeaderboard:
             A list of which combinations of 3 teams have the most event wins together (ie won the finals).
 
         """
-        return Alliance.objects.annotate(stat=Count('winning_alliance')).order_by('-stat')[:n]
+        return Alliance.objects.annotate(event_wins=Count('winning_alliance')).order_by('-event_wins')[:n]
 
     @staticmethod
     def most_event_wins_2(n=None):
@@ -87,7 +87,7 @@ class TeamLeaderboard:
             A list of which teams have the most match wins. Has the extra field 'stat'.
 
         """
-        return Team.objects.annotate(stat=Count('alliance__winner')).order_by('-stat')[:n]
+        return Team.objects.annotate(match_wins=Count('alliance__winner')).order_by('-match_wins')[:n]
 
     @staticmethod
     def most_event_wins(n=None):
@@ -100,8 +100,8 @@ class TeamLeaderboard:
             A list of which teams have the most event wins. Has the extra field 'stat'.
 
         """
-        return Team.objects.annotate(stat=Count('alliance__winning_alliance',
-                                                distinct=True)).order_by('-stat')[:n]
+        return Team.objects.annotate(event_wins=Count('alliance__winning_alliance',
+                                                      distinct=True)).order_by('-event_wins')[:n]
 
     @staticmethod
     def highest_win_rate(n=None):
@@ -121,8 +121,8 @@ class TeamLeaderboard:
             num_played=ExpressionWrapper(Count('alliance__match', distinct=True), output_field=FloatField()),
             num_wins=ExpressionWrapper(Count('alliance__winner', distinct=True), output_field=FloatField())
         ).annotate(
-            stat=ExpressionWrapper(F('num_wins') * 100.0 / F('num_played'), output_field=FloatField())
-        ).order_by('-stat')[:n]
+            win_rate=ExpressionWrapper(F('num_wins') * 100.0 / F('num_played'), output_field=FloatField())
+        ).order_by('-win_rate')[:n]
 
     @staticmethod
     def highest_elo(n=None):
@@ -135,7 +135,7 @@ class TeamLeaderboard:
             A list of which teams have the highest Elo rating. Has the extra field 'stat'.
 
         """
-        return Team.objects.order_by('-elo_mu').annotate(stat='elo_mu')[:n]
+        return Team.objects.order_by('-elo_mu')[:n]
 
     @staticmethod
     def highest_elo_scaled(n=None):
@@ -148,7 +148,7 @@ class TeamLeaderboard:
             A list of which teams have the highest Elo rating (scaled to start at 1500 rather than 25).
 
         """
-        return Team.objects.annotate(stat=F('elo_mu') * 60).order_by('-stat')[:n]
+        return Team.objects.annotate(elo_scaled=F('elo_mu') * 60).order_by('-elo_scaled')[:n]
 
     @staticmethod
     def most_award_wins(n=None):
@@ -162,7 +162,7 @@ class TeamLeaderboard:
 
 
         """
-        return Team.objects.annotate(stat=Count('award')).order_by('-stat')[:n]
+        return Team.objects.annotate(award_wins=Count('award')).order_by('-award_wins')[:n]
 
     @staticmethod
     def most_blue_banners(n=None):
@@ -177,11 +177,11 @@ class TeamLeaderboard:
         """
         blue_banner_reverse = dict((v, k) for k, v in Award.blue_banner_choices)
         return Team.objects.filter(award__award_type__in=blue_banner_reverse.values()).annotate(
-            stat=Sum(
+            blue_banners_won=Sum(
                 Case(
                     When(award__award_type__in=blue_banner_reverse.values(), then=1),
                     default=0,
                     output_field=PositiveSmallIntegerField(),
                 )
             )
-        ).order_by('-stat')[:n]
+        ).order_by('-blue_banners_won')[:n]
