@@ -15,7 +15,7 @@
             <tr>
                 <td>{{ forloop.counter }}</td>
                 <td><a href="{% url 'team_view' team.team_number %}">{{ team }}</a></td>
-                <td>{{ team.stat }}</td>
+                <td>{{ team.blue_banners_won }}</td>
             </tr>
         {% endfor %}
         </tbody>

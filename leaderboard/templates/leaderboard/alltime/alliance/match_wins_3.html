@@ -17,7 +17,7 @@
                     <td>
                         <a href="{% url 'alliance_view' teams.0.team_number teams.1.team_number teams.2.team_number %}">{{ teams|join:", " }}</a>
                     </td>
-                    <td>{{ alliance.stat }}</td>
+                    <td>{{ alliance.match_wins }}</td>
                 </tr>
             {% endwith %}
         {% endfor %}
