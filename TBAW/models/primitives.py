@@ -28,6 +28,19 @@ class Team(models.Model):
     def get_matches(self):
         return Match.objects.filter(alliances__teams__team_number=self.team_number)
 
+    def get_wins(self):
+        return Match.objects.filter(winner__teams__team_number=self.team_number)
+
+    def get_losses(self):
+        return Match.objects.filter(alliances__teams__team_number=self.team_number).exclude(
+            winner__teams__team_number=self.team_number).exclude(winner__isnull=True)
+
+    def get_ties(self):
+        return Match.objects.filter(alliances__teams__team_number=self.team_number).filter(winner__isnull=True)
+
+    def get_record(self):
+        return "{0}-{1}-{2}".format(self.get_wins().count(), self.get_losses().count(), self.get_ties().count())
+
 
 class Alliance(models.Model):
     teams = models.ManyToManyField(Team)

@@ -147,8 +147,8 @@ class TeamLeaderboard:
             n: An optional argument that cuts the return to n elements.
 
         Returns:
-            A QuerySet of which teams have the highest Elo rating (scaled to start at 1500 rather than 25). Has the extra
-            field 'elo_scaled'.
+            A QuerySet of which teams have the highest Elo rating (scaled to start at 1500 rather than 25). Has the
+            extra field 'elo_scaled'.
 
         """
         return Team.objects.annotate(elo_scaled=F('elo_mu') * 60).order_by('-elo_scaled')[:n]

@@ -15,7 +15,7 @@
             <tr>
                 <td><a href="{{ record.url }}">{{ record.name }}</a></td>
                 <td><a href="{{ record.holder_url }}">{{ record.holder }}</a></td>
-                <td>{{ record.stat }}</td>
+                <td>{{ record.stat|floatformat:"-2" }}</td>
             </tr>
         {% endfor %}
         </tbody>
