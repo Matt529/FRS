@@ -25,6 +25,9 @@ class Team(models.Model):
     def __str__(self):
         return "{0} ({1})".format(self.nickname, self.team_number)
 
+    def get_matches(self):
+        return Match.objects.filter(alliances__teams__team_number=self.team_number)
+
 
 class Alliance(models.Model):
     teams = models.ManyToManyField(Team)
