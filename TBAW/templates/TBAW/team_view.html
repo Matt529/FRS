@@ -2,6 +2,7 @@
 {% block body %}
     <h1>Team {{ team.team_number }} - {{ team.nickname }}</h1>
     <h3>Rating: {{ team.elo_mu|floatformat:2 }} ± {{ team.elo_sigma|floatformat:2 }}</h3>
+    <h3>All-time Record: {{ team.get_record }}</h3>
     <h5>Rookie year: {{ team.rookie_year }}<br>
     {{ team.location }}<br></h5>
 
