@@ -11,7 +11,8 @@ class AllianceLeaderboard:
             n: An optional argument that cuts the return to n elements.
 
         Returns:
-            A list of which combinations of 3 teams have the most match wins together.
+            A QuerySet of which combinations of 3 teams have the most match wins together.Contains the extra field
+            'match_wins'.
 
         """
         return Alliance.objects.annotate(match_wins=Count('winner')).order_by('-match_wins')[:n]
@@ -24,7 +25,7 @@ class AllianceLeaderboard:
             n: An optional argument that cuts the return to n elements.
 
         Returns:
-            A list of which combinations of 2 teams have the most match wins together.
+            A QuerySet of which combinations of 2 teams have the most match wins together.
 
         """
         # matches = Match.objects.filter(winner__isnull=False)
@@ -45,7 +46,8 @@ class AllianceLeaderboard:
             n: An optional argument that cuts the return to n elements.
 
         Returns:
-            A list of which combinations of 3 teams have the most event wins together (ie won the finals).
+            A QuerySet of which combinations of 3 teams have the most event wins together (ie won the finals). Contains the
+            extra field 'event_wins'.
 
         """
         return Alliance.objects.annotate(event_wins=Count('winning_alliance')).order_by('-event_wins')[:n]
@@ -58,7 +60,7 @@ class AllianceLeaderboard:
             n: An optional argument that cuts the return to n elements.
 
         Returns:
-            A list of which combinations of 2 teams have the most event wins together (ie won the finals).
+            A QuerySet of which combinations of 2 teams have the most event wins together (ie won the finals).
 
         """
         # winning_alliances = AllianceLeaderboard.most_event_wins_3(get_counter_obj=True)
@@ -84,7 +86,7 @@ class TeamLeaderboard:
             n: An optional argument that cuts the return to n elements.
 
         Returns:
-            A list of which teams have the most match wins. Has the extra field 'stat'.
+            A QuerySet of which teams have the most match wins. Has the extra field 'match_wins'.
 
         """
         return Team.objects.annotate(match_wins=Count('alliance__winner')).order_by('-match_wins')[:n]
@@ -97,7 +99,7 @@ class TeamLeaderboard:
             n: An optional argument that cuts the return to n elements.
 
         Returns:
-            A list of which teams have the most event wins. Has the extra field 'stat'.
+            A QuerySet of which teams have the most event wins. Has the extra field 'event_wins'.
 
         """
         return Team.objects.annotate(event_wins=Count('alliance__winning_alliance',
@@ -115,7 +117,7 @@ class TeamLeaderboard:
             n: An optional argument that cuts the return to n elements.
 
         Returns:
-            A list of which teams have the highest winrate. Has the extra field 'stat'.
+            A QuerySet of which teams have the highest winrate. Has the extra field 'win_rate'.
         """
         return Team.objects.annotate(
             num_played=ExpressionWrapper(Count('alliance__match', distinct=True), output_field=FloatField()),
@@ -132,7 +134,7 @@ class TeamLeaderboard:
             n:  An optional argument that cuts the return to n elements.
 
         Returns:
-            A list of which teams have the highest Elo rating. Has the extra field 'stat'.
+            A QuerySet of which teams have the highest Elo rating.
 
         """
         return Team.objects.order_by('-elo_mu')[:n]
@@ -145,7 +147,8 @@ class TeamLeaderboard:
             n: An optional argument that cuts the return to n elements.
 
         Returns:
-            A list of which teams have the highest Elo rating (scaled to start at 1500 rather than 25).
+            A QuerySet of which teams have the highest Elo rating (scaled to start at 1500 rather than 25). Has the extra
+            field 'elo_scaled'.
 
         """
         return Team.objects.annotate(elo_scaled=F('elo_mu') * 60).order_by('-elo_scaled')[:n]
@@ -158,7 +161,7 @@ class TeamLeaderboard:
             n: An optional argument that cuts the return to n elements.
 
         Returns:
-            A query set of which teams have the most total awards. Has the extra field 'stat'.
+            A QuerySet of which teams have the most total awards. Has the extra field 'award_wins'.
 
 
         """
@@ -172,7 +175,7 @@ class TeamLeaderboard:
             n: An optional argument that cuts the return to n elements.
 
         Returns:
-            A query set of which teams have the most blue banners. Has the extra field 'stat'.
+            A QuerySet of which teams have the most blue banners. Has the extra field 'blue_banners_won'.
 
         """
         blue_banner_reverse = dict((v, k) for k, v in Award.blue_banner_choices)
