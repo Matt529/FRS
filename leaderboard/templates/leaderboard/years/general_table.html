@@ -6,6 +6,7 @@
             <th>Rank</th>
             <th>Team</th>
             <th>{{ name }}</th>
+            <th>Event</th>
         </tr>
         </thead>
         <tbody>
@@ -14,6 +15,7 @@
                 <td>{{ forloop.counter }}</td>
                 <td><a href="{{ d.holder_url }}">{{ d.holder }}</a></td>
                 <td>{{ d.value|floatformat:"-2" }}</td>
+                <td><a href="{{ d.event_url }}">{{ d.event }}</a></td>
             </tr>
         {% endfor %}
         </tbody>

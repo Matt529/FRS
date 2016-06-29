@@ -98,7 +98,9 @@ def make_table_page(request, name, query_set, attr):
         data += [{
             'holder': query_obj.team,
             'holder_url': reverse_model_url(query_obj.team),
-            'value': getattr(query_obj, attr, 0)
+            'value': getattr(query_obj, attr, 0),
+            'event': query_obj.event.name,
+            'event_url': reverse_model_url(query_obj.event)
         }]
 
     return render(request, 'leaderboard/years/general_table.html', context={'name': name, 'data': data})
