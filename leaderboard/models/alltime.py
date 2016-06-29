@@ -112,6 +112,7 @@ class TeamLeaderboard:
         2. Counts how many times a team has appeared on a winning alliance and saves it to a float named num_wins
         3. Divides num_wins by num_played and saves it to a float named win_rate
         4. Orders the teams by win_rate
+        Requires that a team has played 11 or more matches all-time.
 
         Args:
             n: An optional argument that cuts the return to n elements.
@@ -122,7 +123,7 @@ class TeamLeaderboard:
         return Team.objects.annotate(
             num_played=ExpressionWrapper(Count('alliance__match', distinct=True), output_field=FloatField()),
             num_wins=ExpressionWrapper(Count('alliance__winner', distinct=True), output_field=FloatField())
-        ).annotate(
+        ).exclude(num_played__lte=10).annotate(
             win_rate=ExpressionWrapper(F('num_wins') * 100.0 / F('num_played'), output_field=FloatField())
         ).order_by('-win_rate')[:n]
 

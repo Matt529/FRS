@@ -13,7 +13,7 @@
             <tr>
                 <td>{{ forloop.counter }}</td>
                 <td><a href="{{ d.holder_url }}">{{ d.holder }}</a></td>
-                <td>{{ d.value }}</td>
+                <td>{{ d.value|floatformat:"-2" }}</td>
             </tr>
         {% endfor %}
         </tbody>
