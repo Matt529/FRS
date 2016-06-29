@@ -11,7 +11,7 @@ class Leaderboard2016:
         Args:
             n: An optional requirement that cuts the return to n elements.
 
-        Returns: A list of RankingModel2016 objects ordered by 2016's highest autonomous performances (total).
+        Returns: A list of RankingModel2016 objects ordered by year2016's highest autonomous performances (total).
 
         """
         return RankingModel2016.objects.order_by('-auton_points')[:n]
@@ -24,7 +24,7 @@ class Leaderboard2016:
             n: An optional requirement that cuts the return to n elements.
 
         Returns:
-            A list of RankingModel2016 objects ordered by 2016's highest autonomous performances (points per game).
+            A list of RankingModel2016 objects ordered by year2016's highest autonomous performances (points per game).
             Contains the extra field 'avg_auton' (FloatField).
 
         """
@@ -40,7 +40,7 @@ class Leaderboard2016:
             n: An optional requirement that cuts the return to n elements.
 
         Returns:
-            A list of RankingModel2016 objects ordered by 2016's highest ranking point performances (total).
+            A list of RankingModel2016 objects ordered by year2016's highest ranking point performances (total).
 
         """
         return RankingModel2016.objects.order_by('-ranking_score')[:n]
@@ -53,7 +53,7 @@ class Leaderboard2016:
             n: An optional requirement that cuts the return to n elements.
 
         Returns:
-            A list of RankingModel2016 objects ordered by 2016's highest ranking point performances (points per game).
+            A list of RankingModel2016 objects ordered by year2016's highest ranking point performances (points per game).
             Contains the extra field 'extra_ranking' (FloatField).
 
         """
@@ -69,7 +69,7 @@ class Leaderboard2016:
             n: An optional requirement that cuts the return to n elements.
 
         Returns:
-            A list of RankingModel2016 objects ordered by 2016's highest scale/challenge point performances (total).
+            A list of RankingModel2016 objects ordered by year2016's highest scale/challenge point performances (total).
 
         """
         return RankingModel2016.objects.order_by('-scale_challenge_points')[:n]
@@ -82,7 +82,7 @@ class Leaderboard2016:
             n: An optional requirement that cuts the return to n elements.
 
         Returns:
-            A list of RankingModel2016 objects ordered by 2016's highest scale/challenge point performances (points per
+            A list of RankingModel2016 objects ordered by year2016's highest scale/challenge point performances (points per
             game). Contains the extra field 'avg_scale' (FloatField).
 
         """
@@ -98,7 +98,7 @@ class Leaderboard2016:
             n: An optional requirement that cuts the return to n elements.
 
         Returns:
-            A list of RankingModel2016 objects ordered by 2016's highest goal point performances (total).
+            A list of RankingModel2016 objects ordered by year2016's highest goal point performances (total).
 
         """
         return RankingModel2016.objects.order_by('-goals_points')[:n]
@@ -111,7 +111,7 @@ class Leaderboard2016:
             n: An optional requirement that cuts the return to n elements.
 
         Returns:
-            A list of RankingModel2016 objects ordered by 2016's highest goal point performances (points per game).
+            A list of RankingModel2016 objects ordered by year2016's highest goal point performances (points per game).
             Contains the extra field 'avg_goals' (FloatField).
 
         """
@@ -127,7 +127,7 @@ class Leaderboard2016:
             n: An optional requirement that cuts the return to n elements.
 
         Returns:
-            A list of RankingModel2016 objects ordered by 2016's highest defense point performances (total).
+            A list of RankingModel2016 objects ordered by year2016's highest defense point performances (total).
 
         """
         return RankingModel2016.objects.order_by('-defense_points')[:n]
@@ -140,7 +140,7 @@ class Leaderboard2016:
             n: An optional requirement that cuts the return to n elements.
 
         Returns:
-            A list of RankingModel2016 objects ordered by 2016's highest defense point performances (points per game).
+            A list of RankingModel2016 objects ordered by year2016's highest defense point performances (points per game).
             Contains the average field 'avg_defense' (FloatField).
 
         """
@@ -156,7 +156,7 @@ class Leaderboard2016:
             n: An optional requirement that cuts the return to n elements.
 
         Returns:
-            A list of RankingModel2016 objects ordered by 2016's highest OPR performances.
+            A list of RankingModel2016 objects ordered by year2016's highest OPR performances.
 
         """
         return RankingModel2016.objects.order_by('-tba_opr')[:n]
@@ -169,7 +169,7 @@ class Leaderboard2016:
             n: An optional requirement that cuts the return to n elements.
 
         Returns:
-            A list of RankingModel2016 objects ordered by 2016's highest DPR performances.
+            A list of RankingModel2016 objects ordered by year2016's highest DPR performances.
 
         """
         return RankingModel2016.objects.order_by('-tba_dpr')[:n]
@@ -182,7 +182,7 @@ class Leaderboard2016:
             n: An optional requirement that cuts the return to n elements.
 
         Returns:
-            A list of RankingModel2016 objects ordered by 2016's highest CCWMS (ie the difference between OPR and DPR)
+            A list of RankingModel2016 objects ordered by year2016's highest CCWMS (ie the difference between OPR and DPR)
             performances.
 
         """

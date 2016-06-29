@@ -1,0 +1,22 @@
+{% extends 'FRS/base_template.html' %}
+{% block body %}
+    <table class="uk-table">
+        <thead>
+        <tr>
+            <th>Rank</th>
+            <th>Team</th>
+            <th>{{ name }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for d in data %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td><a href="{{ d.holder_url }}">{{ d.holder }}</a></td>
+                <td>{{ d.value }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

@@ -1,7 +1,7 @@
-from TBAW.urls import reverse_model_url
 from django.core.urlresolvers import reverse
 from .alltime_alliances import *
 from .alltime_teams import *
+from .years import *
 
 
 def leaderboard(request):

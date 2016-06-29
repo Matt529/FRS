@@ -22,7 +22,5 @@ def reverse_model_url(model):
             'team2': model.teams.all()[1].team_number,
             'team3': model.teams.all()[2].team_number
         })
-    else:
-        raise Exception('Cannot find a url for that model!')
 
     return data
