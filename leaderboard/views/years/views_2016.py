@@ -1,11 +1,58 @@
-from TBAW.urls import reverse_model_url
+from django.core.urlresolvers import reverse
 from django.shortcuts import render
 from leaderboard.models import Leaderboard2016
+from util.getters import make_team_tr, reverse_model_url
 
 DEFAULT_SHOW = 100
 
 
 class Views2016:
+    @staticmethod
+    def overview(request):
+        high_auton = Leaderboard2016.highest_team_auton_points(1).first()
+        high_auton_ppg = Leaderboard2016.highest_team_auton_points_per_game(1).first()
+        high_rank = Leaderboard2016.highest_team_ranking_points(1).first()
+        high_rank_ppg = Leaderboard2016.highest_team_ranking_points_per_game(1).first()
+        high_scale = Leaderboard2016.highest_team_scale_challenge_points(1).first()
+        high_scale_ppg = Leaderboard2016.highest_team_scale_challenge_points_per_game(1).first()
+        high_goals = Leaderboard2016.highest_team_goals_points(1).first()
+        high_goals_ppg = Leaderboard2016.highest_team_goals_points_per_game(1).first()
+        high_defense = Leaderboard2016.highest_team_defense_points(1).first()
+        high_defense_ppg = Leaderboard2016.highest_team_defense_points_per_game(1).first()
+        high_opr = Leaderboard2016.highest_team_opr(1).first()
+        high_dpr = Leaderboard2016.highest_team_dpr(1).first()
+        high_ccwms = Leaderboard2016.highest_team_ccwms(1).first()
+
+        top = [
+            make_team_tr('Highest Autonomous (Overall)', reverse('highest_team_auton_points'), high_auton.team,
+                         high_auton.auton_points),
+            make_team_tr('Highest Autonomous (Per Game)', reverse('highest_team_auton_points_per_game'),
+                         high_auton_ppg.team, high_auton_ppg.avg_auton),
+            make_team_tr('Highest Ranking Points (Overall)', reverse('highest_team_ranking_points'), high_rank.team,
+                         high_rank.ranking_score),
+            make_team_tr('Highest Ranking Points (Per Game)', reverse('highest_team_ranking_points_per_game'),
+                         high_rank_ppg.team, high_rank_ppg.avg_ranking),
+            make_team_tr('Highest Scale/Challenge Points (Overall)', reverse('highest_team_scale_points'),
+                         high_scale.team, high_scale.scale_challenge_points),
+            make_team_tr('Highest Scale/Challenge Points (Per Game)', reverse('highest_team_scale_points_per_game'),
+                         high_scale_ppg.team, high_scale_ppg.avg_scale),
+            make_team_tr('Highest Goals Points (Overall)', reverse('highest_team_goals_points'), high_goals.team,
+                         high_goals.goals_points),
+            make_team_tr('Highest Goals Points (Per Game)', reverse('highest_team_goals_points_per_game'),
+                         high_goals_ppg.team, high_goals_ppg.avg_goals),
+            make_team_tr('Highest Defense Points (Overall)', reverse('highest_team_defense_points'), high_defense.team,
+                         high_defense.defense_points),
+            make_team_tr('Highest Defense Points (Per Game)', reverse('highest_team_defense_points_per_game'),
+                         high_defense_ppg.team, high_defense_ppg.avg_defense),
+            make_team_tr('Highest OPR', reverse('highest_team_opr'), high_opr.team, high_opr.tba_opr),
+            make_team_tr('Highest DPR', reverse('highest_team_dpr'), high_dpr.team, high_dpr.tba_dpr),
+            make_team_tr('Highest CCWMS', reverse('highest_team_ccwms'), high_ccwms.team, high_ccwms.tba_ccwms),
+        ]
+
+        return render(request, 'leaderboard/leaderboard.html', context={
+            'leaderboard': top
+        })
+
     @staticmethod
     def highest_team_auton_points(request):
         return make_table_page(request, 'Highest Auton Points (Overall)',

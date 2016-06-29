@@ -1,5 +1,7 @@
+from TBAW import models
 from TBAW.models import Team, Event, Match, Alliance, ScoringModel2016, ScoringModel2015, ScoringModel2014, \
     RankingModel2016, RankingModel2015
+from django.core.urlresolvers import reverse
 
 
 def get_team(team_number):
@@ -115,3 +117,30 @@ def get_instance_ranking_model(year):
         2015: RankingModel2015,
         # etc
     }.get(year)
+
+
+def make_team_tr(name, url, holder, stat):
+    return {
+        'name': name,
+        'url': url,
+        'holder': holder,
+        'holder_url': reverse_model_url(holder),
+        'stat': stat
+    }
+
+
+def reverse_model_url(model):
+    data = None
+
+    if type(model) is models.Team:
+        data = reverse('team_view', kwargs={'team_number': model.team_number})
+    elif type(model) is models.Event:
+        data = reverse('event_view', kwargs={'event_key': model.key})
+    elif type(model) is models.Alliance:
+        data = reverse('alliance_view', kwargs={
+            'team1': model.teams.all()[0].team_number,
+            'team2': model.teams.all()[1].team_number,
+            'team3': model.teams.all()[2].team_number
+        })
+
+    return data
