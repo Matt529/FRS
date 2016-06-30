@@ -168,7 +168,7 @@ def handle_event_winners():
     matches_of_3 = Match.objects.filter(comp_level__exact='f', match_number__exact=3, winner__isnull=False)
     matches_of_2 = Match.objects.filter(
         key__in=[x.key for x in Match.objects.filter(comp_level__exact='f', match_number__exact=2,
-                                                     winner__isnull=False) if not event_has_f3_match(x.event.key)])
+                                                     winner__isnull=False) if not x.event.has_f3_match()])
     matches = (matches_of_2 | matches_of_3)
 
     for m in matches:

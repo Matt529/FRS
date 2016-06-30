@@ -71,14 +71,3 @@ def alliance_appearance_exists(alliance, event):
         return False
 
 
-def event_has_f3_match(event_key):
-    """
-
-    Args:
-        event_key: the year of the event and the string associated with the event (e.g. 2016nyro, 2014cmp, 2015iri)
-
-    Returns:
-        true if the event's finals set went to three games, false otherwise
-
-    """
-    return Match.objects.filter(comp_level__exact='f', match_number__exact=3, event__key__exact=event_key).exists()

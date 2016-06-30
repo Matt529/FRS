@@ -1,6 +1,5 @@
 from FRS.settings import DEFAULT_MU, DEFAULT_SIGMA
 from django.db import models
-from util.computations import average_match_score
 
 
 class Team(models.Model):
@@ -25,21 +24,23 @@ class Team(models.Model):
     def __str__(self):
         return "{0} ({1})".format(self.nickname, self.team_number)
 
-    def get_matches(self):
-        return Match.objects.filter(alliances__teams__team_number=self.team_number)
+    def get_matches(self, year=2016):
+        return Match.objects.filter(event__year=year).filter(alliances__teams__team_number=self.team_number)
 
-    def get_wins(self):
-        return Match.objects.filter(winner__teams__team_number=self.team_number)
+    def get_wins(self, year=2016):
+        return Match.objects.filter(event__year=year).filter(winner__teams__team_number=self.team_number)
 
-    def get_losses(self):
-        return Match.objects.filter(alliances__teams__team_number=self.team_number).exclude(
+    def get_losses(self, year=2016):
+        return Match.objects.filter(event__year=year).filter(alliances__teams__team_number=self.team_number).exclude(
             winner__teams__team_number=self.team_number).exclude(winner__isnull=True)
 
-    def get_ties(self):
-        return Match.objects.filter(alliances__teams__team_number=self.team_number).filter(winner__isnull=True)
+    def get_ties(self, year=2016):
+        return Match.objects.filter(event__year=year).filter(alliances__teams__team_number=self.team_number).filter(
+            winner__isnull=True)
 
-    def get_record(self):
-        return "{0}-{1}-{2}".format(self.get_wins().count(), self.get_losses().count(), self.get_ties().count())
+    def get_record(self, year=2016):
+        return "{0}-{1}-{2}".format(self.get_wins(year).count(), self.get_losses(year).count(),
+                                    self.get_ties(year).count())
 
 
 class Alliance(models.Model):
@@ -103,14 +104,14 @@ class Event(models.Model):
     def __str__(self):
         return "{0}".format(self.key)
 
-    def get_average_qual_match_score(self):
-        return average_match_score(self.match_set.filter(comp_level__exact='qm'))
+    def has_f3_match(self):
+        """
 
-    def get_average_playoff_match_score(self):
-        return average_match_score(self.match_set.filter(comp_level__in=['ef', 'qf', 'sf', 'f']))
+        Returns:
+            true if the event's finals set went to three games, false otherwise
 
-    def get_average_overall_match_score(self):
-        return average_match_score(self.match_set.all())
+        """
+        return Match.objects.filter(comp_level__exact='f', match_number__exact=3, event__key__exact=self.key).exists()
 
 
 class Match(models.Model):
