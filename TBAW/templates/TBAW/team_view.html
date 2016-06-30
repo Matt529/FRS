@@ -1,19 +1,18 @@
 {% extends 'FRS/base_template.html' %}
 {% block body %}
-    <h1>Team {{ team.team_number }} - {{ team.nickname }}</h1>
-    <h3>Rating: {{ team.elo_mu|floatformat:2 }} ± {{ team.elo_sigma|floatformat:2 }}</h3>
-    <h3>All-time Record: {{ team.get_record }}</h3>
-    <h5>Rookie year: {{ team.rookie_year }}<br>
-    {{ team.location }}<br></h5>
+    <div class="uk-grid">
+        <div class=".uk-width-large-1-1 uk-container-center">
+            <h1>Team {{ team.team_number }} - {{ team.nickname }}</h1>
+        </div>
+        <div class="uk-width-1-2"><h3>Rating: {{ team.elo_mu|floatformat:2 }} ± {{ team.elo_sigma|floatformat:2 }}</h3></div>
+        <div class="uk-width-1-2"><h3 class="uk-text-right">Rookie year: {{ team.rookie_year }}</h3></div>
+        <div class="uk-width-1-2"><h3>All-time Record: {{ team.get_record }}</h3></div>
+        <div class="uk-width-1-2"><h3 class="uk-text-right">{{ team.location }}</h3></div>
+    </div>
 
-    {% if team.motto != None %}
-        <blockquote>{{ team.motto }}</blockquote>
-    {% endif %}
-
-    Competed in {{ events.count }} event{{ events.count|pluralize }} in {{ events.first.year }}:
+    <p>Competed in {{ events.count }} event{{ events.count|pluralize }} in {{ events.first.year }}:
     {% for event in events %}
         <a href="{% url 'event_view' event.key %}">{{ event.name.strip }}{% if not forloop.last %},{% endif %}</a>
     {% endfor %}
 
-    <br>
 {% endblock %}
