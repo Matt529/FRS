@@ -42,6 +42,9 @@ class Team(models.Model):
         return "{0}-{1}-{2}".format(self.get_wins(year).count(), self.get_losses(year).count(),
                                     self.get_ties(year).count())
 
+    def get_elo_standing(self):
+        return Team.objects.filter(elo_mu__gte=self.elo_mu).count()
+
 
 class Alliance(models.Model):
     teams = models.ManyToManyField(Team)

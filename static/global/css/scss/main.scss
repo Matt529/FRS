@@ -6,6 +6,14 @@ body {
   .wrapper {
     max-width: 1024px;
     margin: 0 auto;
+    padding: 1%;
+    .wrapper-nav {
+      padding: 0;
+    }
+  }
+
+  .uk-width-1-2 {
+    margin-bottom: 0.4em;
   }
 }
 
