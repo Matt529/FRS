@@ -1,5 +1,6 @@
 {% extends 'FRS/base_template.html' %}
 {% load match_level_humanizer %}
+{% block title %}{{ event.year }} {{ event.name }}{% endblock %}
 {% block body %}
     <h1>{{ event.name }} {{ event.year }}</h1><br>
     {% if event.event_district != 0 %}
