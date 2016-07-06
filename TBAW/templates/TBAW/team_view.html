@@ -7,8 +7,7 @@
             <h2>Team {{ team.team_number }} - {{ team.nickname }}</h2>
         </div>
         <div class="uk-width-1-2">
-            <h4>Rating: {{ team.elo_mu|floatformat:2 }} ± {{ team.elo_sigma|floatformat:2 }}
-                ({{ team.get_elo_standing|ordinal }} overall)</h4>
+            <h4>Rating: {{ team.elo_scaled|floatformat:2 }} ({{ team.get_elo_standing|ordinal|intcomma }} overall)</h4>
         </div>
         <div class="uk-width-1-2"><h4 class="uk-text-right">Rookie year: {{ team.rookie_year }}</h4></div>
         <div class="uk-width-1-2"><h4>All-time Record: {{ team.get_record }}</h4></div>

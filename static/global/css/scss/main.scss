@@ -2,6 +2,8 @@
 @import '../../../../bower_components/uikit/scss/uikit.scss';
 @import '../../../../bower_components/uikit/scss/components/autocomplete.scss';
 
+$secondary-color: #333840;
+
 body {
   .wrapper {
     max-width: 1024px;
@@ -18,7 +20,7 @@ body {
 }
 
 .uk-navbar {
-  background-color: slategrey;
+  background-color: $secondary-color;
 
   a, h1, h2, h3, h4, h5, h6 {
     color: white;
@@ -28,5 +30,11 @@ body {
     a, h1, h2, h3, h4, h5, h6 {
       color: white;
     }
+  }
+
+  .uk-navbar-brand:hover {
+    background-color: #F5F5F5;
+    color: $secondary-color;
+    outline: none;
   }
 }

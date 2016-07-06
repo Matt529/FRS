@@ -45,6 +45,9 @@ class Team(models.Model):
     def get_elo_standing(self):
         return Team.objects.filter(elo_mu__gte=self.elo_mu).count()
 
+    def elo_scaled(self):
+        return self.elo_mu * 1500 / DEFAULT_MU
+
 
 class Alliance(models.Model):
     teams = models.ManyToManyField(Team)
