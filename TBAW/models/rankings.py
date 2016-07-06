@@ -17,6 +17,8 @@ class RankingModel(PolymorphicModel):
     tba_dpr = models.FloatField(null=True)
     tba_ccwms = models.FloatField(null=True)
     event = models.ForeignKey(Event, null=True)
+    elo_pre = models.FloatField(null=True)
+    elo_post = models.FloatField(null=True)
 
     @abstractmethod
     def setup(self, rankings_json):
