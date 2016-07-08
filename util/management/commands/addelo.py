@@ -1,6 +1,6 @@
 from time import clock
 
-from TBAW.models import Event
+from TBAW.models import Event, RankingModel
 from django.core.management.base import BaseCommand
 from leaderboard.models import TeamLeaderboard
 from trueskill import Rating, rate
@@ -45,9 +45,24 @@ def add_all_elo():
 
 
 def add_event_elo(event):
-    print("Adding Elo for event {0}".format(event.key))
+    print("Adding Elo for event {0}... ".format(event.key), end="")
+
+    for team in event.teams.all():
+        ranking = RankingModel.objects.get(team=team, event=event)
+        ranking.elo_mu_pre = team.elo_mu
+        ranking.elo_sigma_pre = team.elo_sigma
+        ranking.save()
+
     for match in event.match_set.all():
         handle_match_elo(match)
+
+    for team in event.teams.all():
+        ranking = RankingModel.objects.get(team=team, event=event)
+        ranking.elo_mu_post = team.elo_mu
+        ranking.elo_sigma_post = team.elo_sigma
+        ranking.save()
+
+    print("Done!")
 
 
 class Command(BaseCommand):

@@ -1,9 +1,9 @@
 from time import clock
 
-from TBAW.models import Match, Alliance, Event, AllianceAppearance
+from TBAW.models import Match, Alliance, Event, AllianceAppearance, RankingModel
 from TBAW.requester import get_list_of_matches_json, get_event_json
 from django.core.management.base import BaseCommand
-from util.check import match_exists, alliance_exists, alliance_appearance_exists, event_has_f3_match
+from util.check import match_exists, alliance_exists, alliance_appearance_exists
 from util.getters import get_team, get_event, get_alliance, get_instance_scoring_model
 
 matches_created = 0
@@ -141,17 +141,9 @@ def add_matches_from_event(event_key):
 
             matches_created += 1
             event_matches += 1
-            # print("({7}) Added match {0} ({1}/{2}/{3} vs {4}/{5}/{6})".format(match['key'],
-            #                                                                   red_alliance.teams.all()[0].team_number,
-            #                                                                   red_alliance.teams.all()[1].team_number,
-            #                                                                   red_alliance.teams.all()[2].team_number,
-            #                                                                   blue_alliance.teams.all()[0].team_number,
-            #                                                                   blue_alliance.teams.all()[1].team_number,
-            #                                                                   blue_alliance.teams.all()[2].team_number,
-            #                                                                   matches_created))
 
-    print("\tSuccessfully added {0} matches from event ({1}% of total added)".format(event_matches, round(
-        event_matches / matches_created * 100, 2)))
+    print("\tSuccessfully added {0} matches from event".format(event_matches))
+    event_matches = 0
 
 
 def parse_score_breakdown(year, score_breakdown):
