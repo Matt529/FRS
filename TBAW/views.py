@@ -1,4 +1,4 @@
-from TBAW.models import Event, Team
+from TBAW.models import Event, Team, RankingModel
 from django.shortcuts import render
 from util.check import alliance_exists, team_exists
 from util.getters import get_team, get_event, get_alliance
@@ -16,10 +16,12 @@ def team_view(request, team_number):
 
 def event_view(request, event_key):
     event = get_event(event_key)
+    ranking_models = RankingModel.objects.filter(event=event)
 
     return render(request, 'TBAW/event_view.html',
                   context={
                       'event': event,
+                      'ranking_models': ranking_models,
                   })
 
 

@@ -1,5 +1,7 @@
 {% extends 'FRS/base_template.html' %}
 {% load match_level_humanizer %}
+{% load get_team_ranking_model %}
+{% load elo_formatter %}
 {% block title %}{{ event.year }} {{ event.name }}{% endblock %}
 {% block body %}
     <h1>{{ event.name }} {{ event.year }}</h1><br>
@@ -9,7 +11,9 @@
     <strong>{{ event.get_event_type_display }}</strong><br>
     {{ event.location }}<br>
     {{ event.end_date }}<br>
-    {{ event.website }}<br>
+    {% if event.website != None %}
+        <a href="{{ event.website }}">{{ event.website }}</a>
+    {% endif %}
 
 
     <table class="uk-table uk-table-condensed">
@@ -17,15 +21,21 @@
         <thead>
         <tr>
             <th>Team</th>
-            <th>Team Elo</th>
+            <th>Event Record</th>
+            <th>Pre-Event Elo</th>
+            <th>Post-Event Elo</th>
         </tr>
         </thead>
         <tbody>
         {% for team in event.teams.all %}
-            <tr>
-                <td><a href="{% url 'team_view' team.team_number %}">{{ team }}</a></td>
-                <td>{{ team.elo_mu|floatformat:2 }}</td>
-            </tr>
+            {% with ranking_models|get_team_rm:team as rm %}
+                <tr>
+                    <td><a href="{% url 'team_view' team.team_number %}">{{ team }}</a></td>
+                    <td>{{ rm.get_record }}</td>
+                    <td>{{ rm.elo_mu_pre|format_elo|floatformat:2 }}</td>
+                    <td>{{ rm.elo_mu_post|format_elo|floatformat:2 }}</td>
+                </tr>
+            {% endwith %}
         {% endfor %}
         </tbody>
     </table>

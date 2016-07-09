@@ -26,6 +26,9 @@ class RankingModel(PolymorphicModel):
     def setup(self, rankings_json):
         pass
 
+    def get_record(self):
+        return "{0}-{1}-{2}".format(self.wins, self.losses, self.ties)
+
     def __repr__(self):
         return "{0}. {1} [{2}-{3}-{4}] ({5})".format(self.rank, self.team, self.wins, self.losses, self.ties,
                                                      self.event)
