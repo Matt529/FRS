@@ -3,6 +3,7 @@ bower_components/
 static/compiled
 *.sqlite3
 static/global/js/d3/d3*.js
+static/global/js/uikit/*.js
 
 # Created by https://www.gitignore.io/api/pycharm,python,django,virtualenv
 

@@ -7,10 +7,13 @@ from util.getters import get_team, get_event, get_alliance
 def team_view(request, team_number):
     team = get_team(team_number)
     events = Event.objects.filter(teams__team_number=team.team_number).order_by('end_date')
+    awards_count = team.get_awards().count()
+
     return render(request, 'TBAW/team_view.html',
                   context={
                       'team': team,
                       'events': events,
+                      'awards_count': awards_count,
                   })
 
 

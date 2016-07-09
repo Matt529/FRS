@@ -48,6 +48,16 @@ class Team(models.Model):
     def elo_scaled(self):
         return self.elo_mu * 1500 / DEFAULT_MU
 
+    def get_awards(self, year=None):
+        if year is None:
+            return Award.objects.filter(recipients=self)
+        else:
+            return Award.objects.filter(recipients=self, year=year)
+
+    def count_awards(self):
+        return Team.objects.filter(team_number=self.team_number).values_list('award__name'). \
+            annotate(count=models.Count('award__award_type')).order_by('-count')
+
 
 class Alliance(models.Model):
     teams = models.ManyToManyField(Team)

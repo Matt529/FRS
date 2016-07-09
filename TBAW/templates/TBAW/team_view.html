@@ -14,9 +14,21 @@
         <div class="uk-width-1-2"><h4 class="uk-text-right">{{ team.location }}</h4></div>
     </div>
 
-    <p>Competed in {{ events.count }} event{{ events.count|pluralize }} in {{ events.first.year }}:
-    {% for event in events %}
-        <a href="{% url 'event_view' event.key %}">{{ event.name.strip }}{% if not forloop.last %},{% endif %}</a>
-    {% endfor %}
+    <p>
+        Won {{ awards_count }} award{{ awards_count|pluralize }} all-time:
+    </p>
+    <ul class="uk-list">
+        {% for award in team.count_awards %}
+            <li>&bull; {{ award.1 }}x {{ award.0 }}</li>
+        {% endfor %}
+    </ul>
+
+    <p>
+        Competed in {{ events.count }} event{{ events.count|pluralize }} in {{ events.first.year }}:
+        {% for event in events %}
+            <a href="{% url 'event_view' event.key %}">{{ event.name.strip }}{% if not forloop.last %},{% endif %}</a>
+        {% endfor %}
+    </p>
+
 
 {% endblock %}
