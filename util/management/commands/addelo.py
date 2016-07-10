@@ -3,27 +3,47 @@ from time import clock
 from TBAW.models import Event, RankingModel
 from django.core.management.base import BaseCommand
 from leaderboard.models import TeamLeaderboard
-from trueskill import Rating, rate
+from trueskill import Rating, rate, rate_1vs1
 
 matches_added = 0
 
 
 def handle_match_elo(match):
     global matches_added
+
     drawn = False
     if match.winner is None:
         drawn = True
-        winners = match.alliances.all()[0].teams.all()
+        alliance_winner = match.alliances.all()[0]
+        team_winners = alliance_winner.teams.all()
     else:
-        winners = match.winner.teams.all()
-    losers = [x for x in match.alliances.all() if x != match.winner][0].teams.all()
-    winner_ts_pairs = [(t, Rating(t.elo_mu, t.elo_sigma)) for t in winners]
-    loser_ts_pairs = [(t, Rating(t.elo_mu, t.elo_sigma)) for t in losers]
+        alliance_winner = match.winner
+        team_winners = alliance_winner.teams.all()
+
+    alliance_loser = [x for x in match.alliances.all() if x != match.winner][0]
+    team_losers = alliance_loser.teams.all()
+
+    alliance_winner_ts = Rating(alliance_winner.elo_mu, alliance_winner.elo_sigma)
+    alliance_loser_ts = Rating(alliance_loser.elo_mu, alliance_loser.elo_sigma)
+    alliance_results = rate_1vs1(alliance_winner_ts, alliance_loser_ts, drawn=drawn)
+
+    alliance_winner.elo_mu = alliance_results[0].mu
+    alliance_winner.elo_sigma = alliance_results[0].sigma
+    alliance_loser.elo_mu = alliance_results[1].mu
+    alliance_loser.elo_sigma = alliance_results[1].sigma
+    alliance_winner.save()
+    alliance_loser.save()
+
+    team_winner_ts_pairs = [(t, Rating(t.elo_mu, t.elo_sigma)) for t in team_winners]
+    team_loser_ts_pairs = [(t, Rating(t.elo_mu, t.elo_sigma)) for t in team_losers]
+
     if drawn:
-        results = rate([[x[1] for x in winner_ts_pairs], [x[1] for x in loser_ts_pairs]], ranks=[0, 0])
+        team_results = rate([[x[1] for x in team_winner_ts_pairs], [x[1] for x in team_loser_ts_pairs]], ranks=[0, 0])
     else:
-        results = rate([[x[1] for x in winner_ts_pairs], [x[1] for x in loser_ts_pairs]])
-    for winner_result, winner_team, loser_result, loser_team in zip(results[0], winners, results[1], losers):
+        team_results = rate([[x[1] for x in team_winner_ts_pairs], [x[1] for x in team_loser_ts_pairs]])
+
+    for winner_result, winner_team, loser_result, loser_team in zip(team_results[0], team_winners, team_results[1],
+                                                                    team_losers):
         winner_team.elo_mu = winner_result.mu
         winner_team.elo_sigma = winner_result.sigma
         loser_team.elo_mu = loser_result.mu

@@ -1,0 +1,27 @@
+{% extends 'FRS/base_template.html' %}
+{% load elo_formatter %}
+
+{% block body %}
+    <table class="uk-table uk-table-condensed">
+        <thead>
+        <tr>
+            <th>Rank</th>
+            <th>Alliance</th>
+            <th>Elo</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for alliance in alliance_elo %}
+            {% with alliance.teams.all as teams %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>
+                        <a href="{% url 'alliance_view' teams.0.team_number teams.1.team_number teams.2.team_number %}">{{ teams|join:", " }}</a>
+                    </td>
+                    <td>{{ alliance.elo_mu|format_elo|floatformat:2 }}</td>
+                </tr>
+            {% endwith %}
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

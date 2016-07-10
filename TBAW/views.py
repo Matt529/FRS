@@ -1,4 +1,5 @@
-from TBAW.models import Event, Team, RankingModel
+from TBAW.models import Event, Team, RankingModel, Match
+from django.db.models import Q
 from django.shortcuts import render
 from util.check import alliance_exists, team_exists
 from util.getters import get_team, get_event, get_alliance
@@ -48,8 +49,15 @@ def alliance_view_alliance_obj(request, alliance_obj):
 
 
 def alliance_exists_view(request, alliance):
+    events = Event.objects.filter(allianceappearance__alliance=alliance)
+    matches = Match.objects.filter(Q(red_alliance=alliance) | Q(blue_alliance=alliance))
+    wins = Match.objects.filter(winner=alliance)
+
     return render(request, 'TBAW/alliance_exists.html', context={
-        'alliance': alliance
+        'alliance': alliance,
+        'events': events,
+        'matches': matches,
+        'wins': wins,
     })
 
 

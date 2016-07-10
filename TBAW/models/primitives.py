@@ -62,12 +62,17 @@ class Team(models.Model):
 class Alliance(models.Model):
     teams = models.ManyToManyField(Team)
     color = models.CharField(max_length=4, null=True)
+    elo_mu = models.FloatField(default=DEFAULT_MU)
+    elo_sigma = models.FloatField(default=DEFAULT_SIGMA)
 
     def __str__(self):
         return "{0}".format(self.teams.all())
 
     def to_html(self):
         return "{0}\n{1}\n{2}".format(self.teams.first(), self.teams.all()[1], self.teams.all()[2])
+
+    def get_elo_standing(self):
+        return Alliance.objects.filter(elo_mu__gte=self.elo_mu).count()
 
 
 class Event(models.Model):
@@ -258,3 +263,7 @@ class AllianceAppearance(models.Model):
     alliance = models.ForeignKey(Alliance, null=True)
     event = models.ForeignKey(Event, null=True)
     seed = models.PositiveSmallIntegerField(null=True)
+    elo_mu_pre = models.FloatField(null=True)
+    elo_mu_post = models.FloatField(null=True)
+    elo_sigma_pre = models.FloatField(null=True)
+    elo_sigma_post = models.FloatField(null=True)

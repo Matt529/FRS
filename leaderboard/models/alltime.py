@@ -76,6 +76,10 @@ class AllianceLeaderboard:
 
         raise NotImplementedError
 
+    @staticmethod
+    def highest_elo(n=None):
+        return Alliance.objects.order_by('-elo_mu')[:n]
+
 
 class TeamLeaderboard:
     @staticmethod
