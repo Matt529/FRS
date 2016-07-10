@@ -3,13 +3,6 @@
 {% load elo_formatter %}
 
 {% block body %}
-    <h1>{% for item in alliance.teams.all %}{% if not forloop.first %}{% if forloop.last %} and {% else %},
-    {% endif %}{% endif %}<a href="{% url 'team_view' item.team_number %}">{{ item }}</a>{% endfor %}</h1>
-
-    <p>Appeared in {{ alliance.allianceappearance_set.count }}
-        event{{ alliance.allianceappearance_set.count|pluralize }} all-time.</p>
-    <p>Played {{ alliance.match_set.count }} match{{ alliance.match_set.count|pluralize:"es" }} all-time.</p>
-
     <div class="uk-grid">
         <div class="uk-width-large-1-1 uk-container-center">
             <h2>{% for item in alliance.teams.all %}{% if not forloop.first %}{% if forloop.last %} and {% else %},
@@ -19,6 +12,20 @@
             <h4>Rating: {{ alliance.elo_mu|format_elo|floatformat:2 }} ({{ alliance.get_elo_standing|ordinal|intcomma }}
                 overall)</h4>
         </div>
+        <div class="uk-width-1-2">
+            <h4 class="uk-text-right">First appeared in {{ events.first.year }}</h4>
+        </div>
     </div>
+
+    <p>
+        Competed in {{ events.count }} event{{ events.count|pluralize }} all-time:
+        {% for event in events %}
+            <a href="{% url 'event_view' event.key %}">{{ event.name.strip }}
+                {{ event.year }}{% if not forloop.last %},{% endif %}</a>
+        {% endfor %}
+    </p>
+
+    <p>Played {{ alliance.match_set.count }} match{{ alliance.match_set.count|pluralize:"es" }} all-time
+        ({{ alliance.get_record }}).</p>
 
 {% endblock %}

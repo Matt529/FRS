@@ -74,6 +74,18 @@ class Alliance(models.Model):
     def get_elo_standing(self):
         return Alliance.objects.filter(elo_mu__gte=self.elo_mu).count()
 
+    def get_wins(self):
+        return self.match_set.filter(winner=self)
+
+    def get_losses(self):
+        return self.match_set.exclude(winner=self).exclude(winner__isnull=True)
+
+    def get_ties(self):
+        return self.match_set.exclude(winner=self).filter(winner__isnull=True)
+
+    def get_record(self):
+        return "{0}-{1}-{2}".format(self.get_wins().count(), self.get_losses().count(), self.get_ties().count())
+
 
 class Event(models.Model):
     key = models.CharField(max_length=10)  # e.g. 2016cmp

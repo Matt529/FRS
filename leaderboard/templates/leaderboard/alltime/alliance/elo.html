@@ -8,6 +8,7 @@
             <th>Rank</th>
             <th>Alliance</th>
             <th>Elo</th>
+            <th>Record</th>
         </tr>
         </thead>
         <tbody>
@@ -19,6 +20,7 @@
                         <a href="{% url 'alliance_view' teams.0.team_number teams.1.team_number teams.2.team_number %}">{{ teams|join:", " }}</a>
                     </td>
                     <td>{{ alliance.elo_mu|format_elo|floatformat:2 }}</td>
+                    <td>{{ alliance.get_record }}</td>
                 </tr>
             {% endwith %}
         {% endfor %}
