@@ -51,7 +51,8 @@ INSTALLED_APPS = [
     'TBAW',
     'util',
     'leaderboard',
-    'polymorphic'
+    'polymorphic',
+    'django_spaghetti',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -143,3 +144,9 @@ DEFAULT_MU = 25
 DEFAULT_SIGMA = DEFAULT_MU / 3
 CENTER_RATING = 1500
 SCALE = CENTER_RATING / DEFAULT_MU
+
+SPAGHETTI_SAUCE = {
+    'apps': ['TBAW'],
+    'show_fields': False,
+    'exclude': {'auth': ['user']}
+}

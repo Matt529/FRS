@@ -88,6 +88,7 @@ def add_event_elo(event):
 class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('--log', action='store_true', dest='log', default=False)
+        parser.add_argument('--event', dest='event', default='', type=str)
 
     def handle(self, *args, **options):
         log = options['log']
@@ -101,8 +102,7 @@ class Command(BaseCommand):
                     # Replace double quotes so we can post it to Gist without Github freaking out
                     # Replace tab characters because Team 422 has a tab in their name (WHY?!)
                     # More teams have commas than tabs in their names so just uses .tsv file
-
-        else:
+        elif options['event'] == '':
             time_start = clock()
             add_all_elo()
             time_end = clock()
@@ -110,3 +110,5 @@ class Command(BaseCommand):
             print("Matches added:\t\t{0}".format(matches_added))
             print("Ran in {0} seconds.".format((time_end - time_start).__round__(3)))
             print("-------------")
+        else:
+            add_event_elo(Event.objects.get(key=options['event']))

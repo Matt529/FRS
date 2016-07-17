@@ -42,6 +42,21 @@ class Team(models.Model):
         return "{0}-{1}-{2}".format(self.get_wins(year).count(), self.get_losses(year).count(),
                                     self.get_ties(year).count())
 
+    def get_winrate(self):
+        return Team.objects.filter(team_number=self.team_number).annotate(
+            num_played=models.ExpressionWrapper(models.Count('alliance__match', distinct=True),
+                                                output_field=models.FloatField()),
+            num_wins=models.ExpressionWrapper(models.Count('alliance__winner', distinct=True),
+                                              output_field=models.FloatField())
+        ).annotate(
+            win_rate=models.ExpressionWrapper(models.F('num_wins') / models.F('num_played'),
+                                              output_field=models.FloatField())
+        )[0].win_rate
+
+    def foo(self):
+        from TBAW.models import ScoringModel2016
+        ScoringModel2016.objects.filter(match__comp_level='qm').order_by()
+
     def get_elo_standing(self):
         return Team.objects.filter(elo_mu__gte=self.elo_mu).count()
 
@@ -57,6 +72,9 @@ class Team(models.Model):
     def count_awards(self):
         return Team.objects.filter(team_number=self.team_number).values_list('award__name'). \
             annotate(count=models.Count('award__award_type')).order_by('-count')
+
+    def get_max_opr(self):
+        return self.rankingmodel_set.order_by('-tba_opr').first().tba_opr
 
 
 class Alliance(models.Model):
