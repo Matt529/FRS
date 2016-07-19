@@ -9,9 +9,6 @@ class RankingModel(PolymorphicModel):
 
     rank = models.PositiveSmallIntegerField(null=True)
     team = models.ForeignKey(Team, null=True)
-    wins = models.PositiveSmallIntegerField(null=True)
-    losses = models.PositiveSmallIntegerField(null=True)
-    ties = models.PositiveSmallIntegerField(null=True)
     played = models.PositiveSmallIntegerField(null=True)
     tba_opr = models.FloatField(null=True)
     tba_dpr = models.FloatField(null=True)
@@ -22,12 +19,16 @@ class RankingModel(PolymorphicModel):
     elo_sigma_pre = models.FloatField(null=True)
     elo_sigma_post = models.FloatField(null=True)
 
+    qual_wins = models.PositiveSmallIntegerField(null=True)
+    qual_losses = models.PositiveSmallIntegerField(null=True)
+    qual_ties = models.PositiveSmallIntegerField(null=True)
+
     @abstractmethod
     def setup(self, rankings_json):
         pass
 
     def get_record(self):
-        return "{0}-{1}-{2}".format(self.wins, self.losses, self.ties)
+        return "{0}-{1}-{2}".format(self.qual_wins, self.qual_losses, self.qual_ties)
 
     def __repr__(self):
         return "{0}. {1} [{2}-{3}-{4}] ({5})".format(self.rank, self.team, self.wins, self.losses, self.ties,

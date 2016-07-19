@@ -53,10 +53,6 @@ class Team(models.Model):
                                               output_field=models.FloatField())
         )[0].win_rate
 
-    def foo(self):
-        from TBAW.models import ScoringModel2016
-        ScoringModel2016.objects.filter(match__comp_level='qm').order_by()
-
     def get_elo_standing(self):
         return Team.objects.filter(elo_mu__gte=self.elo_mu).count()
 
@@ -79,7 +75,6 @@ class Team(models.Model):
 
 class Alliance(models.Model):
     teams = models.ManyToManyField(Team)
-    color = models.CharField(max_length=4, null=True)
     elo_mu = models.FloatField(default=DEFAULT_MU)
     elo_sigma = models.FloatField(default=DEFAULT_SIGMA)
 

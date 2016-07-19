@@ -145,8 +145,13 @@ DEFAULT_SIGMA = DEFAULT_MU / 3
 CENTER_RATING = 1500
 SCALE = CENTER_RATING / DEFAULT_MU
 
+# For model visualization at /plate/
 SPAGHETTI_SAUCE = {
     'apps': ['TBAW'],
     'show_fields': False,
     'exclude': {'auth': ['user']}
 }
+
+# For API request logging
+LOG_PATH = BASE_DIR + '/logs/api/'
+FILE_NUM = 1

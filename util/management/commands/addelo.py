@@ -67,6 +67,10 @@ def add_all_elo():
 def add_event_elo(event):
     print("Adding Elo for event {0}... ".format(event.key), end="")
 
+    for appearance in event.allianceappearance_set.all():
+        appearance.elo_mu_pre = appearance.alliance.elo_mu
+        appearance.elo_sigma_pre = appearance.alliance.elo_sigma
+
     for team in event.teams.all():
         ranking = RankingModel.objects.get(team=team, event=event)
         ranking.elo_mu_pre = team.elo_mu
@@ -75,6 +79,10 @@ def add_event_elo(event):
 
     for match in event.match_set.all():
         handle_match_elo(match)
+
+    for appearance in event.allianceappearance_set.all():
+        appearance.elo_mu_post = appearance.alliance.elo_mu
+        appearance.elo_sigma_post = appearance.alliance.elo_sigma
 
     for team in event.teams.all():
         ranking = RankingModel.objects.get(team=team, event=event)

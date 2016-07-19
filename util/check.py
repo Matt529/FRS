@@ -1,5 +1,4 @@
-from TBAW.models import Team, Event, Match, Alliance
-from .getters import get_alliance
+from TBAW.models import Team, Event, Match, Alliance, AllianceAppearance
 
 
 def team_exists(team_number):
@@ -54,20 +53,12 @@ def alliance_exists(teams):
         true if the alliance exists in the database, false otherwise
 
     """
-    if type(teams[0]) is int:
-        teams = [Team.objects.get(team_number=x) for x in teams]
+    if type(teams[0]) is Team:
+        teams = [t.team_number for t in teams]
 
-    set1 = set(Alliance.objects.filter(teams__team_number=teams[0].team_number))
-    set2 = set(Alliance.objects.filter(teams__team_number=teams[1].team_number))
-    set3 = set(Alliance.objects.filter(teams__team_number=teams[2].team_number))
-    return len(list(set1 & set2 & set3)) > 0
+    Alliance.objects.filter(teams__team_number=teams[0]).filter(teams__team_number=teams[1]).filter(
+        teams__team_number=teams[2]).exists()
 
 
 def alliance_appearance_exists(alliance, event):
-    if alliance_exists(list(alliance.teams.all())):
-        alliance = get_alliance(list(alliance.teams.all()))
-        return alliance.allianceappearance_set.filter(event=event).exists()
-    else:
-        return False
-
-
+    return AllianceAppearance.objects.filter(alliance=alliance, event=event).exists()

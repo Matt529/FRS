@@ -1,5 +1,3 @@
-from json import loads, dumps
-
 from abc import ABCMeta, abstractmethod
 from django.db import models
 from polymorphic.models import PolymorphicModel
@@ -7,8 +5,6 @@ from polymorphic.models import PolymorphicModel
 
 class ScoringModel(PolymorphicModel):
     __metaclass__ = ABCMeta
-
-    json_data = models.TextField(default='', null=True)
 
     red_total_score = models.SmallIntegerField(null=True)
     red_auton_score = models.SmallIntegerField(null=True)
@@ -23,12 +19,6 @@ class ScoringModel(PolymorphicModel):
     blue_foul_score = models.SmallIntegerField(null=True)
     blue_foul_count = models.SmallIntegerField(default=0, null=True)
     blue_tech_foul_count = models.SmallIntegerField(default=0, null=True)
-
-    def get_json_data(self):
-        return loads(self.json_data)
-
-    def set_json_data(self, data):
-        self.json_data = dumps(data)
 
     def get_higher_score(self):
         return self.red_total_score if self.red_total_score > self.blue_total_score else self.blue_total_score
@@ -116,8 +106,6 @@ class ScoringModel2016(ScoringModel):
     red_tower_faceC = models.CharField(max_length=20, default='', null=True)
 
     def setup(self, json):
-        self.set_json_data(json)
-
         blue_sb = json['blue']
         red_sb = json['red']
 

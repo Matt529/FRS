@@ -1,6 +1,6 @@
 from time import clock
 
-from TBAW.models import Match, Alliance, Event, AllianceAppearance, RankingModel
+from TBAW.models import Match, Alliance, Event, AllianceAppearance
 from TBAW.requester import get_list_of_matches_json, get_event_json
 from django.core.management.base import BaseCommand
 from util.check import match_exists, alliance_exists, alliance_appearance_exists
@@ -12,13 +12,14 @@ event_matches = 0
 
 
 def add_all_matches():
-    events = Event.objects.exclude(key__in=['2016cmp', '2016cc']).order_by('end_date')
+    events = Event.objects.exclude(key__in=['2016cmp', '2016iri', '2016cc']).order_by('end_date')
     for event in events:
         add_matches_from_event(event.key)
 
     # force CMP to be the last event processed during the championship weekend
     # ...except offseasons
     add_matches_from_event('2016cmp')
+    add_matches_from_event('2016iri')
     add_matches_from_event('2016cc')
 
 
@@ -49,7 +50,6 @@ def add_matches_from_event(event_key):
             event = get_event(event_key)
             if match['comp_level'] in ['ef', 'qf', 'sf', 'f']:
                 if not alliance_exists(red_teams):
-                    # print(event_json['alliances'])
                     red_alliance = Alliance.objects.create()
                     event.alliances.add(red_alliance)
                     for x in red_teams:
@@ -108,9 +108,7 @@ def add_matches_from_event(event_key):
             else:
                 winner = None
 
-            red_alliance.color = 'Red'
             red_alliance.save()
-            blue_alliance.color = 'Blue'
             blue_alliance.save()
             match_obj = Match.objects.create(key=match['key'], comp_level=match['comp_level'],
                                              set_number=match['set_number'], match_number=match['match_number'],
