@@ -56,7 +56,7 @@ def alliance_exists(teams):
     if type(teams[0]) is Team:
         teams = [t.team_number for t in teams]
 
-    Alliance.objects.filter(teams__team_number=teams[0]).filter(teams__team_number=teams[1]).filter(
+    return Alliance.objects.filter(teams__team_number=teams[0]).filter(teams__team_number=teams[1]).filter(
         teams__team_number=teams[2]).exists()
 
 
