@@ -1,34 +1,5 @@
-from abc import ABCMeta, abstractmethod
+from TBAW.models.scoring import ScoringModel
 from django.db import models
-from polymorphic.models import PolymorphicModel
-
-
-class ScoringModel(PolymorphicModel):
-    __metaclass__ = ABCMeta
-
-    red_total_score = models.SmallIntegerField(null=True)
-    red_auton_score = models.SmallIntegerField(null=True)
-    red_teleop_score = models.SmallIntegerField(null=True)
-    red_foul_score = models.SmallIntegerField(null=True)
-    red_foul_count = models.SmallIntegerField(default=0, null=True)
-    red_tech_foul_count = models.SmallIntegerField(default=0, null=True)
-
-    blue_total_score = models.SmallIntegerField(null=True)
-    blue_auton_score = models.SmallIntegerField(null=True)
-    blue_teleop_score = models.SmallIntegerField(null=True)
-    blue_foul_score = models.SmallIntegerField(null=True)
-    blue_foul_count = models.SmallIntegerField(default=0, null=True)
-    blue_tech_foul_count = models.SmallIntegerField(default=0, null=True)
-
-    def get_higher_score(self):
-        return self.red_total_score if self.red_total_score > self.blue_total_score else self.blue_total_score
-
-    @abstractmethod
-    def setup(self, json):
-        return
-
-    def __str__(self):
-        return "blue: {0}, red: {1}".format(self.blue_total_score, self.red_total_score)
 
 
 class ScoringModel2016(ScoringModel):
@@ -184,13 +155,3 @@ class ScoringModel2016(ScoringModel):
         self.red_tower_faceA = red_sb['towerFaceA']
         self.red_tower_faceB = red_sb['towerFaceB']
         self.red_tower_faceC = red_sb['towerFaceC']
-
-
-class ScoringModel2015(ScoringModel):
-    def setup(self, json):
-        pass
-
-
-class ScoringModel2014(ScoringModel):
-    def setup(self, json):
-        pass
