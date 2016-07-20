@@ -1,7 +1,7 @@
 from time import clock
 
-from TBAW.requester import get_awards_from_event_json
 from TBAW.models import Event, Award
+from TBAW.requester import get_awards_from_event_json
 from django.core.management.base import BaseCommand
 from util.getters import get_event, get_team
 
@@ -32,22 +32,24 @@ def add_single_event(event):
         awards_created += 1
 
 
-def add_all_events():
-    for event in Event.objects.all():
+def add_all_events(year):
+    for event in Event.objects.filter(year=year):
         add_single_event(event)
 
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('--key', dest='key', default='', type=str)
+        parser.add_argument('--year', dest='year', default=2016, type=int)
 
     def handle(self, *args, **options):
         key = options['key']
+        year = options['year']
         time_start = clock()
         if key is not '':
             add_single_event(key)
         else:
-            add_all_events()
+            add_all_events(year)
         time_end = clock()
         print("-------------")
         print("Awards created:\t\t{0}".format(awards_created))

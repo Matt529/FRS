@@ -1,3 +1,5 @@
+from datetime import date
+
 from TBAW.models import Event, Team, RankingModel
 from django.shortcuts import render
 from util.check import alliance_exists, team_exists
@@ -6,7 +8,7 @@ from util.getters import get_team, get_event, get_alliance
 
 def team_view(request, team_number):
     team = get_team(team_number)
-    events = Event.objects.filter(teams__team_number=team.team_number).order_by('end_date')
+    events = Event.objects.filter(year=date.today().year, teams__team_number=team.team_number).order_by('end_date')
     awards_count = team.get_awards().count()
 
     return render(request, 'TBAW/team_view.html',
