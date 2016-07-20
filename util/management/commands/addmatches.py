@@ -11,16 +11,10 @@ matches_skipped = 0
 event_matches = 0
 
 
-def add_all_matches():
-    events = Event.objects.exclude(key__in=['2016cmp', '2016iri', '2016cc']).order_by('end_date')
+def add_all_matches(year):
+    events = Event.objects.filter(year=year).order_by('end_date')
     for event in events:
         add_matches_from_event(event.key)
-
-    # force CMP to be the last event processed during the championship weekend
-    # ...except offseasons
-    add_matches_from_event('2016cmp')
-    add_matches_from_event('2016iri')
-    add_matches_from_event('2016cc')
 
 
 def add_matches_from_event(event_key):
@@ -171,14 +165,16 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('--event', dest='event', default='', type=str)
+        parser.add_argument('--year', dest='year', default=2016, type=int)
 
     def handle(self, *args, **options):
         event = options['event']
+        year = options['year']
         time_start = clock()
         if event is not '':
             add_matches_from_event(event)
         else:
-            add_all_matches()
+            add_all_matches(year)
         handle_event_winners()
         time_end = clock()
         print("-------------")

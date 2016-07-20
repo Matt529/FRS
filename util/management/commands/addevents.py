@@ -1,8 +1,8 @@
+from datetime import date, timedelta
 from time import clock
-from datetime import date
 
-from TBAW.requester import get_event_json, get_list_of_events_json
 from TBAW.models import Event
+from TBAW.requester import get_event_json, get_list_of_events_json
 from django.core.management.base import BaseCommand
 from util.check import event_exists
 from util.getters import get_team
@@ -11,9 +11,11 @@ events_updated = 0
 events_created = 0
 events_skipped = 0
 
+championship_keys = ['arc', 'cars', 'carv', 'gal', 'tes', 'new', 'cur', 'hop']
 
-def add_list():
-    events = get_list_of_events_json(2016)
+
+def add_list(year):
+    events = get_list_of_events_json(year)
     for event_data in events:
         add_event(event_data['key'], get_event_json(event_data['key']))
 
@@ -29,6 +31,10 @@ def add_event(event_key, event_data=None):
     month = int(event_data['end_date'][5:7])
     day = int(event_data['end_date'][8:10])
     date_obj = date(year, month, day)
+
+    # Make sure the date-based ordering of championship divisions and Einstein is correct by just moving divs up 1 day
+    if event_key in championship_keys:
+        date_obj -= timedelta(days=1)
 
     if event_exists(event_key):
         Event.objects.filter(key=event_key).update(name=event_data['name'], short_name=event_data['short_name'],
@@ -68,14 +74,16 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('--key', dest='key', default='', type=str)
+        parser.add_argument('--year', dest='year', default=2016, type=int)
 
     def handle(self, *args, **options):
         key = options['key']
+        year = options['year']
         time_start = clock()
         if key is not '':
             add_event(key)
         else:
-            add_list()
+            add_list(year)
         time_end = clock()
         print("-------------")
         print("Events created:\t\t{0}".format(events_created))

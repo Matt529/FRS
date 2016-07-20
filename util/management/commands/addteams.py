@@ -1,7 +1,7 @@
 from time import clock
 
-from TBAW.requester import get_list_of_teams_json, get_team_json
 from TBAW.models import Team
+from TBAW.requester import get_list_of_teams_json, get_team_json, get_team_years_participated
 from django.core.management.base import BaseCommand
 from util.check import team_exists
 from util.getters import get_previous_team
@@ -12,24 +12,17 @@ teams_skipped = 0
 
 
 def add_list():
-    global teams_skipped
     teams = get_list_of_teams_json()
     for team_data in teams:
-        if team_data['name'] is None:
-            teams_skipped += 1
-            print("Skipped team {0}".format(team_data['team_number']))
-            continue
-
         add_team(team_data['team_number'], team_data=team_data)
 
 
 def add_team(team_number, team_data=None):
-    global teams_updated, teams_created
+    global teams_updated, teams_created, teams_skipped
     if team_data is None:
         team_data = get_team_json(team_number)
 
     print("Adding team {0}".format(team_number))
-
     website = team_data['website']
     name = team_data['name']
     locality = team_data['locality']
@@ -39,6 +32,14 @@ def add_team(team_number, team_data=None):
     key = team_data['key']
     nickname = team_data['nickname']
     motto = team_data['motto']
+
+    # Sometimes teams have null records, for reasons unknown. Check if null records were indeed ever active
+    # examples: 146, 413
+    if name is None:
+        years_participated = get_team_years_participated(team_number)
+        if len(years_participated) == 0:
+            teams_skipped += 1
+            return
 
     # Handle empty rookie year data field by guessing that it's equal to the year of the team before it
     # may not be perfect but it's the best option we've got

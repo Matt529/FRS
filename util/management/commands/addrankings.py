@@ -10,8 +10,8 @@ teams_added = 0
 teams_skipped = 0
 
 
-def add_all():
-    events = Event.objects.all()
+def add_all(year):
+    events = Event.objects.filter(year=year)
     for event in events:
         add_event(event.key)
 
@@ -62,6 +62,7 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('--key', dest='key', default='', type=str)
+        parser.add_argument('--year', dest='year', default='', type=int)
 
     def handle(self, *args, **options):
         key = options['key']

@@ -4,7 +4,7 @@ from django.db import models
 
 class Team(models.Model):
     website = models.URLField(null=True)
-    name = models.TextField()  # longer name
+    name = models.TextField(null=True)  # longer name
 
     locality = models.CharField(max_length=50, null=True)  # e.g. city
     region = models.CharField(max_length=50, null=True)  # e.g. state, province
@@ -13,7 +13,7 @@ class Team(models.Model):
 
     team_number = models.PositiveSmallIntegerField()
     key = models.CharField(max_length=8)  # e.g. frc2791
-    nickname = models.CharField(max_length=100)  # shorter name
+    nickname = models.CharField(max_length=100, null=True)  # shorter name
     rookie_year = models.PositiveSmallIntegerField(null=True)
     motto = models.TextField(null=True)
 

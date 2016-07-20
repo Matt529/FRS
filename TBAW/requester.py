@@ -95,3 +95,8 @@ def get_team_robots_history_json(team_number):
 def get_awards_from_event_json(event_key=None):
     url = __tba_url + 'event/{0}/awards'.format(event_key)
     return requests.get(url, headers=__api_key).json()
+
+
+def get_team_years_participated(team_number):
+    url = __tba_url + 'team/frc{0}/years_participated'.format(team_number)
+    return requests.get(url, headers=__api_key).json()
