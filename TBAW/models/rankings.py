@@ -31,8 +31,8 @@ class RankingModel(PolymorphicModel):
         return "{0}-{1}-{2}".format(self.qual_wins, self.qual_losses, self.qual_ties)
 
     def __repr__(self):
-        return "{0}. {1} [{2}-{3}-{4}] ({5})".format(self.rank, self.team, self.wins, self.losses, self.ties,
-                                                     self.event)
+        return "{0}. {1} [{2}-{3}-{4}] ({5})".format(self.rank, self.team, self.qual_wins, self.qual_losses,
+                                                     self.qual_ties, self.event)
 
 
 class RankingModel2016(RankingModel):
@@ -67,4 +67,13 @@ class RankingModel2015(RankingModel):
     tote_points = models.PositiveSmallIntegerField(null=True)
 
     def setup(self, rankings_json):
-        pass
+        for data_field in rankings_json[1:]:
+            if int(data_field[1]) == self.team.team_number:
+                self.rank = int(data_field[0])
+                self.qual_average = float(data_field[2])
+                self.auton_points = int(data_field[3])
+                self.container_points = int(data_field[4])
+                self.coopertition_points = int(data_field[5])
+                self.litter_points = int(data_field[6])
+                self.tote_points = int(data_field[7])
+                self.played = int(data_field[8])

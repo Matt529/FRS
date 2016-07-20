@@ -45,7 +45,10 @@ def add_event(key):
             new_model.tba_dpr = dpr
             new_model.tba_ccwms = ccwms
         except KeyError:
-            print("Skipping team {0} (can't find OPR/DPR/CCWMS)".format(team))
+            try:
+                print("Skipping team {0} (can't find OPR/DPR/CCWMS)".format(team))
+            except UnicodeEncodeError:
+                pass
             teams_skipped += 1
 
         new_model.setup(rankings)
@@ -66,11 +69,12 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         key = options['key']
+        year = options['year']
         time_start = clock()
         if key is not '':
             add_event(key)
         else:
-            add_all()
+            add_all(year)
         time_end = clock()
         print("-------------")
         print("Events added:\t\t{0}".format(events_added))

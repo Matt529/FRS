@@ -1,6 +1,6 @@
 from time import clock
 
-from TBAW.models import Match, Alliance, Event, AllianceAppearance
+from TBAW.models import Match, Alliance, Event, AllianceAppearance, RankingModel2015
 from TBAW.requester import get_list_of_matches_json, get_event_json
 from django.core.management.base import BaseCommand
 from util.check import match_exists, alliance_exists, alliance_appearance_exists
@@ -130,6 +130,32 @@ def add_matches_from_event(event_key):
                 blue_appearance = AllianceAppearance.objects.get(alliance=blue_alliance, event=event)
                 blue_appearance.seed = blue_seed
                 blue_appearance.save()
+
+            # Because 2015 had no win/loss things in their scoreboard but we want em anyway
+            if event.year == 2015 and match.comp_level == 'qm':
+                if winner is None:
+                    for team in red_alliance.teams.all():
+                        rm = RankingModel2015.objects.get(team=team, event=event)
+                        rm.qual_ties += 1
+                        rm.save()
+                    for team in blue_alliance.teams.all():
+                        rm = RankingModel2015.objects.get(team=team, event=event)
+                        rm.qual_ties += 1
+                        rm.save()
+                else:
+                    if winner == red_alliance:
+                        loser = blue_alliance
+                    else:
+                        loser = red_alliance
+
+                    for team in winner.teams.all():
+                        rm = RankingModel2015.objects.get(team=team, event=event)
+                        rm.qual_wins += 1
+                        rm.save()
+                    for team in loser.teams.all():
+                        rm = RankingModel2015.objects.get(team=team, event=event)
+                        rm.qual_losses += 1
+                        rm.save()
 
             matches_created += 1
             event_matches += 1
