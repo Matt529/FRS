@@ -24,6 +24,7 @@ def add_matches_from_event(event_key):
     """
     global matches_created, matches_skipped, event_matches
     matches = get_list_of_matches_json(event_key)
+    current_seed = 1
     print("Adding matches from event {0}...".format(event_key))
     for match in matches:
         if match_exists(event_key, match['key']):
@@ -53,10 +54,8 @@ def add_matches_from_event(event_key):
 
                 for data_seg in event_json['alliances']:
                     if red_teams[0].key in data_seg['picks']:
-                        try:
-                            red_seed = int(data_seg['name'][-1:])
-                        except ValueError:
-                            print("Can't retrieve a seed from {}".format(data_seg['name']))
+                        red_seed = current_seed
+                        current_seed += 1
 
                 if not alliance_exists(blue_teams):
                     blue_alliance = Alliance.objects.create()
@@ -68,10 +67,8 @@ def add_matches_from_event(event_key):
 
                 for data_seg in event_json['alliances']:
                     if blue_teams[0].key in data_seg['picks']:
-                        try:
-                            blue_seed = int(data_seg['name'][-1:])
-                        except ValueError:
-                            print("Can't retrieve a seed from {}".format(data_seg['name']))
+                        blue_seed = current_seed
+                        current_seed += 1
             else:
                 red_alliance = Alliance.objects.create()
                 blue_alliance = Alliance.objects.create()
@@ -80,19 +77,28 @@ def add_matches_from_event(event_key):
                     red_alliance.teams.add(x)
                     blue_alliance.teams.add(y)
 
-            red_score_breakdown = match['score_breakdown']['red']
-            blue_score_breakdown = match['score_breakdown']['blue']
+            if event.year in [2015, 2016]:
+                if event.year == 2016:
+                    pt_str = 'Points'
+                elif event.year == 2015:
+                    pt_str = '_points'
 
-            red_total_points = red_score_breakdown['totalPoints']
-            blue_total_points = blue_score_breakdown['totalPoints']
-            red_foul_points = red_score_breakdown['foulPoints']
-            blue_foul_points = blue_score_breakdown['foulPoints']
+                red_score_breakdown = match['score_breakdown']['red']
+                blue_score_breakdown = match['score_breakdown']['blue']
+
+                red_total_points = red_score_breakdown['total{0}'.format(pt_str)]
+                blue_total_points = blue_score_breakdown['total{0}'.format(pt_str)]
+                red_foul_points = red_score_breakdown['foul{0}'.format(pt_str)]
+                blue_foul_points = blue_score_breakdown['foul{0}'.format(pt_str)]
+            else:
+                red_total_points = match['alliances']['red']['score']
+                blue_total_points = match['alliances']['blue']['score']
 
             if red_total_points < blue_total_points:
                 winner = blue_alliance
             elif red_total_points > blue_total_points:
                 winner = red_alliance
-            elif match['comp_level'] in ['ef', 'qf', 'sf', 'f']:
+            elif match['comp_level'] in ['ef', 'qf', 'sf', 'f'] and event.year == 2016:
                 if red_total_points + red_foul_points > blue_total_points + blue_foul_points:
                     winner = red_alliance
                 elif red_total_points + red_foul_points < blue_total_points + blue_foul_points:
@@ -132,7 +138,7 @@ def add_matches_from_event(event_key):
                 blue_appearance.save()
 
             # Because 2015 had no win/loss things in their scoreboard but we want em anyway
-            if event.year == 2015 and match.comp_level == 'qm':
+            if event.year == 2015 and match['comp_level'] == 'qm':
                 if winner is None:
                     for team in red_alliance.teams.all():
                         rm = RankingModel2015.objects.get(team=team, event=event)

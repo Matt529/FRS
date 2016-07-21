@@ -65,7 +65,7 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('--key', dest='key', default='', type=str)
-        parser.add_argument('--year', dest='year', default='', type=int)
+        parser.add_argument('--year', dest='year', default=0, type=int)
 
     def handle(self, *args, **options):
         key = options['key']

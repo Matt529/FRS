@@ -19,9 +19,9 @@ class RankingModel(PolymorphicModel):
     elo_sigma_pre = models.FloatField(null=True)
     elo_sigma_post = models.FloatField(null=True)
 
-    qual_wins = models.PositiveSmallIntegerField(null=True)
-    qual_losses = models.PositiveSmallIntegerField(null=True)
-    qual_ties = models.PositiveSmallIntegerField(null=True)
+    qual_wins = models.PositiveSmallIntegerField(default=0)
+    qual_losses = models.PositiveSmallIntegerField(default=0)
+    qual_ties = models.PositiveSmallIntegerField(default=0)
 
     @abstractmethod
     def setup(self, rankings_json):

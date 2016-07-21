@@ -187,8 +187,100 @@ class ScoringModel2016(ScoringModel):
 
 
 class ScoringModel2015(ScoringModel):
+    coopertition = models.TextField(max_length=7, null=True)
+
+    blue_tote_count_far = models.PositiveSmallIntegerField(null=True)
+    blue_tote_count_near = models.PositiveSmallIntegerField(null=True)
+    blue_tote_set = models.NullBooleanField()
+    blue_container_set = models.NullBooleanField()
+    blue_container_points = models.PositiveSmallIntegerField(null=True)
+    blue_container_count_1 = models.PositiveSmallIntegerField(null=True)
+    blue_container_count_2 = models.PositiveSmallIntegerField(null=True)
+    blue_container_count_3 = models.PositiveSmallIntegerField(null=True)
+    blue_container_count_4 = models.PositiveSmallIntegerField(null=True)
+    blue_container_count_5 = models.PositiveSmallIntegerField(null=True)
+    blue_container_count_6 = models.PositiveSmallIntegerField(null=True)
+    blue_litter_count_unprocessed = models.PositiveSmallIntegerField(null=True)
+    blue_litter_count_container = models.PositiveSmallIntegerField(null=True)
+    blue_litter_count_landfill = models.PositiveSmallIntegerField(null=True)
+    blue_litter_points = models.PositiveSmallIntegerField(null=True)
+    blue_tote_points = models.PositiveSmallIntegerField(null=True)
+    blue_tote_stack = models.NullBooleanField()
+    blue_robot_set = models.NullBooleanField()
+
+    red_tote_count_far = models.PositiveSmallIntegerField(null=True)
+    red_tote_count_near = models.PositiveSmallIntegerField(null=True)
+    red_tote_set = models.NullBooleanField()
+    red_container_set = models.NullBooleanField()
+    red_container_points = models.PositiveSmallIntegerField(null=True)
+    red_container_count_1 = models.PositiveSmallIntegerField(null=True)
+    red_container_count_2 = models.PositiveSmallIntegerField(null=True)
+    red_container_count_3 = models.PositiveSmallIntegerField(null=True)
+    red_container_count_4 = models.PositiveSmallIntegerField(null=True)
+    red_container_count_5 = models.PositiveSmallIntegerField(null=True)
+    red_container_count_6 = models.PositiveSmallIntegerField(null=True)
+    red_litter_count_unprocessed = models.PositiveSmallIntegerField(null=True)
+    red_litter_count_container = models.PositiveSmallIntegerField(null=True)
+    red_litter_count_landfill = models.PositiveSmallIntegerField(null=True)
+    red_litter_points = models.PositiveSmallIntegerField(null=True)
+    red_tote_points = models.PositiveSmallIntegerField(null=True)
+    red_tote_stack = models.NullBooleanField()
+    red_robot_set = models.NullBooleanField()
+
     def setup(self, json):
-        pass
+        self.coopertition = json['coopertition']
+        blue_sb = json['blue']
+        red_sb = json['red']
+
+        self.blue_total_score = blue_sb['total_points']
+        self.blue_auton_score = blue_sb['auto_points']
+        self.blue_teleop_score = blue_sb['teleop_points']
+        self.blue_foul_score = blue_sb['foul_points']
+        self.blue_foul_count = blue_sb['foul_count']
+        self.blue_tech_foul_count = 0
+        self.blue_tote_count_far = blue_sb['tote_count_far']
+        self.blue_tote_count_near = blue_sb['tote_count_near']
+        self.blue_tote_set = blue_sb['tote_set']
+        self.blue_container_set = blue_sb['container_set']
+        self.blue_container_points = blue_sb['container_points']
+        self.blue_container_count_1 = blue_sb['container_count_level1']
+        self.blue_container_count_2 = blue_sb['container_count_level2']
+        self.blue_container_count_3 = blue_sb['container_count_level3']
+        self.blue_container_count_4 = blue_sb['container_count_level4']
+        self.blue_container_count_5 = blue_sb['container_count_level5']
+        self.blue_container_count_6 = blue_sb['container_count_level6']
+        self.blue_litter_count_unprocessed = blue_sb['litter_count_unprocessed']
+        self.blue_litter_count_container = blue_sb['litter_count_container']
+        self.blue_litter_count_landfill = blue_sb['litter_count_landfill']
+        self.blue_litter_points = blue_sb['litter_points']
+        self.blue_tote_points = blue_sb['tote_points']
+        self.blue_tote_stack = blue_sb['tote_stack']
+        self.blue_robot_set = blue_sb['robot_set']
+
+        self.red_total_score = red_sb['total_points']
+        self.red_auton_score = red_sb['auto_points']
+        self.red_teleop_score = red_sb['teleop_points']
+        self.red_foul_score = red_sb['foul_points']
+        self.red_foul_count = red_sb['foul_count']
+        self.red_tech_foul_count = 0
+        self.red_tote_count_far = red_sb['tote_count_far']
+        self.red_tote_count_near = red_sb['tote_count_near']
+        self.red_tote_set = red_sb['tote_set']
+        self.red_container_set = red_sb['container_set']
+        self.red_container_points = red_sb['container_points']
+        self.red_container_count_1 = red_sb['container_count_level1']
+        self.red_container_count_2 = red_sb['container_count_level2']
+        self.red_container_count_3 = red_sb['container_count_level3']
+        self.red_container_count_4 = red_sb['container_count_level4']
+        self.red_container_count_5 = red_sb['container_count_level5']
+        self.red_container_count_6 = red_sb['container_count_level6']
+        self.red_litter_count_unprocessed = red_sb['litter_count_unprocessed']
+        self.red_litter_count_container = red_sb['litter_count_container']
+        self.red_litter_count_landfill = red_sb['litter_count_landfill']
+        self.red_litter_points = red_sb['litter_points']
+        self.red_tote_points = red_sb['tote_points']
+        self.red_tote_stack = red_sb['tote_stack']
+        self.red_robot_set = red_sb['robot_set']
 
 
 class ScoringModel2014(ScoringModel):
