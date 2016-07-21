@@ -1,5 +1,6 @@
-from FRS.settings import DEFAULT_MU, DEFAULT_SIGMA
 from django.db import models
+
+from FRS.settings import DEFAULT_MU, DEFAULT_SIGMA
 
 
 class Team(models.Model):
@@ -24,21 +25,35 @@ class Team(models.Model):
     def __str__(self):
         return "{0} ({1})".format(self.nickname, self.team_number)
 
-    def get_matches(self, year=2016):
-        return Match.objects.filter(event__year=year).filter(alliances__teams__team_number=self.team_number)
+    def get_matches(self, year=None):
+        if year is None:
+            return Match.objects.filter(alliances__teams__team_number=self.team_number)
+        else:
+            return Match.objects.filter(event__year=year).filter(alliances__teams__team_number=self.team_number)
 
-    def get_wins(self, year=2016):
-        return Match.objects.filter(event__year=year).filter(winner__teams__team_number=self.team_number)
+    def get_wins(self, year=None):
+        if year is None:
+            return Match.objects.filter(winner__teams__team_number=self.team_number)
+        else:
+            return Match.objects.filter(event__year=year).filter(winner__teams__team_number=self.team_number)
 
-    def get_losses(self, year=2016):
-        return Match.objects.filter(event__year=year).filter(alliances__teams__team_number=self.team_number).exclude(
-            winner__teams__team_number=self.team_number).exclude(winner__isnull=True)
+    def get_losses(self, year=None):
+        if year is None:
+            return Match.objects.filter(alliances__teams__team_number=self.team_number).exclude(
+                winner__teams__team_number=self.team_number).exclude(winner__isnull=True)
+        else:
+            return Match.objects.filter(event__year=year).filter(
+                alliances__teams__team_number=self.team_number).exclude(
+                winner__teams__team_number=self.team_number).exclude(winner__isnull=True)
 
-    def get_ties(self, year=2016):
-        return Match.objects.filter(event__year=year).filter(alliances__teams__team_number=self.team_number).filter(
-            winner__isnull=True)
+    def get_ties(self, year=None):
+        if year is None:
+            return Match.objects.filter(alliances__teams__team_number=self.team_number).filter(winner__isnull=True)
+        else:
+            return Match.objects.filter(event__year=year).filter(alliances__teams__team_number=self.team_number).filter(
+                winner__isnull=True)
 
-    def get_record(self, year=2016):
+    def get_record(self, year=None):
         return "{0}-{1}-{2}".format(self.get_wins(year).count(), self.get_losses(year).count(),
                                     self.get_ties(year).count())
 

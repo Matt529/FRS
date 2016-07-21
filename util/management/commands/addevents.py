@@ -49,7 +49,7 @@ def add_event(event_key, event_data=None):
         # print("Updated event {0}".format(event_key))
     # We only want to analyze data from official events or IRI/Cheezy Champs
     elif (event_data['official'] is True and event_data['event_type_string'] != 'Offseason') or \
-            event_data['event_code'] == 'iri' or event_data['event_code'] == 'cc':
+            event_data['event_code'] == 'iri':
         event = Event.objects.create(key=event_key, name=event_data['name'], short_name=event_data['short_name'],
                                      event_code=event_data['event_code'], event_type=event_data['event_type'],
                                      event_district=event_data['event_district'], year=event_data['year'],

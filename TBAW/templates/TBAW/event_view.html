@@ -32,8 +32,8 @@
                 <tr>
                     <td><a href="{% url 'team_view' team.team_number %}">{{ team }}</a></td>
                     <td>{{ rm.get_record }}</td>
-                    <td>{{ rm.elo_mu_pre|format_elo|floatformat:2 }}</td>
-                    <td>{{ rm.elo_mu_post|format_elo|floatformat:2 }}</td>
+{#                    <td>{{ rm.elo_mu_pre|format_elo|floatformat:2 }}</td>#}
+{#                    <td>{{ rm.elo_mu_post|format_elo|floatformat:2 }}</td>#}
                 </tr>
             {% endwith %}
         {% endfor %}

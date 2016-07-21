@@ -1,4 +1,5 @@
 from abc import ABCMeta, abstractmethod
+
 from django.db import models
 from polymorphic.models import PolymorphicModel
 
@@ -281,6 +282,10 @@ class ScoringModel2015(ScoringModel):
         self.red_tote_points = red_sb['tote_points']
         self.red_tote_stack = red_sb['tote_stack']
         self.red_robot_set = red_sb['robot_set']
+
+        # https://github.com/the-blue-alliance/the-blue-alliance/issues/1563
+        if self.blue_tote_count_far < 0:
+            self.blue_tote_count_far = 0
 
 
 class ScoringModel2014(ScoringModel):

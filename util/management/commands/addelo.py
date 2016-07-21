@@ -56,8 +56,8 @@ def handle_match_elo(match):
     # print("({1}) Handled {0}".format(match, matches_added))
 
 
-def add_all_elo():
-    for event in Event.objects.exclude(key__in=['2016cmp', '2016cc']).order_by('end_date'):
+def add_all_elo(year):
+    for event in Event.objects.filter(year=year).order_by('end_date'):
         add_event_elo(event)
 
     add_event_elo(Event.objects.get(key='2016cmp'))
@@ -97,9 +97,11 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('--log', action='store_true', dest='log', default=False)
         parser.add_argument('--event', dest='event', default='', type=str)
+        parser.add_argument('--year', dest='year', default=0, type=int)
 
     def handle(self, *args, **options):
         log = options['log']
+        year = options['year']
         if log:
             with open('elo.tsv', 'w', encoding='utf-8') as file:
                 elo_leaders = TeamLeaderboard.highest_elo_scaled()
@@ -112,7 +114,7 @@ class Command(BaseCommand):
                     # More teams have commas than tabs in their names so just uses .tsv file
         elif options['event'] == '':
             time_start = clock()
-            add_all_elo()
+            add_all_elo(year)
             time_end = clock()
             print("-------------")
             print("Matches added:\t\t{0}".format(matches_added))

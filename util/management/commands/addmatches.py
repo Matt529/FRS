@@ -1,8 +1,9 @@
 from time import clock
 
+from django.core.management.base import BaseCommand
+
 from TBAW.models import Match, Alliance, Event, AllianceAppearance, RankingModel2015
 from TBAW.requester import get_list_of_matches_json, get_event_json
-from django.core.management.base import BaseCommand
 from util.check import match_exists, alliance_exists, alliance_appearance_exists
 from util.getters import get_team, get_event, get_alliance, get_instance_scoring_model
 
@@ -36,7 +37,8 @@ def add_matches_from_event(event_key):
             red_seed = None
             blue_seed = None
 
-            if match['score_breakdown'] is None:
+            if match['score_breakdown'] is None or (
+                        match['alliances']['blue']['score'] == -1 and match['alliances']['red']['score'] == -1):
                 print("Skipping match {0} from event {1} (scores not found)".format(match['key'], event_key))
                 matches_skipped += 1
                 continue
@@ -77,7 +79,7 @@ def add_matches_from_event(event_key):
                     red_alliance.teams.add(x)
                     blue_alliance.teams.add(y)
 
-            if event.year in [2015, 2016]:
+            if event.year in [2015, 2016] and event.event_code != 'cc':
                 if event.year == 2016:
                     pt_str = 'Points'
                 elif event.year == 2015:
