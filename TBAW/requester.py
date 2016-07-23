@@ -1,5 +1,9 @@
-import requests
 from operator import itemgetter
+from typing import List
+
+import requests
+
+from TBAW.models import Team
 from util.getters import get_team
 
 __api_key = {'X-TBA-App-Id': 'frs:frs:1'}
@@ -7,12 +11,12 @@ __tba_url = 'https://www.thebluealliance.com/api/v2/'
 
 
 # team_number is type int
-def get_team_json(team_number):
+def get_team_json(team_number: int) -> dict:
     url = __tba_url + 'team/frc{0}'.format(team_number)
     return requests.get(url, headers=__api_key).json()
 
 
-def get_list_of_teams_json():
+def get_list_of_teams_json() -> List[dict]:
     teams = []
     for page in range(0, 13):
         url = __tba_url + 'teams/{0}'.format(page)
@@ -22,7 +26,7 @@ def get_list_of_teams_json():
 
 
 # event_key should be yyyyKEY, e.g. 2016nyro
-def get_event_json(event_key):
+def get_event_json(event_key: str) -> dict:
     url = __tba_url + 'event/{0}'.format(event_key)
     event_json = requests.get(url, headers=__api_key).json()
 
@@ -34,12 +38,12 @@ def get_event_json(event_key):
     return dict(event_json, **event_teams)
 
 
-def get_list_of_events_json(year=2016):
+def get_list_of_events_json(year=2016) -> dict:
     url = __tba_url + 'events/{0}'.format(year)
     return requests.get(url, headers=__api_key).json()
 
 
-def get_list_of_matches_json(event_key):
+def get_list_of_matches_json(event_key: str) -> List[dict]:
     url = __tba_url + 'event/{0}/matches'.format(event_key)
     json = requests.get(url, headers=__api_key).json()
     qm = []
@@ -67,17 +71,17 @@ def get_list_of_matches_json(event_key):
     return matches
 
 
-def get_event_rankings_json(event_key):
+def get_event_rankings_json(event_key: str) -> List[List[str]]:
     url = __tba_url + 'event/{0}/rankings'.format(event_key)
     return requests.get(url, headers=__api_key).json()
 
 
-def get_event_statistics_json(event_key):
+def get_event_statistics_json(event_key: str) -> dict:
     url = __tba_url + 'event/{0}/stats'.format(event_key)
     return requests.get(url, headers=__api_key).json()
 
 
-def get_teams_at_event(event_key):
+def get_teams_at_event(event_key: str) -> List[Team]:
     url = __tba_url + 'event/{0}/teams'.format(event_key)
     teams = []
     teams_json = requests.get(url, headers=__api_key).json()
@@ -87,16 +91,16 @@ def get_teams_at_event(event_key):
     return teams
 
 
-def get_team_robots_history_json(team_number):
+def get_team_robots_history_json(team_number: int) -> dict:
     url = __tba_url + 'team/frc{0}/history/robots'.format(team_number)
     return requests.get(url, headers=__api_key).json()
 
 
-def get_awards_from_event_json(event_key=None):
+def get_awards_from_event_json(event_key: str) -> List[dict]:
     url = __tba_url + 'event/{0}/awards'.format(event_key)
     return requests.get(url, headers=__api_key).json()
 
 
-def get_team_years_participated(team_number):
+def get_team_years_participated(team_number: int) -> List[int]:
     url = __tba_url + 'team/frc{0}/years_participated'.format(team_number)
     return requests.get(url, headers=__api_key).json()

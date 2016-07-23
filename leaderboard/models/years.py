@@ -1,11 +1,14 @@
-from TBAW.models import RankingModel2016, Event, Match, ScoringModel2016
 from collections import Counter
+
 from django.db.models import F, ExpressionWrapper, FloatField, Sum, Count
+from django.db.models.query import QuerySet
+
+from TBAW.models import RankingModel2016, Event, Match, ScoringModel2016
 
 
 class Leaderboard2016:
     @staticmethod
-    def highest_team_auton_points(n=None):
+    def highest_team_auton_points(n=None) -> QuerySet:
         """
 
         Args:
@@ -17,7 +20,7 @@ class Leaderboard2016:
         return RankingModel2016.objects.order_by('-auton_points')[:n]
 
     @staticmethod
-    def highest_team_auton_points_per_game(n=None):
+    def highest_team_auton_points_per_game(n=None) -> QuerySet:
         """
 
         Args:
@@ -33,7 +36,7 @@ class Leaderboard2016:
             '-avg_auton')[:n]
 
     @staticmethod
-    def highest_team_ranking_points(n=None):
+    def highest_team_ranking_points(n=None) -> QuerySet:
         """
 
         Args:
@@ -46,7 +49,7 @@ class Leaderboard2016:
         return RankingModel2016.objects.order_by('-ranking_score')[:n]
 
     @staticmethod
-    def highest_team_ranking_points_per_game(n=None):
+    def highest_team_ranking_points_per_game(n=None) -> QuerySet:
         """
 
         Args:
@@ -62,7 +65,7 @@ class Leaderboard2016:
             '-avg_ranking')[:n]
 
     @staticmethod
-    def highest_team_scale_challenge_points(n=None):
+    def highest_team_scale_challenge_points(n=None) -> QuerySet:
         """
 
         Args:
@@ -75,7 +78,7 @@ class Leaderboard2016:
         return RankingModel2016.objects.order_by('-scale_challenge_points')[:n]
 
     @staticmethod
-    def highest_team_scale_challenge_points_per_game(n=None):
+    def highest_team_scale_challenge_points_per_game(n=None) -> QuerySet:
         """
 
         Args:
@@ -91,7 +94,7 @@ class Leaderboard2016:
                                         output_field=FloatField())).order_by('-avg_scale')[:n]
 
     @staticmethod
-    def highest_team_goals_points(n=None):
+    def highest_team_goals_points(n=None) -> QuerySet:
         """
 
         Args:
@@ -104,7 +107,7 @@ class Leaderboard2016:
         return RankingModel2016.objects.order_by('-goals_points')[:n]
 
     @staticmethod
-    def highest_team_goals_points_per_game(n=None):
+    def highest_team_goals_points_per_game(n=None) -> QuerySet:
         """
 
         Args:
@@ -120,7 +123,7 @@ class Leaderboard2016:
                                         output_field=FloatField())).order_by('-avg_goals')[:n]
 
     @staticmethod
-    def highest_team_defense_points(n=None):
+    def highest_team_defense_points(n=None) -> QuerySet:
         """
 
         Args:
@@ -133,7 +136,7 @@ class Leaderboard2016:
         return RankingModel2016.objects.order_by('-defense_points')[:n]
 
     @staticmethod
-    def highest_team_defense_points_per_game(n=None):
+    def highest_team_defense_points_per_game(n=None) -> QuerySet:
         """
 
         Args:
@@ -149,7 +152,7 @@ class Leaderboard2016:
                                           output_field=FloatField())).order_by('-avg_defense')[:n]
 
     @staticmethod
-    def highest_team_opr(n=None):
+    def highest_team_opr(n=None) -> QuerySet:
         """
 
         Args:
@@ -162,7 +165,7 @@ class Leaderboard2016:
         return RankingModel2016.objects.order_by('-tba_opr')[:n]
 
     @staticmethod
-    def highest_team_dpr(n=None):
+    def highest_team_dpr(n=None) -> QuerySet:
         """
 
         Args:
@@ -175,7 +178,7 @@ class Leaderboard2016:
         return RankingModel2016.objects.order_by('-tba_dpr')[:n]
 
     @staticmethod
-    def highest_team_ccwms(n=None):
+    def highest_team_ccwms(n=None) -> QuerySet:
         """
 
         Args:
@@ -189,7 +192,7 @@ class Leaderboard2016:
         return RankingModel2016.objects.order_by('-tba_ccwms')[:n]
 
     @staticmethod
-    def highest_event_match_average_score(n=None):
+    def highest_event_match_average_score(n=None) -> QuerySet:
         """
 
         Args:
@@ -211,7 +214,7 @@ class Leaderboard2016:
         ).order_by('-avg_score')[:n]
 
     @staticmethod
-    def highest_score_matches(n=None):
+    def highest_score_matches(n=None) -> QuerySet:
         """
 
         Args:
@@ -227,7 +230,7 @@ class Leaderboard2016:
 
     @staticmethod
     @DeprecationWarning
-    def highest_region_average_score(n=None):
+    def highest_region_average_score(n=None) -> QuerySet:
         # This takes forever, don't use it until we replace it with Django annotations
         matches = Match.objects.filter(event__year=2016)
         totals = Counter()
@@ -237,8 +240,7 @@ class Leaderboard2016:
                 for team in alliance.teams.all():
                     counts['{0}, {1}'.format(team.region, team.country_name)] += 1
                     if alliance.get_color_display() == 'Red':
-                        totals['{0}, {1}'.format(team.region, team.country_name)] += \
-                            match.scoring_model.red_total_score
+                        totals['{0}, {1}'.format(team.region, team.country_name)] += match.scoring_model.red_total_score
                     else:
                         totals['{0}, {1}'.format(team.region, team.country_name)] += \
                             match.scoring_model.blue_total_score

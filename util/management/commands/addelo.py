@@ -6,13 +6,13 @@ from django.db.models import F
 from trueskill import Rating, rate, rate_1vs1
 
 from FRS.settings import SOFT_RESET_SCALE, DEFAULT_SIGMA, DEFAULT_MU
-from TBAW.models import Event, RankingModel, Team, Alliance
+from TBAW.models import Event, RankingModel, Team, Alliance, Match
 from leaderboard.models import TeamLeaderboard
 
 matches_added = 0
 
 
-def handle_match_elo(match):
+def handle_match_elo(match: Match) -> None:
     global matches_added
 
     drawn = False
@@ -55,12 +55,12 @@ def handle_match_elo(match):
 
         winner_team.save(update_fields=['elo_mu', 'elo_sigma'])
         loser_team.save(update_fields=['elo_mu', 'elo_sigma'])
-        
+
     matches_added += 1
     # print("({1}) Handled {0}".format(match, matches_added))
 
 
-def add_all_elo(year):
+def add_all_elo(year: int) -> None:
     for e in Event.objects.filter(year=year).exclude(event_code='cmp').exclude(event_code='iri').order_by('end_date'):
         add_event_elo(e)
 
@@ -68,7 +68,7 @@ def add_all_elo(year):
     add_event_elo(Event.objects.get(year=year, event_code='iri'))
 
 
-def add_event_elo(event):
+def add_event_elo(event: Event) -> None:
     print("Adding Elo for event {0}... ".format(event.key), end="", flush=True)
 
     for appearance in event.allianceappearance_set.all():
@@ -101,7 +101,7 @@ def add_event_elo(event):
     print("Done!")
 
 
-def soft_reset(value=SOFT_RESET_SCALE):
+def soft_reset(value=SOFT_RESET_SCALE) -> None:
     Team.objects.exclude(elo_sigma=DEFAULT_SIGMA).update(
         elo_mu=F('elo_mu') - (F('elo_mu') - DEFAULT_MU) * value,
         elo_sigma=F('elo_sigma') - (F('elo_sigma') - DEFAULT_SIGMA) * value

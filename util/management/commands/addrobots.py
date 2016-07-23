@@ -8,12 +8,12 @@ from util.getters import get_team
 robots_created = 0
 
 
-def add_all_robots():
+def add_all_robots() -> None:
     for team in Team.objects.all():
         add_team_robots(team.team_number)
 
 
-def add_team_robots(team_number):
+def add_team_robots(team_number: int) -> None:
     global robots_created
     robots = get_team_robots_history_json(team_number)
     team = get_team(team_number)

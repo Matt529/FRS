@@ -1,10 +1,12 @@
-from TBAW import models
-from TBAW.models import Team, Event, Match, Alliance, ScoringModel2016, ScoringModel2015, ScoringModel2014, \
-    RankingModel2016, RankingModel2015
 from django.core.urlresolvers import reverse
 
+from TBAW import models
+from TBAW.models import Team, Event, Match, Alliance, ScoringModel2016, ScoringModel2015, ScoringModel2014, \
+    RankingModel2016, RankingModel2015, ScoringModel, RankingModel
+from django.db.models import Model
 
-def get_team(team_number):
+
+def get_team(team_number: int) -> Team:
     """
 
     Args:
@@ -14,12 +16,10 @@ def get_team(team_number):
         a Team object associated with the number
 
     """
-    if type(team_number) is not int:
-        team_number = int(team_number)
     return Team.objects.get(team_number=team_number)
 
 
-def get_previous_team(team_number):
+def get_previous_team(team_number: int) -> Team:
     """
     Used for attempting to guess rookie year when one isn't provided.
 
@@ -37,7 +37,7 @@ def get_previous_team(team_number):
             return get_team(num)
 
 
-def get_event(event_key):
+def get_event(event_key: str) -> Event:
     """
 
     Args:
@@ -50,7 +50,7 @@ def get_event(event_key):
     return Event.objects.get(key=event_key)
 
 
-def get_match(event_key, match_key):
+def get_match(event_key: str, match_key: str) -> Match:
     """
 
     Args:
@@ -65,26 +65,22 @@ def get_match(event_key, match_key):
     return Match.objects.get(event_key=event_key, match_key=match_key)
 
 
-def get_alliance(teams):
+def get_alliance(team1: Team, team2: Team, team3: Team) -> Alliance:
     """
 
     Args:
-        teams: a list interpretation of teams, can be type int or type Team.
+        team1: the first team of the alliance
+        team2: the second team of the alliance
+        team3: the third team of the alliance
 
     Returns:
         Alliance containing the three teams provided.
 
     """
-    if type(teams[0]) is int:
-        teams = [Team.objects.get(team_number=x) for x in teams]
-    set1 = set(Alliance.objects.filter(teams__team_number=teams[0].team_number))
-    set2 = set(Alliance.objects.filter(teams__team_number=teams[1].team_number))
-    set3 = set(Alliance.objects.filter(teams__team_number=teams[2].team_number))
-    alliances = list(set1 & set2 & set3)
-    return alliances[0]
+    return Alliance.objects.filter(teams=team1).filter(teams=team2).get(teams=team3)
 
 
-def get_instance_scoring_model(year):
+def get_instance_scoring_model(year: int) -> ScoringModel:
     """
 
     Args:
@@ -102,7 +98,7 @@ def get_instance_scoring_model(year):
     }.get(year)
 
 
-def get_instance_ranking_model(year):
+def get_instance_ranking_model(year: int) -> RankingModel:
     """
 
     Args:
@@ -119,7 +115,7 @@ def get_instance_ranking_model(year):
     }.get(year)
 
 
-def make_team_tr(name, url, holder, stat):
+def make_team_tr(name: str, url: str, holder: Model, stat) -> dict:
     return {
         'name': name,
         'url': url,
@@ -129,7 +125,7 @@ def make_team_tr(name, url, holder, stat):
     }
 
 
-def reverse_model_url(model):
+def reverse_model_url(model: Model) -> str:
     data = None
 
     if type(model) is models.Team:

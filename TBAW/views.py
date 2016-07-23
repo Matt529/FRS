@@ -1,7 +1,8 @@
 from datetime import date
 
-from TBAW.models import Event, Team, RankingModel
 from django.shortcuts import render
+
+from TBAW.models import Event, Team, RankingModel
 from util.check import alliance_exists, team_exists
 from util.getters import get_team, get_event, get_alliance
 
@@ -30,7 +31,11 @@ def event_view(request, event_key):
                   })
 
 
-def alliance_view(request, team1, team2, team3):
+def alliance_view(request, team1: str, team2: str, team3: str):
+    team1 = int(team1)
+    team2 = int(team2)
+    team3 = int(team3)
+
     if team_exists(team1):
         team1 = get_team(team1)
     if team_exists(team2):
@@ -38,8 +43,8 @@ def alliance_view(request, team1, team2, team3):
     if team_exists(team3):
         team3 = get_team(team3)
 
-    if type(team1) is Team and type(team2) is Team and type(team3) is Team and alliance_exists([team1, team2, team3]):
-        return alliance_exists_view(request, get_alliance([team1, team2, team3]))
+    if alliance_exists(team1, team2, team3):
+        return alliance_exists_view(request, get_alliance(team1, team2, team3))
     else:
         return alliance_does_not_exist_view(request, [team1, team2, team3])
 

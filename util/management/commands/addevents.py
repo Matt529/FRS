@@ -14,13 +14,13 @@ events_skipped = 0
 championship_keys = ['arc', 'cars', 'carv', 'gal', 'tes', 'new', 'cur', 'hop']
 
 
-def add_list(year):
+def add_list(year: int) -> None:
     events = get_list_of_events_json(year)
     for event_data in events:
         add_event(event_data['key'], get_event_json(event_data['key']))
 
 
-def add_event(event_key, event_data=None):
+def add_event(event_key: str, event_data=None) -> None:
     global events_updated, events_created, events_skipped
     if event_data is None:
         event_data = get_event_json(event_key)

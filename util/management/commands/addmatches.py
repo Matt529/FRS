@@ -2,7 +2,7 @@ from time import clock
 
 from django.core.management.base import BaseCommand
 
-from TBAW.models import Match, Alliance, Event, AllianceAppearance, RankingModel2015
+from TBAW.models import Match, Alliance, Event, AllianceAppearance, RankingModel2015, ScoringModel
 from TBAW.requester import get_list_of_matches_json, get_event_json
 from util.check import match_exists, alliance_exists, alliance_appearance_exists
 from util.getters import get_team, get_event, get_alliance, get_instance_scoring_model
@@ -12,17 +12,13 @@ matches_skipped = 0
 event_matches = 0
 
 
-def add_all_matches(year):
+def add_all_matches(year: int) -> None:
     events = Event.objects.filter(year=year).order_by('end_date')
     for event in events:
         add_matches_from_event(event.key)
 
 
-def add_matches_from_event(event_key):
-    """
-    Looking to clean this up. This is really gross.
-
-    """
+def add_matches_from_event(event_key: str) -> None:
     global matches_created, matches_skipped, event_matches
     matches = get_list_of_matches_json(event_key)
     current_seed = 1
@@ -46,26 +42,26 @@ def add_matches_from_event(event_key):
             event_json = get_event_json(event_key)
             event = get_event(event_key)
             if match['comp_level'] in ['ef', 'qf', 'sf', 'f']:
-                if not alliance_exists(red_teams):
+                if not alliance_exists(red_teams[0], red_teams[1], red_teams[2]):
                     red_alliance = Alliance.objects.create()
                     event.alliances.add(red_alliance)
                     for x in red_teams:
                         red_alliance.teams.add(x)
                 else:
-                    red_alliance = get_alliance(red_teams)
+                    red_alliance = get_alliance(red_teams[0], red_teams[1], red_teams[2])
 
                 for data_seg in event_json['alliances']:
                     if red_teams[0].key in data_seg['picks']:
                         red_seed = current_seed
                         current_seed += 1
 
-                if not alliance_exists(blue_teams):
+                if not alliance_exists(blue_teams[0], blue_teams[1], blue_teams[2]):
                     blue_alliance = Alliance.objects.create()
                     event.alliances.add(blue_alliance)
                     for x in blue_teams:
                         blue_alliance.teams.add(x)
                 else:
-                    blue_alliance = get_alliance(blue_teams)
+                    blue_alliance = get_alliance(blue_teams[0], blue_teams[1], blue_teams[2])
 
                 for data_seg in event_json['alliances']:
                     if blue_teams[0].key in data_seg['picks']:
@@ -172,17 +168,14 @@ def add_matches_from_event(event_key):
     event_matches = 0
 
 
-def parse_score_breakdown(year, score_breakdown):
-    if type(year) is not int:
-        year = int(year)
-
+def parse_score_breakdown(year: int, score_breakdown: dict) -> ScoringModel:
     model = get_instance_scoring_model(year).objects.create()
     model.setup(score_breakdown)
     model.save()
     return model
 
 
-def handle_event_winners():
+def handle_event_winners() -> None:
     matches_of_3 = Match.objects.filter(comp_level__exact='f', match_number__exact=3, winner__isnull=False)
     matches_of_2 = Match.objects.filter(
         key__in=[x.key for x in Match.objects.filter(comp_level__exact='f', match_number__exact=2,

@@ -11,13 +11,13 @@ teams_created = 0
 teams_skipped = 0
 
 
-def add_list():
+def add_list() -> None:
     teams = get_list_of_teams_json()
     for team_data in teams:
         add_team(team_data['team_number'], team_data=team_data)
 
 
-def add_team(team_number, team_data=None):
+def add_team(team_number: int, team_data=None) -> None:
     global teams_updated, teams_created, teams_skipped
     if team_data is None:
         team_data = get_team_json(team_number)

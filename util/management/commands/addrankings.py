@@ -10,13 +10,13 @@ teams_added = 0
 teams_skipped = 0
 
 
-def add_all(year):
+def add_all(year: int) -> None:
     events = Event.objects.filter(year=year)
     for event in events:
         add_event(event.key)
 
 
-def add_event(key):
+def add_event(key: str) -> None:
     global teams_added, events_added, teams_skipped
     print("({1}) Adding stats for event {0}...".format(key, events_added + 1))
     stats = get_event_statistics_json(key)

@@ -10,7 +10,7 @@ class ScoringModel(PolymorphicModel):
     red_total_score = models.SmallIntegerField(null=True)
     blue_total_score = models.SmallIntegerField(null=True)
 
-    def get_higher_score(self):
+    def get_higher_score(self) -> int:
         return self.red_total_score if self.red_total_score > self.blue_total_score else self.blue_total_score
 
     @abstractmethod

@@ -1,7 +1,9 @@
 from bulk_update.manager import BulkUpdateManager
 from django.db import models
+from django.db.models.query import QuerySet
 
 from FRS.settings import DEFAULT_MU, DEFAULT_SIGMA
+from FRS.settings import SCALE
 
 
 class Team(models.Model):
@@ -28,19 +30,19 @@ class Team(models.Model):
     def __str__(self):
         return "{0} ({1})".format(self.nickname, self.team_number)
 
-    def get_matches(self, year=None):
+    def get_matches(self, year=None) -> QuerySet:
         if year is None:
             return Match.objects.filter(alliances__teams__team_number=self.team_number)
         else:
             return Match.objects.filter(event__year=year).filter(alliances__teams__team_number=self.team_number)
 
-    def get_wins(self, year=None):
+    def get_wins(self, year=None) -> QuerySet:
         if year is None:
             return Match.objects.filter(winner__teams__team_number=self.team_number)
         else:
             return Match.objects.filter(event__year=year).filter(winner__teams__team_number=self.team_number)
 
-    def get_losses(self, year=None):
+    def get_losses(self, year=None) -> QuerySet:
         if year is None:
             return Match.objects.filter(alliances__teams__team_number=self.team_number).exclude(
                 winner__teams__team_number=self.team_number).exclude(winner__isnull=True)
@@ -49,18 +51,18 @@ class Team(models.Model):
                 alliances__teams__team_number=self.team_number).exclude(
                 winner__teams__team_number=self.team_number).exclude(winner__isnull=True)
 
-    def get_ties(self, year=None):
+    def get_ties(self, year=None) -> QuerySet:
         if year is None:
             return Match.objects.filter(alliances__teams__team_number=self.team_number).filter(winner__isnull=True)
         else:
             return Match.objects.filter(event__year=year).filter(alliances__teams__team_number=self.team_number).filter(
                 winner__isnull=True)
 
-    def get_record(self, year=None):
+    def get_record(self, year=None) -> str:
         return "{0}-{1}-{2}".format(self.get_wins(year).count(), self.get_losses(year).count(),
                                     self.get_ties(year).count())
 
-    def get_winrate(self):
+    def get_winrate(self) -> float:
         return Team.objects.filter(team_number=self.team_number).annotate(
             num_played=models.ExpressionWrapper(models.Count('alliance__match', distinct=True),
                                                 output_field=models.FloatField()),
@@ -71,23 +73,23 @@ class Team(models.Model):
                                               output_field=models.FloatField())
         )[0].win_rate
 
-    def get_elo_standing(self):
+    def get_elo_standing(self) -> int:
         return Team.objects.filter(elo_mu__gte=self.elo_mu).count()
 
-    def elo_scaled(self):
-        return self.elo_mu * 1500 / DEFAULT_MU
+    def elo_scaled(self) -> float:
+        return self.elo_mu * SCALE
 
-    def get_awards(self, year=None):
+    def get_awards(self, year=None) -> QuerySet:
         if year is None:
             return Award.objects.filter(recipients=self)
         else:
             return Award.objects.filter(recipients=self, year=year)
 
-    def count_awards(self):
+    def count_awards(self) -> QuerySet:
         return Team.objects.filter(team_number=self.team_number).values_list('award__name'). \
             annotate(count=models.Count('award__award_type')).order_by('-count')
 
-    def get_max_opr(self):
+    def get_max_opr(self) -> float:
         return self.rankingmodel_set.order_by('-tba_opr').first().tba_opr
 
 
@@ -101,22 +103,22 @@ class Alliance(models.Model):
     def __str__(self):
         return "{0}".format(self.teams.all())
 
-    def to_html(self):
+    def to_html(self) -> str:
         return "{0}\n{1}\n{2}".format(self.teams.first(), self.teams.all()[1], self.teams.all()[2])
 
-    def get_elo_standing(self):
+    def get_elo_standing(self) -> int:
         return Alliance.objects.filter(elo_mu__gte=self.elo_mu).count()
 
-    def get_wins(self):
+    def get_wins(self) -> QuerySet:
         return self.match_set.filter(winner=self)
 
-    def get_losses(self):
+    def get_losses(self) -> QuerySet:
         return self.match_set.exclude(winner=self).exclude(winner__isnull=True)
 
-    def get_ties(self):
+    def get_ties(self) -> QuerySet:
         return self.match_set.exclude(winner=self).filter(winner__isnull=True)
 
-    def get_record(self):
+    def get_record(self) -> str:
         return "{0}-{1}-{2}".format(self.get_wins().count(), self.get_losses().count(), self.get_ties().count())
 
 
@@ -170,7 +172,7 @@ class Event(models.Model):
     def __str__(self):
         return "{0}".format(self.key)
 
-    def has_f3_match(self):
+    def has_f3_match(self) -> bool:
         """
 
         Returns:

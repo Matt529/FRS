@@ -1,10 +1,12 @@
-from TBAW.models import Team, Award, Alliance
 from django.db.models import Count, F, ExpressionWrapper, FloatField, When, Case, Sum, PositiveSmallIntegerField
+from django.db.models.query import QuerySet
+
+from TBAW.models import Team, Award, Alliance
 
 
 class AllianceLeaderboard:
     @staticmethod
-    def most_match_wins_3(n=None):
+    def most_match_wins_3(n=None) -> QuerySet:
         """
 
         Args:
@@ -18,7 +20,7 @@ class AllianceLeaderboard:
         return Alliance.objects.annotate(match_wins=Count('winner')).order_by('-match_wins')[:n]
 
     @staticmethod
-    def most_match_wins_2(n=None):
+    def most_match_wins_2(n=None) -> QuerySet:
         """
 
         Args:
@@ -39,21 +41,21 @@ class AllianceLeaderboard:
         raise NotImplementedError
 
     @staticmethod
-    def most_event_wins_3(n=None):
+    def most_event_wins_3(n=None) -> QuerySet:
         """
 
         Args:
             n: An optional argument that cuts the return to n elements.
 
         Returns:
-            A QuerySet of which combinations of 3 teams have the most event wins together (ie won the finals). Contains the
-            extra field 'event_wins'.
+            A QuerySet of which combinations of 3 teams have the most event wins together (ie won the finals). Contains
+            the extra field 'event_wins'.
 
         """
         return Alliance.objects.annotate(event_wins=Count('winning_alliance')).order_by('-event_wins')[:n]
 
     @staticmethod
-    def most_event_wins_2(n=None):
+    def most_event_wins_2(n=None) -> QuerySet:
         """
 
         Args:
@@ -77,13 +79,13 @@ class AllianceLeaderboard:
         raise NotImplementedError
 
     @staticmethod
-    def highest_elo(n=None):
+    def highest_elo(n=None) -> QuerySet:
         return Alliance.objects.order_by('-elo_mu')[:n]
 
 
 class TeamLeaderboard:
     @staticmethod
-    def most_match_wins(n=None):
+    def most_match_wins(n=None) -> QuerySet:
         """
 
         Args:
@@ -96,7 +98,7 @@ class TeamLeaderboard:
         return Team.objects.annotate(match_wins=Count('alliance__winner')).order_by('-match_wins')[:n]
 
     @staticmethod
-    def most_event_wins(n=None):
+    def most_event_wins(n=None) -> QuerySet:
         """
 
         Args:
@@ -110,7 +112,7 @@ class TeamLeaderboard:
                                                       distinct=True)).order_by('-event_wins')[:n]
 
     @staticmethod
-    def highest_win_rate(n=None):
+    def highest_win_rate(n=None) -> QuerySet:
         """
         1. Counts how many times a team has appeared on an alliance and saves it to a float named num_played
         2. Counts how many times a team has appeared on a winning alliance and saves it to a float named num_wins
@@ -132,7 +134,7 @@ class TeamLeaderboard:
         ).order_by('-win_rate')[:n]
 
     @staticmethod
-    def highest_elo(n=None):
+    def highest_elo(n=None) -> QuerySet:
         """
 
         Args:
@@ -145,7 +147,7 @@ class TeamLeaderboard:
         return Team.objects.order_by('-elo_mu')[:n]
 
     @staticmethod
-    def highest_elo_scaled(n=None):
+    def highest_elo_scaled(n=None) -> QuerySet:
         """
 
         Args:
@@ -159,7 +161,7 @@ class TeamLeaderboard:
         return Team.objects.annotate(elo_scaled=F('elo_mu') * 60).order_by('-elo_scaled')[:n]
 
     @staticmethod
-    def most_award_wins(n=None):
+    def most_award_wins(n=None) -> QuerySet:
         """
 
         Args:
@@ -173,7 +175,7 @@ class TeamLeaderboard:
         return Team.objects.annotate(award_wins=Count('award')).order_by('-award_wins')[:n]
 
     @staticmethod
-    def most_blue_banners(n=None):
+    def most_blue_banners(n=None) -> QuerySet:
         """
 
         Args:

@@ -29,10 +29,10 @@ class RankingModel(PolymorphicModel):
     objects = BulkUpdateManager()
 
     @abstractmethod
-    def setup(self, rankings_json):
+    def setup(self, rankings_json) -> None:
         pass
 
-    def get_record(self):
+    def get_record(self) -> str:
         return "{0}-{1}-{2}".format(self.qual_wins, self.qual_losses, self.qual_ties)
 
     def __repr__(self):
