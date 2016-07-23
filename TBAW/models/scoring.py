@@ -8,18 +8,7 @@ class ScoringModel(PolymorphicModel):
     __metaclass__ = ABCMeta
 
     red_total_score = models.SmallIntegerField(null=True)
-    red_auton_score = models.SmallIntegerField(null=True)
-    red_teleop_score = models.SmallIntegerField(null=True)
-    red_foul_score = models.SmallIntegerField(null=True)
-    red_foul_count = models.SmallIntegerField(default=0, null=True)
-    red_tech_foul_count = models.SmallIntegerField(default=0, null=True)
-
     blue_total_score = models.SmallIntegerField(null=True)
-    blue_auton_score = models.SmallIntegerField(null=True)
-    blue_teleop_score = models.SmallIntegerField(null=True)
-    blue_foul_score = models.SmallIntegerField(null=True)
-    blue_foul_count = models.SmallIntegerField(default=0, null=True)
-    blue_tech_foul_count = models.SmallIntegerField(default=0, null=True)
 
     def get_higher_score(self):
         return self.red_total_score if self.red_total_score > self.blue_total_score else self.blue_total_score
@@ -73,6 +62,13 @@ class ScoringModel2016(ScoringModel):
     blue_tower_faceA = models.CharField(max_length=20, default='', null=True)
     blue_tower_faceB = models.CharField(max_length=20, default='', null=True)
     blue_tower_faceC = models.CharField(max_length=20, default='', null=True)
+
+    blue_auton_score = models.SmallIntegerField(null=True)
+    blue_teleop_score = models.SmallIntegerField(null=True)
+    blue_foul_score = models.SmallIntegerField(null=True)
+    blue_foul_count = models.SmallIntegerField(default=0, null=True)
+    blue_tech_foul_count = models.SmallIntegerField(default=0, null=True)
+
     red_adjust_points = models.SmallIntegerField(default=0, null=True)
     red_auton_boulders_high = models.SmallIntegerField(default=0, null=True)
     red_auton_boulders_low = models.SmallIntegerField(default=0, null=True)
@@ -105,6 +101,12 @@ class ScoringModel2016(ScoringModel):
     red_tower_faceA = models.CharField(max_length=20, default='', null=True)
     red_tower_faceB = models.CharField(max_length=20, default='', null=True)
     red_tower_faceC = models.CharField(max_length=20, default='', null=True)
+
+    red_auton_score = models.SmallIntegerField(null=True)
+    red_teleop_score = models.SmallIntegerField(null=True)
+    red_foul_score = models.SmallIntegerField(null=True)
+    red_foul_count = models.SmallIntegerField(default=0, null=True)
+    red_tech_foul_count = models.SmallIntegerField(default=0, null=True)
 
     def setup(self, json):
         blue_sb = json['blue']
@@ -209,6 +211,11 @@ class ScoringModel2015(ScoringModel):
     blue_tote_stack = models.NullBooleanField()
     blue_robot_set = models.NullBooleanField()
 
+    blue_auton_score = models.SmallIntegerField(null=True)
+    blue_teleop_score = models.SmallIntegerField(null=True)
+    blue_foul_score = models.SmallIntegerField(null=True)
+    blue_foul_count = models.SmallIntegerField(default=0, null=True)
+
     red_tote_count_far = models.PositiveSmallIntegerField(null=True)
     red_tote_count_near = models.PositiveSmallIntegerField(null=True)
     red_tote_set = models.NullBooleanField()
@@ -228,6 +235,11 @@ class ScoringModel2015(ScoringModel):
     red_tote_stack = models.NullBooleanField()
     red_robot_set = models.NullBooleanField()
 
+    red_auton_score = models.SmallIntegerField(null=True)
+    red_teleop_score = models.SmallIntegerField(null=True)
+    red_foul_score = models.SmallIntegerField(null=True)
+    red_foul_count = models.SmallIntegerField(default=0, null=True)
+
     def setup(self, json):
         self.coopertition = json['coopertition']
         blue_sb = json['blue']
@@ -238,7 +250,6 @@ class ScoringModel2015(ScoringModel):
         self.blue_teleop_score = blue_sb['teleop_points']
         self.blue_foul_score = blue_sb['foul_points']
         self.blue_foul_count = blue_sb['foul_count']
-        self.blue_tech_foul_count = 0
         self.blue_tote_count_far = blue_sb['tote_count_far']
         self.blue_tote_count_near = blue_sb['tote_count_near']
         self.blue_tote_set = blue_sb['tote_set']
@@ -263,7 +274,6 @@ class ScoringModel2015(ScoringModel):
         self.red_teleop_score = red_sb['teleop_points']
         self.red_foul_score = red_sb['foul_points']
         self.red_foul_count = red_sb['foul_count']
-        self.red_tech_foul_count = 0
         self.red_tote_count_far = red_sb['tote_count_far']
         self.red_tote_count_near = red_sb['tote_count_near']
         self.red_tote_set = red_sb['tote_set']

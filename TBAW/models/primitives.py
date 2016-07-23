@@ -1,3 +1,4 @@
+from bulk_update.manager import BulkUpdateManager
 from django.db import models
 
 from FRS.settings import DEFAULT_MU, DEFAULT_SIGMA
@@ -21,6 +22,8 @@ class Team(models.Model):
     # Modeled after TrueSkill, which is a Gaussian distribution with mu=25.0 and sigma = 25/3.
     elo_mu = models.FloatField(default=DEFAULT_MU)
     elo_sigma = models.FloatField(default=DEFAULT_SIGMA)
+
+    objects = BulkUpdateManager()
 
     def __str__(self):
         return "{0} ({1})".format(self.nickname, self.team_number)
@@ -92,6 +95,8 @@ class Alliance(models.Model):
     teams = models.ManyToManyField(Team)
     elo_mu = models.FloatField(default=DEFAULT_MU)
     elo_sigma = models.FloatField(default=DEFAULT_SIGMA)
+
+    objects = BulkUpdateManager()
 
     def __str__(self):
         return "{0}".format(self.teams.all())
@@ -191,6 +196,8 @@ class Match(models.Model):
     red_alliance = models.ForeignKey(Alliance, null=True, related_name='red_alliance')
     winner = models.ForeignKey(Alliance, null=True, related_name='winner')
     scoring_model = models.ForeignKey('TBAW.ScoringModel', null=True)
+
+    objects = BulkUpdateManager()
 
     def __str__(self):
         return "{0}".format(self.key)
@@ -307,3 +314,5 @@ class AllianceAppearance(models.Model):
     elo_mu_post = models.FloatField(null=True)
     elo_sigma_pre = models.FloatField(null=True)
     elo_sigma_post = models.FloatField(null=True)
+
+    objects = BulkUpdateManager()

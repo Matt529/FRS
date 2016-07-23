@@ -1,7 +1,10 @@
-from TBAW.models import Team, Event
 from abc import ABCMeta, abstractmethod
+
+from bulk_update.manager import BulkUpdateManager
 from django.db import models
 from polymorphic.models import PolymorphicModel
+
+from TBAW.models import Team, Event
 
 
 class RankingModel(PolymorphicModel):
@@ -14,14 +17,16 @@ class RankingModel(PolymorphicModel):
     tba_dpr = models.FloatField(null=True)
     tba_ccwms = models.FloatField(null=True)
     event = models.ForeignKey(Event, null=True)
-    elo_mu_pre = models.FloatField(null=True)
-    elo_mu_post = models.FloatField(null=True)
-    elo_sigma_pre = models.FloatField(null=True)
-    elo_sigma_post = models.FloatField(null=True)
+    elo_mu_pre = models.FloatField(null=True, default=0)
+    elo_mu_post = models.FloatField(null=True, default=0)
+    elo_sigma_pre = models.FloatField(null=True, default=0)
+    elo_sigma_post = models.FloatField(null=True, default=0)
 
     qual_wins = models.PositiveSmallIntegerField(default=0)
     qual_losses = models.PositiveSmallIntegerField(default=0)
     qual_ties = models.PositiveSmallIntegerField(default=0)
+
+    objects = BulkUpdateManager()
 
     @abstractmethod
     def setup(self, rankings_json):
@@ -76,4 +81,27 @@ class RankingModel2015(RankingModel):
                 self.coopertition_points = int(data_field[5])
                 self.litter_points = int(data_field[6])
                 self.tote_points = int(data_field[7])
+                self.played = int(data_field[8])
+
+
+class RankingModel2014(RankingModel):
+    qual_score = models.PositiveSmallIntegerField(null=True)
+    assist_points = models.PositiveSmallIntegerField(null=True)
+    truss_catch_points = models.PositiveSmallIntegerField(null=True)
+    auton_points = models.PositiveSmallIntegerField(null=True)
+    teleop_points = models.PositiveSmallIntegerField(null=True)
+
+    def setup(self, rankings_json):
+        for data_field in rankings_json[1:]:
+            if int(data_field[1]) == self.team.team_number:
+                self.rank = int(data_field[0])
+                self.qual_score = int(float(data_field[2]))
+                self.assist_points = int(float(data_field[3]))
+                self.auton_points = int(float(data_field[4]))
+                self.truss_catch_points = int(float(data_field[5]))
+                self.teleop_points = int(float(data_field[6]))
+                record = [int(s) for s in data_field[7].split('-') if s.isdigit()]
+                self.qual_wins = record[0]
+                self.qual_losses = record[1]
+                self.qual_ties = record[2]
                 self.played = int(data_field[8])

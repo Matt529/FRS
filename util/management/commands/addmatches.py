@@ -79,7 +79,7 @@ def add_matches_from_event(event_key):
                     red_alliance.teams.add(x)
                     blue_alliance.teams.add(y)
 
-            if event.year in [2015, 2016] and event.event_code != 'cc':
+            if event.year in [2015, 2016]:
                 if event.year == 2016:
                     pt_str = 'Points'
                 elif event.year == 2015:
