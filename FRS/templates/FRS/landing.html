@@ -1,4 +1,8 @@
 {% extends 'FRS/base_template.html' %}
 {% block body %}
-<h1>FRS</h1>
+    <form action="{% url 'search' %}" method="post">
+        {% csrf_token %}
+        <label for="search"></label>
+        <input autofocus required type="search" name="search" id="search" placeholder="Search">
+    </form>
 {% endblock %}
