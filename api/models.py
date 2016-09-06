@@ -1,6 +1,8 @@
 import os
-from FRS.settings import LOG_PATH, FILE_NUM
+
 from django.http import JsonResponse
+
+from FRS.settings import LOG_PATH, FILE_NUM
 
 
 class ApiResponse(JsonResponse):

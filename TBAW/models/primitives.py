@@ -92,6 +92,9 @@ class Team(models.Model):
     def get_max_opr(self) -> float:
         return self.rankingmodel_set.order_by('-tba_opr').first().tba_opr
 
+    def to_dict(self) -> dict:
+        return dict((name, getattr(self, name)) for name in self.__dict__ if not name.startswith('_'))
+
 
 class Alliance(models.Model):
     teams = models.ManyToManyField(Team)
