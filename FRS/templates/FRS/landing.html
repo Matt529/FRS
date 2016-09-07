@@ -1,8 +1,39 @@
 {% extends 'FRS/base_template.html' %}
 {% block body %}
-    <form action="{% url 'search' %}" method="post">
+    <script>
+        function s(e) {
+            var query = $('#search').val();
+
+            if (query.length > 0) {
+                console.log(query);
+                $.ajax({
+                    url: "{% url 'search' %}",
+                    data: {'search': query},
+                    context: document.body,
+                    success: function (r) {
+                        console.log(r);
+                    }
+                });
+            }
+        }
+        $(document).ready(function () {
+            var timeout = null;
+            var delay = 1000; // 1.000 seconds
+            $('#search').keyup(function (e) {
+                if (timeout !== null) {
+                    clearTimeout(timeout);
+                }
+                timeout = setTimeout(function () {
+                    s(e);
+                }, delay);
+            })
+        })
+    </script>
+
+    <form action="{% url 'search' %}" method="get" class="uk-form">
         {% csrf_token %}
         <label for="search"></label>
-        <input autofocus required type="search" name="search" id="search" placeholder="Search">
+        <input autofocus required type="search" name="search" id="search" placeholder="Search"
+               class="uk-form-large">
     </form>
 {% endblock %}
