@@ -5,6 +5,10 @@ static/compiled
 *.sql
 static/global/js/d3/d3*.js
 static/global/js/uikit/*.js
+static/global/js/*.js
+static/global/css/scss/jq*.scss
+static/global/js/typeahead/*.js
+static/global/json/*.json
 
 # Created by https://www.gitignore.io/api/pycharm,python,django,virtualenv
 

@@ -12,8 +12,8 @@ def landing(request):
 
 def search(request):
     query = request.GET['search']
-    team_fields = ('team_number', 'nickname')
-    event_fields = ('short_name', 'year', 'event_code')
+    team_fields = ('nickname',)
+    event_fields = ('event_code',)
 
     teams = Team.objects.filter(Q(nickname__icontains=query) | Q(key__icontains=query))
     events = Event.objects.filter(Q(key__icontains=query) | Q(name__icontains=query) | Q(short_name__icontains=query))

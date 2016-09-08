@@ -1,4 +1,6 @@
 {% extends 'FRS/base_template.html' %}
+{% load staticfiles %}
+{% load static from staticfiles %}
 {% block body %}
     <script>
         function s(e) {
@@ -36,4 +38,70 @@
         <input autofocus required type="search" name="search" id="search" placeholder="Search"
                class="uk-form-large">
     </form>
+
+    <div id="tpa">
+        <input class="typeahead" type="text" placeholder="Search">
+    </div>
+    <style>
+    </style>
+    <script>
+        var teams = new Bloodhound({
+            datumTokenizer: Bloodhound.tokenizers.whitespace,
+            queryTokenizer: Bloodhound.tokenizers.whitespace,
+            prefetch: "{% static 'global/json/teams.json' %}"
+        });
+
+        var events = new Bloodhound({
+            datumTokenizer: Bloodhound.tokenizers.obj.whitespace('event'),
+            queryTokenizer: Bloodhound.tokenizers.whitespace,
+            prefetch: "{% static 'global/json/events_2016.json' %}"
+        });
+
+        $('#tpa .typeahead').typeahead(
+                null,
+                {
+                    name: 'teams',
+                    display: 'team',
+                    source: teams,
+                    templates: {
+                        header: '<h3 class="type-name">Teams</h3>'
+                    }
+                },
+                {
+                    name: 'events',
+                    display: 'event',
+                    source: events,
+                    templates: {
+                        header: '<h3 class="type-name">Events</h3>'
+                    }
+                });
+    </script>
+
+
+    <script>
+        {#        $.typeahead({#}
+        {#            input: ".search-js",#}
+        {#            order: "asc",#}
+        {#            source: {#}
+        {#                team: {#}
+        {#                    data: ["hello there"],#}
+        {#                    ajax: {#}
+        {#                        type: "GET",#}
+        {#                        url: "{% url 'search' %}",#}
+        {#                        data: {'search': $('#search').val()}#}
+        {#                    }#}
+        {#                }#}
+        {#            },#}
+        {#            hint: true,#}
+        {#            cache: true,#}
+        {#            callback: {#}
+        {#                onSendRequest: function(node, query) {#}
+        {#                    console.log('sent request');#}
+        {#                },#}
+        {#                onReceiveRequest: function(node, query) {#}
+        {#                    console.log('received request');#}
+        {#                }#}
+        {#            }#}
+        {#        });#}
+    </script>
 {% endblock %}

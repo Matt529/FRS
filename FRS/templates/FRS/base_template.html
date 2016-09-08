@@ -21,9 +21,11 @@
             <link rel="stylesheet" href="{% static 'global/css/scss/main.css' %}">
         {% endblock %}
         {% block scripts %}
-            <script src="{% static 'global/js/d3/d3.min.js' %}"></script>
             <script src="https://code.jquery.com/jquery-3.1.0.min.js"
                     integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
+            <script src="{% static 'global/js/d3/d3.min.js' %}"></script>
+            <script src="{% static 'global/js/uikit/uikit.min.js' %}"></script>
+            <script src="{% static 'global/js/typeahead/typeahead.bundle.min.js' %}"></script>
         {% endblock %}
     </head>
 {% endblock %}
