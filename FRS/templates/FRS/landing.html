@@ -9,7 +9,7 @@
             if (query.length > 0) {
                 console.log(query);
                 $.ajax({
-                    url: "{% url 'search' %}",
+                    url: "{% url 'search_api' %}",
                     data: {'search': query},
                     context: document.body,
                     success: function (r) {
