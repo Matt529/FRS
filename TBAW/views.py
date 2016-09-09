@@ -2,33 +2,40 @@ from datetime import date
 
 from django.shortcuts import render
 
-from TBAW.models import Event, Team, RankingModel
+from FRS.views import handle_404
+from TBAW.models import Event, RankingModel, Team
 from util.check import alliance_exists, team_exists
 from util.getters import get_team, get_event, get_alliance
 
 
 def team_view(request, team_number):
-    team = get_team(team_number)
-    events = Event.objects.filter(year=date.today().year, teams__team_number=team.team_number).order_by('end_date')
-    awards_count = team.get_awards().count()
+    if Team.objects.filter(team_number=team_number).exists():
+        team = get_team(team_number)
+        events = Event.objects.filter(year=date.today().year, teams__team_number=team.team_number).order_by('end_date')
+        awards_count = team.get_awards().count()
 
-    return render(request, 'TBAW/team_view.html',
-                  context={
-                      'team': team,
-                      'events': events,
-                      'awards_count': awards_count,
-                  })
+        return render(request, 'TBAW/team_view.html',
+                      context={
+                          'team': team,
+                          'events': events,
+                          'awards_count': awards_count,
+                      })
+    else:
+        return handle_404(request)
 
 
 def event_view(request, event_key):
-    event = get_event(event_key)
-    ranking_models = RankingModel.objects.filter(event=event)
+    if Event.objects.filter(key=event_key).exists():
+        event = get_event(event_key)
+        ranking_models = RankingModel.objects.filter(event=event)
 
-    return render(request, 'TBAW/event_view.html',
-                  context={
-                      'event': event,
-                      'ranking_models': ranking_models,
-                  })
+        return render(request, 'TBAW/event_view.html',
+                      context={
+                          'event': event,
+                          'ranking_models': ranking_models,
+                      })
+    else:
+        return handle_404(request)
 
 
 def alliance_view(request, team1: str, team2: str, team3: str):
@@ -56,9 +63,9 @@ def alliance_view_alliance_obj(request, alliance_obj):
 
 def alliance_exists_view(request, alliance):
     events = Event.objects.filter(allianceappearance__alliance=alliance).order_by('-end_date')
-    wins = alliance.get_wins()
-    losses = alliance.get_losses()
-    ties = alliance.get_ties()
+    # wins = alliance.get_wins()
+    # losses = alliance.get_losses()
+    # ties = alliance.get_ties()
 
     return render(request, 'TBAW/alliance_exists.html', context={
         'alliance': alliance,

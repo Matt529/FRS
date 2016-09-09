@@ -1,10 +1,17 @@
 from django.core.serializers import serialize
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, render_to_response
+from django.template import RequestContext
 
 from TBAW.models import Team, Event
 from util.getters import reverse_model_url
+
+
+def handle_404(request):
+    response = render_to_response('FRS/404.html', context_instance=RequestContext(request))
+    response.status_code = 404
+    return response
 
 
 def landing(request):
