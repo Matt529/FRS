@@ -1,9 +1,5 @@
-from json import dumps
-from typing import Dict
-
 from django.db.models.query import QuerySet
 
-from FRS.settings import STATICFILES_DIRS
 from TBAW.models import Team, Event
 
 
@@ -23,34 +19,25 @@ def non_championship_teams(year: int) -> QuerySet:
         event__year=year).distinct()
 
 
-def win_streaks() -> Dict[str, Dict[str, int]]:
-    longest_streaks = {}
-    active_streaks = {}
-    active = True
+def event_win_streaks() -> None:
     teams = Team.objects.all()
     for team in teams:
-        key = team.team_number
         streak = 0
         active_streak = 0
-        longest_streaks[key] = 0
         excluded_events = ['iri', 'cmp', 'new', 'cur', 'arc', 'gal', 'cars', 'tes', 'carv', 'hop']
-        for event in Event.objects.exclude(event_code__in=excluded_events).filter(teams=team).order_by('-end_date'):
+        for event in Event.objects.exclude(event_code__in=excluded_events).filter(teams=team).order_by('end_date'):
             if team in event.winning_alliance.teams.all():
                 streak += 1
-                if active:
-                    active_streak += 1
+                active_streak += 1
             else:
-                if streak > longest_streaks[key]:
-                    longest_streaks[key] = streak
+                if streak > team.longest_event_winstreak:
+                    team.longest_event_winstreak = streak
                 streak = 0
-                active = False
+                active_streak = 0
 
-        if streak > longest_streaks[key]:
-            longest_streaks[key] = streak
+        if streak > team.longest_event_winstreak:
+            team.longest_event_winstreak = streak
 
-        active_streaks[key] = active_streak
+        team.active_event_winstreak = active_streak
 
-    with open(STATICFILES_DIRS[0] + '\\global\\json\\streaks.json', 'w+') as f:
-        f.write(dumps({'longest': longest_streaks, 'active': active_streaks}))
-
-    return longest_streaks
+    Team.objects.bulk_update(teams, update_fields=['longest_event_winstreak', 'active_event_winstreak'])

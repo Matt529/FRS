@@ -27,6 +27,11 @@ class Team(models.Model):
 
     objects = BulkUpdateManager()
 
+    # Stats that are too expensive to compute on the fly
+    # see util.management.commands.update
+    active_event_winstreak = models.PositiveSmallIntegerField(default=0)
+    longest_event_winstreak = models.PositiveSmallIntegerField(default=0)
+
     def __str__(self):
         return "{0} ({1})".format(self.nickname, self.team_number)
 

@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from util.generators import win_streaks
+from util.generators import event_win_streaks
 
 
 class Command(BaseCommand):
@@ -8,5 +8,4 @@ class Command(BaseCommand):
         pass
 
     def handle(self, *args, **options):
-        streak = win_streaks()
-
+        event_win_streaks()

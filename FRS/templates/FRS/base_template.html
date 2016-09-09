@@ -1,48 +1,51 @@
-<!DOCTYPE html>
-<html lang="en">
-{% load staticfiles %}
-{% load static from staticfiles %}
-{% block head %}
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="x-ua-compatible" content="ie=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+{% spaceless %}
+    <!DOCTYPE html>
+    <html lang="en">
+    {% load staticfiles %}
+    {% load static from staticfiles %}
+    {% block head %}
+        <head>
+            <meta charset="UTF-8">
+            <meta http-equiv="x-ua-compatible" content="ie=edge">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        {# Android Chrome theme color #}
-        <meta name="theme-color" content="#205081">
-        {# Windows Phone theme color #}
-        <meta name="msapplication-navbutton-color" content="#205081">
-        {# iOS Safari theme color #}
-        <meta name="apple-mobile-web-app-status-bar-style" content="#205081">
+            {# Android Chrome theme color #}
+            <meta name="theme-color" content="#205081">
+            {# Windows Phone theme color #}
+            <meta name="msapplication-navbutton-color" content="#205081">
+            {# iOS Safari theme color #}
+            <meta name="apple-mobile-web-app-status-bar-style" content="#205081">
 
-        <title>{% block title %}FRS{% endblock %}</title>
+            <title>{% block title %}FRS{% endblock %}</title>
 
-        {% block css %}
-            <link rel="stylesheet" href="{% static 'global/css/scss/main.css' %}">
-        {% endblock %}
-        {% block scripts %}
-            <script src="https://code.jquery.com/jquery-3.1.0.min.js"
-                    integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s=" crossorigin="anonymous"></script>
-            <script src="{% static 'global/js/d3/d3.min.js' %}"></script>
-            <script src="{% static 'global/js/uikit/uikit.min.js' %}"></script>
-            <script src="{% static 'global/js/typeahead/typeahead.bundle.min.js' %}"></script>
-        {% endblock %}
-    </head>
-{% endblock %}
-<body>
-{% block navbar %}
-    <nav class="uk-navbar uk-navbar-attached">
-        <div class="wrapper-nav">
-            <a href="{% url 'landing' %}" class="uk-navbar-brand">FRS</a>
-            <ul class="uk-navbar-nav">
-                <li><a href="{% url 'leaderboard' %}">Leaderboard</a></li>
-            </ul>
-        </div>
-    </nav>
-{% endblock %}
-<div class="wrapper">
-    {% block body %}
+            {% block css %}
+                <link rel="stylesheet" href="{% static 'global/css/scss/main.css' %}">
+            {% endblock %}
+            {% block scripts %}
+                <script src="https://code.jquery.com/jquery-3.1.0.min.js"
+                        integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="
+                        crossorigin="anonymous"></script>
+                <script src="{% static 'global/js/d3/d3.min.js' %}"></script>
+                <script src="{% static 'global/js/uikit/uikit.min.js' %}"></script>
+                <script src="{% static 'global/js/typeahead/typeahead.bundle.min.js' %}"></script>
+            {% endblock %}
+        </head>
     {% endblock %}
-</div>
-</body>
-</html>
+    <body>
+    {% block navbar %}
+        <nav class="uk-navbar uk-navbar-attached">
+            <div class="wrapper-nav">
+                <a href="{% url 'landing' %}" class="uk-navbar-brand">FRS</a>
+                <ul class="uk-navbar-nav">
+                    <li><a href="{% url 'leaderboard' %}">Leaderboard</a></li>
+                </ul>
+            </div>
+        </nav>
+    {% endblock %}
+    <div class="wrapper">
+        {% block body %}
+        {% endblock %}
+    </div>
+    </body>
+    </html>
+{% endspaceless %}
