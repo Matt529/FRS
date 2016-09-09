@@ -11,6 +11,8 @@ def leaderboard(request):
     team_highest_elo = TeamLeaderboard.highest_elo(1).first()
     team_most_award_wins = TeamLeaderboard.most_award_wins(1).first()
     team_most_blue_banner_wins = TeamLeaderboard.most_blue_banners(1).first()
+    team_longest_recorded_streak = TeamLeaderboard.longest_recorded_event_winstreak(1).first()
+    team_longest_active_streak = TeamLeaderboard.longest_active_event_winstreak(1).first()
 
     team_top = [
         make_team_tr('All-time Match Wins', reverse('team_matches'), team_most_match_wins,
@@ -24,7 +26,11 @@ def leaderboard(request):
         make_team_tr('All-time Award Wins', reverse('team_awards'), team_most_award_wins,
                      team_most_award_wins.award_wins),
         make_team_tr('All-time Blue Banners', reverse('team_blue_banners'), team_most_blue_banner_wins,
-                     team_most_blue_banner_wins.blue_banners_won)
+                     team_most_blue_banner_wins.blue_banners_won),
+        make_team_tr('Longest Recorded Event Winstreak', reverse('team_longest_winstreak'),
+                     team_longest_recorded_streak, team_longest_recorded_streak.longest_event_winstreak),
+        make_team_tr('Longest Active Event Winstreak', reverse('team_active_winstreak'),
+                     team_longest_active_streak, team_longest_active_streak.active_event_winstreak),
     ]
 
     alliance_most_match_wins_3 = AllianceLeaderboard.most_match_wins_3(1).first()

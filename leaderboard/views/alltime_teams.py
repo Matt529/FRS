@@ -1,4 +1,5 @@
 from django.shortcuts import render
+
 from leaderboard.models import TeamLeaderboard
 
 DEFAULT_SHOW = 200
@@ -37,4 +38,16 @@ def team_award_wins(request):
 def team_blue_banners(request):
     return render(request, 'leaderboard/alltime/team/blue_banners.html', context={
         'team_blue_banners': TeamLeaderboard.most_blue_banners(DEFAULT_SHOW)
+    })
+
+
+def team_longest_recorded_winstreak(request):
+    return render(request, 'leaderboard/alltime/team/longest_recorded_winstreak.html', context={
+        'teams': TeamLeaderboard.longest_recorded_event_winstreak(DEFAULT_SHOW)
+    })
+
+
+def team_longest_active_winstreak(request):
+    return render(request, 'leaderboard/alltime/team/longest_active_winstreak.html', context={
+        'teams': TeamLeaderboard.longest_active_event_winstreak(DEFAULT_SHOW)
     })

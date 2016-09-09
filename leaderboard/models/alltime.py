@@ -195,3 +195,29 @@ class TeamLeaderboard:
                 )
             )
         ).order_by('-blue_banners_won')[:n]
+
+    @staticmethod
+    def longest_recorded_event_winstreak(n=None) -> QuerySet:
+        """
+
+        Args:
+            n: An optional argument that cuts the return to n elements.
+
+        Returns:
+            A Team QuerySet based on longest event winstreak recorded.
+
+        """
+        return Team.objects.order_by('-longest_event_winstreak')[:n]
+
+    @staticmethod
+    def longest_active_event_winstreak(n=None) -> QuerySet:
+        """
+
+        Args:
+            n: An optional argument that cuts the return to n elements.
+
+        Returns:
+            A Team QuerySet based on longest active winstreak.
+
+        """
+        return Team.objects.order_by('-active_event_winstreak')[:n]

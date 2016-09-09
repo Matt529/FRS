@@ -1,4 +1,5 @@
 from django.conf.urls import url
+
 from leaderboard import views
 
 teams = [
@@ -8,6 +9,8 @@ teams = [
     url(r'^leaderboard/teams/winrate/$', views.team_win_rate, name='team_winrate'),
     url(r'^leaderboard/teams/awards/$', views.team_award_wins, name='team_awards'),
     url(r'^leaderboard/teams/banners/$', views.team_blue_banners, name='team_blue_banners'),
+    url(r'^leaderboard/teams/winstreak/$', views.team_longest_recorded_winstreak, name='team_longest_winstreak'),
+    url(r'^leaderboard/teams/winstreak/active/$', views.team_longest_active_winstreak, name='team_active_winstreak'),
 ]
 
 alliances = [
