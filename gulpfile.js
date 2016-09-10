@@ -48,7 +48,10 @@ function cleanTypescript() {
 
 function buildSass() {
     return gulp.src(SASS_SRC)
-        .pipe(scsslint())
+        .pipe(scsslint({
+            'config': '.scss-lint.yml',
+            'verbose': true
+        }))
         .pipe(sourcemaps.init())
         .pipe(sass().on('error', sass.logError))
         .pipe(sourcemaps.write())
@@ -85,6 +88,8 @@ var rebuildFn = gulp.series(cleanFn, buildFn);
 
 
 // Task Definitions
+gulp.task('buildSass', buildSass);
+
 gulp.task('clean', cleanFn);
 gulp.task('build', buildFn);
 gulp.task('rebuild', rebuildFn);

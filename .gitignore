@@ -1,5 +1,5 @@
 secret_key.py
-bower_components/
+*/bower_components/
 static/compiled
 *.sqlite3
 *.sql

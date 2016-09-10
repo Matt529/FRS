@@ -22,25 +22,38 @@ body {
 .uk-navbar {
   background-color: $secondary-color;
 
-  a, h1, h2, h3, h4, h5, h6 {
-    color: white;
+  a
+  h1
+  h2
+  h3
+  h4
+  h5
+  h6 {
+    color: #fff;
   }
 
   .uk-navbar-nav {
-    a, h1, h2, h3, h4, h5, h6 {
-      color: white;
+    a
+    h1
+    h2
+    h3
+    h4
+    h5
+    h6 {
+      color: #fff;
     }
   }
 
   .uk-navbar-brand:hover {
-    background-color: #F5F5F5;
+    background-color: #f5f5f5;
     color: $secondary-color;
     outline: none;
   }
 }
 
 .uk-table {
-  td, th {
+  td
+  th {
     border-bottom: 1px solid #e5e5e5;
   }
 }
