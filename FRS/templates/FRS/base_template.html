@@ -30,6 +30,7 @@
                         crossorigin="anonymous"></script>
                 <script src="{% static 'bower_components/uikit/js/uikit.min.js' %}"></script>
                 <script src="{% static 'bower_components/typeahead.js/dist/typeahead.bundle.min.js' %}"></script>
+                <script src="{% static 'bower_components/tablesorter/jquery.tablesorter.min.js' %}"></script>
             {% endblock %}
         </head>
     {% endblock %}
@@ -48,6 +49,14 @@
         {% block body %}
         {% endblock %}
     </div>
+    <script>
+        $(document).ready(function () {
+            var tables = document.getElementsByTagName('table');
+            for (var i = 0, len = tables.length; i < len; i++) {
+                $(tables[i]).tablesorter();
+            }
+        });
+    </script>
     </body>
     </html>
 {% endspaceless %}
