@@ -24,7 +24,8 @@
     "lodash": "^4.12.0",
     "uikit": "^2.26.3",
     "typeahead.js": "^0.11.1",
-    "tablesorter": "*"
+    "tablesorter": "*",
+    "semantic": "semantic-ui#^2.2.4"
   },
   "resolutions": {
     "jquery": "^2.2.3"

@@ -20,6 +20,8 @@
 
             {% block css %}
                 <link rel="stylesheet" href="{% static 'compiled/global/css/scss/main.css' %}">
+                {#<link rel="stylesheet" type="text/css"#}
+                {#href="{% static 'bower_components/semantic/dist/semantic.min.css' %}">#}
             {% endblock %}
             {% block scripts %}
                 <script src="https://code.jquery.com/jquery-3.1.0.min.js"
@@ -31,6 +33,7 @@
                 <script src="{% static 'bower_components/uikit/js/uikit.min.js' %}"></script>
                 <script src="{% static 'bower_components/typeahead.js/dist/typeahead.bundle.min.js' %}"></script>
                 <script src="{% static 'bower_components/tablesorter/jquery.tablesorter.min.js' %}"></script>
+                {#<script src="{% static 'bower_components/semantic/dist/semantic.min.js' %}"></script>#}
             {% endblock %}
         </head>
     {% endblock %}
@@ -51,9 +54,15 @@
     </div>
     <script>
         $(document).ready(function () {
+            function hasClass(element, cls) {
+                return (' ' + element.className + ' ').indexOf(' ' + cls + ' ') > -1;
+            }
+
             var tables = document.getElementsByTagName('table');
             for (var i = 0, len = tables.length; i < len; i++) {
-                $(tables[i]).tablesorter();
+                if (!hasClass(tables[i], 'no-sort')) {
+                    $(tables[i]).tablesorter();
+                }
             }
         });
     </script>

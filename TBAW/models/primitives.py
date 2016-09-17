@@ -111,9 +111,6 @@ class Alliance(models.Model):
     def __str__(self):
         return "{0}".format(self.teams.all())
 
-    def to_html(self) -> str:
-        return "{0}\n{1}\n{2}".format(self.teams.first(), self.teams.all()[1], self.teams.all()[2])
-
     def get_elo_standing(self) -> int:
         return Alliance.objects.filter(elo_mu__gte=self.elo_mu).count()
 

@@ -26,6 +26,10 @@ class RankingModel(PolymorphicModel):
     qual_losses = models.PositiveSmallIntegerField(default=0)
     qual_ties = models.PositiveSmallIntegerField(default=0)
 
+    total_wins = models.PositiveSmallIntegerField(default=0)
+    total_losses = models.PositiveSmallIntegerField(default=0)
+    total_ties = models.PositiveSmallIntegerField(default=0)
+
     objects = BulkUpdateManager()
 
     @abstractmethod

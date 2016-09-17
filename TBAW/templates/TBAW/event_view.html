@@ -21,6 +21,7 @@
         <thead>
         <tr>
             <th>Team</th>
+            <th>Team Number</th>
             <th>Event Record</th>
             <th>Pre-Event Elo</th>
             <th>Post-Event Elo</th>
@@ -30,7 +31,8 @@
         {% for team in event.teams.all %}
             {% with ranking_models|get_team_rm:team as rm %}
                 <tr>
-                    <td><a href="{% url 'team_view' team.team_number %}">{{ team }}</a></td>
+                    <td><a href="{% url 'team_view' team.team_number %}">{{ team.nickname }}</a></td>
+                    <td>{{ team.team_number }}</td>
                     <td>{{ rm.get_record }}</td>
                     <td>{{ rm.elo_mu_pre|format_elo|floatformat:2 }}</td>
                     <td>{{ rm.elo_mu_post|format_elo|floatformat:2 }}</td>
@@ -61,11 +63,26 @@
                     {% endif %}
                     Match {{ match.match_number }}
                 </td>
-                <td style="background-color: #ff9999;">{{ match.red_alliance.to_html|linebreaks }}</td>
-                <td style="background-color: #1976D2;">{{ match.blue_alliance.to_html|linebreaks }}</td>
 
-                <td style="background-color: #ff9999;">{{ match.scoring_model.red_total_score }}</td>
-                <td style="background-color: #1976D2;">{{ match.scoring_model.blue_total_score }}</td>
+                <td class="red-alliance">
+                    {% with match.red_alliance.teams.all as red %}
+                        <a href="{% url 'alliance_view' red.0.team_number red.1.team_number red.2.team_number %}">
+                            {{ red.0 }}<br>
+                            {{ red.1 }}<br>
+                            {{ red.2 }}
+                        </a>
+                    {% endwith %}
+                </td>
+                <td class="blue-alliance">
+                    {% with match.blue_alliance.teams.all as blue %}
+                        <a href="{% url 'alliance_view' blue.0.team_number blue.1.team_number blue.2.team_number %}">
+                            {{ blue.0 }}<br>
+                            {{ blue.1 }}<br>
+                            {{ blue.2 }}
+                        </a>
+                    {% endwith %}</td>
+                <td class="red-alliance">{{ match.scoring_model.red_total_score }}</td>
+                <td class="blue-alliance">{{ match.scoring_model.blue_total_score }}</td>
             </tr>
         {% endfor %}
         </tbody>
