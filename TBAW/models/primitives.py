@@ -76,7 +76,7 @@ class Team(models.Model):
         ).annotate(
             win_rate=models.ExpressionWrapper(models.F('num_wins') / models.F('num_played'),
                                               output_field=models.FloatField())
-        )[0].win_rate
+        ).first().win_rate
 
     def get_elo_standing(self) -> int:
         return Team.objects.filter(elo_mu__gte=self.elo_mu).count()
