@@ -1,14 +1,8 @@
 secret_key.py
 */bower_components/
-static/compiled
 *.sqlite3
 *.sql
-static/global/js/d3/d3*.js
-static/global/js/uikit/*.js
-static/global/js/*.js
-static/global/css/scss/jq*.scss
-static/global/js/typeahead/*.js
-static/global/json/*.json
+*.json
 
 # Created by https://www.gitignore.io/api/pycharm,python,django,virtualenv
 
