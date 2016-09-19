@@ -1,8 +1,10 @@
 from time import clock
 
-from TBAW.requester import get_event_statistics_json, get_event_rankings_json, get_teams_at_event
-from TBAW.models import Event, RankingModel
 from django.core.management.base import BaseCommand
+
+from FRS.settings import SUPPORTED_YEARS
+from TBAW.models import Event, RankingModel
+from TBAW.requester import get_event_statistics_json, get_event_rankings_json, get_teams_at_event
 from util.getters import get_event, get_instance_ranking_model
 
 events_added = 0
@@ -27,7 +29,7 @@ def add_event(key: str) -> None:
 
     for team in teams:
         if RankingModel.objects.filter(event=event, team=team).exists():
-            print("Skipping team {0} (already exists)".format(team))
+            # print("Skipping team {0} (already exists)".format(team))
             teams_skipped += 1
             continue
 
@@ -45,10 +47,7 @@ def add_event(key: str) -> None:
             new_model.tba_dpr = dpr
             new_model.tba_ccwms = ccwms
         except KeyError:
-            try:
-                print("Skipping team {0} (can't find OPR/DPR/CCWMS)".format(team))
-            except UnicodeEncodeError:
-                pass
+            # print("Skipping team {0} (can't find OPR/DPR/CCWMS)".format(team))
             teams_skipped += 1
 
         new_model.setup(rankings)
@@ -74,7 +73,11 @@ class Command(BaseCommand):
         if key is not '':
             add_event(key)
         else:
-            add_all(year)
+            if year == 0:
+                for yr in SUPPORTED_YEARS:
+                    add_all(yr)
+            else:
+                add_all(year)
         time_end = clock()
         print("-------------")
         print("Events added:\t\t{0}".format(events_added))

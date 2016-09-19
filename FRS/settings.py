@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
 import os
+
 from django.utils.crypto import get_random_string
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -53,6 +54,7 @@ INSTALLED_APPS = [
     'leaderboard',
     'polymorphic',
     'django_spaghetti',
+    'tastypie',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -144,7 +146,8 @@ DEFAULT_MU = 25
 DEFAULT_SIGMA = DEFAULT_MU / 3
 CENTER_RATING = 1500
 SCALE = CENTER_RATING / DEFAULT_MU
-SOFT_RESET_SCALE = 0.85
+SOFT_RESET_SCALE = 0.75
+SUPPORTED_YEARS = list(range(2015, 2017))
 
 # For model visualization at /plate/
 SPAGHETTI_SAUCE = {

@@ -1,16 +1,25 @@
-import os
+from django.conf.urls import url
+from tastypie.resources import ModelResource
 
-from django.http import JsonResponse
-
-from FRS.settings import LOG_PATH, FILE_NUM
+from TBAW.models import Team, Event
 
 
-class ApiResponse(JsonResponse):
-    def __init__(self, *args, **kwargs):
-        super(ApiResponse, self).__init__(args, kwargs)
-        if not os.path.exists(LOG_PATH):
-            os.makedirs(LOG_PATH)
+class TeamResource(ModelResource):
+    class Meta:
+        queryset = Team.objects.all()
+        resource_name = 'team'
+        excludes = ['id', 'longest_event_winstreak', 'active_event_winstreak']
+        allowed_methods = ['get']
 
-        with open(LOG_PATH + 'log_{0}.csv'.format(FILE_NUM), mode='a+', encoding='utf-8') as log_file:
-            log_file.write('{0},'.format(i) for i in args)
-            log_file.write('\n')
+    def prepend_urls(self):
+        return [
+            url(r"^(?P<resource_name>%s)/(?P<team_number>[0-9]+)/$" % self._meta.resource_name,
+                self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),
+        ]
+
+
+class EventResource(ModelResource):
+    class Meta:
+        queryset = Event.objects.all()
+        resource_name = 'event'
+        excludes = ['id']

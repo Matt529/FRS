@@ -1,8 +1,9 @@
 from time import clock
 
+from django.core.management.base import BaseCommand
+
 from TBAW.models import Team
 from TBAW.requester import get_list_of_teams_json, get_team_json, get_team_years_participated
-from django.core.management.base import BaseCommand
 from util.check import team_exists
 from util.getters import get_previous_team
 
@@ -58,7 +59,7 @@ def add_team(team_number: int, team_data=None) -> None:
         # print("Updated team {0}".format(team_number))
     # But if it doesn't exist, then create a new db entry
     else:
-        team = Team.objects.create(website=website, name=name, locality=locality, region=region,
+        team = Team.objects.create(id=team_number, website=website, name=name, locality=locality, region=region,
                                    country_name=country_name, location=location, key=key, nickname=nickname,
                                    rookie_year=rookie_year, motto=motto, team_number=team_number)
         team.save()

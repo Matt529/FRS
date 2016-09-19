@@ -1,9 +1,11 @@
 from datetime import date, timedelta
 from time import clock
 
+from django.core.management.base import BaseCommand
+
+from FRS.settings import SUPPORTED_YEARS
 from TBAW.models import Event
 from TBAW.requester import get_event_json, get_list_of_events_json
-from django.core.management.base import BaseCommand
 from util.check import event_exists
 from util.getters import get_team
 
@@ -74,7 +76,7 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('--key', dest='key', default='', type=str)
-        parser.add_argument('--year', dest='year', default=2016, type=int)
+        parser.add_argument('--year', dest='year', default=0, type=int)
 
     def handle(self, *args, **options):
         key = options['key']
@@ -83,7 +85,11 @@ class Command(BaseCommand):
         if key is not '':
             add_event(key)
         else:
-            add_list(year)
+            if year == 0:
+                for yr in SUPPORTED_YEARS:
+                    add_list(yr)
+            else:
+                add_list(year)
         time_end = clock()
         print("-------------")
         print("Events created:\t\t{0}".format(events_created))

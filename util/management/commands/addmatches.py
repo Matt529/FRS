@@ -2,6 +2,7 @@ from time import clock
 
 from django.core.management.base import BaseCommand
 
+from FRS.settings import SUPPORTED_YEARS
 from TBAW.models import Match, Alliance, Event, AllianceAppearance, RankingModel2015, ScoringModel
 from TBAW.requester import get_list_of_matches_json, get_event_json
 from util.check import match_exists, alliance_exists, alliance_appearance_exists
@@ -120,7 +121,7 @@ def add_matches_from_event(event_key: str) -> None:
             match_obj = Match.objects.create(key=match['key'], comp_level=match['comp_level'],
                                              set_number=match['set_number'], match_number=match['match_number'],
                                              event=event, winner=winner,
-                                             scoring_model=parse_score_breakdown(match['key'][:4],
+                                             scoring_model=parse_score_breakdown(int(match['key'][:4]),
                                                                                  match['score_breakdown']),
                                              blue_alliance=blue_alliance, red_alliance=red_alliance)
             match_obj.alliances.add(red_alliance)
@@ -163,7 +164,7 @@ def add_matches_from_event(event_key: str) -> None:
 
                     for team in winner.teams.all():
                         rm = RankingModel2015.objects.get(team=team, event=event)
-                        rm.qual_wins += 1
+                        rm.qual_losses += 1
                         rm.save()
                     for team in loser.teams.all():
                         rm = RankingModel2015.objects.get(team=team, event=event)
@@ -201,7 +202,7 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('--event', dest='event', default='', type=str)
-        parser.add_argument('--year', dest='year', default=2016, type=int)
+        parser.add_argument('--year', dest='year', default=0, type=int)
 
     def handle(self, *args, **options):
         event = options['event']
@@ -210,7 +211,11 @@ class Command(BaseCommand):
         if event is not '':
             add_matches_from_event(event)
         else:
-            add_all_matches(year)
+            if year == 0:
+                for yr in SUPPORTED_YEARS:
+                    add_all_matches(yr)
+            else:
+                add_all_matches(year)
         handle_event_winners()
         time_end = clock()
         print("-------------")
