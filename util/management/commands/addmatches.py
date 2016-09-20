@@ -85,10 +85,16 @@ def add_matches_from_event(event_key: str) -> None:
                 red_score_breakdown = match['score_breakdown']['red']
                 blue_score_breakdown = match['score_breakdown']['blue']
 
-                red_total_points = red_score_breakdown['total{0}'.format(pt_str)]
-                blue_total_points = blue_score_breakdown['total{0}'.format(pt_str)]
-                red_foul_points = red_score_breakdown['foul{0}'.format(pt_str)]
-                blue_foul_points = blue_score_breakdown['foul{0}'.format(pt_str)]
+                try:
+                    red_total_points = red_score_breakdown['total{0}'.format(pt_str)]
+                    blue_total_points = blue_score_breakdown['total{0}'.format(pt_str)]
+                    red_foul_points = red_score_breakdown['foul{0}'.format(pt_str)]
+                    blue_foul_points = blue_score_breakdown['foul{0}'.format(pt_str)]
+                except KeyError:
+                    red_total_points = match['alliances']['red']['score']
+                    blue_total_points = match['alliances']['blue']['score']
+                    red_foul_points = 0
+                    blue_foul_points = 0
             else:
                 red_total_points = match['alliances']['red']['score']
                 blue_total_points = match['alliances']['blue']['score']
@@ -102,6 +108,8 @@ def add_matches_from_event(event_key: str) -> None:
                     'capture{0}'.format(pt_str)]
                 blue_breach_capture_points = blue_score_breakdown['breach{0}'.format(pt_str)] + blue_score_breakdown[
                     'capture{0}'.format(pt_str)]
+                red_auto_points = red_score_breakdown['auto{0}'.format(pt_str)]
+                blue_auto_points = blue_score_breakdown['auto{0}'.format(pt_str)]
 
                 if red_total_points + red_foul_points > blue_total_points + blue_foul_points:
                     winner = red_alliance
@@ -110,6 +118,10 @@ def add_matches_from_event(event_key: str) -> None:
                 elif red_breach_capture_points > blue_breach_capture_points:
                     winner = red_alliance
                 elif blue_breach_capture_points > red_breach_capture_points:
+                    winner = blue_alliance
+                elif red_auto_points > blue_auto_points:
+                    winner = red_alliance
+                elif blue_auto_points > red_auto_points:
                     winner = blue_alliance
                 else:
                     winner = None
@@ -180,7 +192,10 @@ def add_matches_from_event(event_key: str) -> None:
 
 def parse_score_breakdown(year: int, score_breakdown: dict) -> ScoringModel:
     model = get_instance_scoring_model(year).objects.create()
-    model.setup(score_breakdown)
+    try:
+        model.setup(score_breakdown)
+    except KeyError:
+        pass  # fail silently for now
     model.save()
     return model
 
