@@ -9,12 +9,11 @@
         Part of the {{ event.get_event_district_display }} District<br>
     {% endif %}
     <strong>{{ event.get_event_type_display }}</strong><br>
-    {{ event.location }}<br>
+    <a href="https://www.google.com/maps/place/{{ event.location }}/">{{ event.location }}</a><br>
     {{ event.end_date }}<br>
     {% if event.website != None %}
         <a href="{{ event.website }}">{{ event.website }}</a>
     {% endif %}
-
 
     <table class="uk-table uk-table-condensed uk-table-hover">
         <caption>Teams in Attendance</caption>

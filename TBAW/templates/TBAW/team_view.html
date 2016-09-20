@@ -11,7 +11,9 @@
         </div>
         <div class="uk-width-1-2"><h4 class="uk-text-right">Rookie year: {{ team.rookie_year }}</h4></div>
         <div class="uk-width-1-2"><h4>All-time Record: {{ team.get_record }}</h4></div>
-        <div class="uk-width-1-2"><h4 class="uk-text-right">{{ team.location }}</h4></div>
+        <div class="uk-width-1-2"><h4 class="uk-text-right">
+            <a href="https://www.google.com/maps/place/{{ team.location }}/">{{ team.location }}</a>
+        </h4></div>
     </div>
 
     <p>

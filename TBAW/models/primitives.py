@@ -305,6 +305,9 @@ class Award(models.Model):
     recipients = models.ManyToManyField(Team)
     year = models.PositiveSmallIntegerField()
 
+    def __str__(self):
+        return "{0} - {1} ({2})".format(self.recipients, self.name, self.event)
+
 
 class Robot(models.Model):
     key = models.CharField(max_length=13, null=True)  # e.g. frc2791_2016
