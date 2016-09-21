@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'TBAW',
     'util',
     'leaderboard',
+    'leaderboard2',
     'polymorphic',
     'django_spaghetti',
     'tastypie',
@@ -141,13 +142,16 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 
+# General settings
+SUPPORTED_YEARS = list(range(2015, 2017))
+LEADERBOARD_COUNT = 200
+
 # For Elo/Trueskill system
 DEFAULT_MU = 25
 DEFAULT_SIGMA = DEFAULT_MU / 3
 CENTER_RATING = 1500
 SCALE = CENTER_RATING / DEFAULT_MU
 SOFT_RESET_SCALE = 0.75
-SUPPORTED_YEARS = list(range(2015, 2017))
 
 # For model visualization at /plate/
 SPAGHETTI_SAUCE = {
