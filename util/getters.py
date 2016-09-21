@@ -1,9 +1,9 @@
 from django.core.urlresolvers import reverse
+from django.db.models import Model
 
 from TBAW import models
 from TBAW.models import Team, Event, Match, Alliance, ScoringModel2016, ScoringModel2015, ScoringModel2014, \
     RankingModel2016, RankingModel2015, ScoringModel, RankingModel
-from django.db.models import Model
 
 
 def get_team(team_number: int) -> Team:
@@ -126,17 +126,15 @@ def make_team_tr(name: str, url: str, holder: Model, stat) -> dict:
 
 
 def reverse_model_url(model: Model) -> str:
-    data = None
-
     if type(model) is models.Team:
-        data = reverse('team_view', kwargs={'team_number': model.team_number})
+        return reverse('team_view', kwargs={'team_number': model.team_number})
     elif type(model) is models.Event:
-        data = reverse('event_view', kwargs={'event_key': model.key})
+        return reverse('event_view', kwargs={'event_key': model.key})
     elif type(model) is models.Alliance:
-        data = reverse('alliance_view', kwargs={
+        return reverse('alliance_view', kwargs={
             'team1': model.teams.all()[0].team_number,
             'team2': model.teams.all()[1].team_number,
             'team3': model.teams.all()[2].team_number
         })
-
-    return data
+    else:
+        return ''

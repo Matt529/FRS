@@ -17,7 +17,8 @@ urlpatterns = [
     url(r'^$', views.landing, name="landing"),
     url(r'^s/', views.search, name="search"),
     url(r'^s2/', views.search_api, name='search_api'),
-    url(r'^api/', include(api_v1.urls))
+    url(r'^api/', include(api_v1.urls)),
+    url(r'^l/', include('leaderboard2.urls')),
 ]
 
 urlpatterns += staticfiles_urlpatterns()

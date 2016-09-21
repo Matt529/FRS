@@ -15,7 +15,7 @@ def populate_team_leaderboards():
         tlb.save()
         print('Starting Team Leaderboard for "{}"... '.format(tlb.field), flush=True, end='')
         tlb.teams.set(Team.objects.order_by(tlb.field)[:LEADERBOARD_COUNT])
-        print('finished'.format(tlb.field), flush=True)
+        print('finished', flush=True)
 
 
 class Command(BaseCommand):
