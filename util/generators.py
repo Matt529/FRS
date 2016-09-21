@@ -1,6 +1,9 @@
+from typing import List
+
 from django.db.models.query import QuerySet
 
 from TBAW.models import Team, Event
+from leaderboard2.models import TeamLeaderboard
 
 
 def non_championship_teams(year: int) -> QuerySet:
@@ -41,3 +44,20 @@ def event_win_streaks() -> None:
         team.active_event_winstreak = active_streak
 
     Team.objects.bulk_update(teams, update_fields=['longest_event_winstreak', 'active_event_winstreak'])
+
+
+def make_team_leaderboards() -> List[TeamLeaderboard]:
+    return [
+        TeamLeaderboard(
+            description="Elo Leaderboard",
+            field="-elo_mu"
+        ),
+        TeamLeaderboard(
+            description="Active Event Winstreak Leaderboard",
+            field="-active_event_winstreak"
+        ),
+        TeamLeaderboard(
+            description="Longest Event Winstreak Leaderboard",
+            field="-longest_event_winstreak"
+        )
+    ]
