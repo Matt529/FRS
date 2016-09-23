@@ -3,7 +3,6 @@ from django.db import models
 from django.db.models.query import QuerySet
 
 from FRS.settings import DEFAULT_MU, DEFAULT_SIGMA
-from FRS.settings import SCALE
 
 
 class Team(models.Model):
@@ -31,6 +30,12 @@ class Team(models.Model):
     # see util.management.commands.update
     active_event_winstreak = models.PositiveSmallIntegerField(default=0)
     longest_event_winstreak = models.PositiveSmallIntegerField(default=0)
+
+    # Yes, it is trivially easy to get these through basic Match querysets. However, this allows us for a much
+    # faster lookup at the expense of database space.
+    wins = models.ManyToManyField('TBAW.Match', related_name="wins")
+    losses = models.ManyToManyField('TBAW.Match', related_name="losses")
+    ties = models.ManyToManyField('TBAW.Match', related_name="ties")
 
     def __str__(self):
         return "{0} ({1})".format(self.nickname, self.team_number)
@@ -80,9 +85,6 @@ class Team(models.Model):
 
     def get_elo_standing(self) -> int:
         return Team.objects.filter(elo_mu__gte=self.elo_mu).count()
-
-    def elo_scaled(self) -> float:
-        return self.elo_mu * SCALE
 
     def get_awards(self, year=None) -> QuerySet:
         if year is None:

@@ -1,4 +1,3 @@
-from FRS.settings import SCALE
 from .alltime_alliances import *
 from .alltime_teams import *
 from .years import *
@@ -22,7 +21,7 @@ def leaderboard(request):
         make_team_tr('All-time Win Rate', reverse('team_winrate'), team_highest_win_rate,
                      team_highest_win_rate.win_rate),
         make_team_tr('All-time Elo (Team)', reverse('team_elo'), team_highest_elo,
-                     team_highest_elo.elo_mu * SCALE),
+                     team_highest_elo.elo_mu),
         make_team_tr('All-time Award Wins', reverse('team_awards'), team_most_award_wins,
                      team_most_award_wins.award_wins),
         make_team_tr('All-time Blue Banners', reverse('team_blue_banners'), team_most_blue_banner_wins,
@@ -43,7 +42,7 @@ def leaderboard(request):
         __make_alliance_tr('All-time Event Wins (3)', reverse('alliance_events_3'), alliance_most_event_wins_3,
                            alliance_most_event_wins_3.event_wins),
         __make_alliance_tr('All-time Elo (Alliance)', reverse('alliance_elo'), alliance_highest_elo,
-                           alliance_highest_elo.elo_mu * SCALE)
+                           alliance_highest_elo.elo_mu)
     ]
 
     return render(request, 'leaderboard/leaderboard.html', context={

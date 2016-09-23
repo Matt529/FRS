@@ -1,7 +1,6 @@
 {% extends 'FRS/base_template.html' %}
 {% load match_level_humanizer %}
 {% load get_team_ranking_model %}
-{% load elo_formatter %}
 {% block title %}{{ event.year }} {{ event.name }}{% endblock %}
 {% block body %}
     <h1>{{ event.name }} {{ event.year }}</h1><br>
@@ -33,8 +32,8 @@
                     <td><a href="{% url 'team_view' team.team_number %}">{{ team.nickname }}</a></td>
                     <td>{{ team.team_number }}</td>
                     <td>{{ rm.get_record }}</td>
-                    <td>{{ rm.elo_mu_pre|format_elo|floatformat:2 }}</td>
-                    <td>{{ rm.elo_mu_post|format_elo|floatformat:2 }}</td>
+                    <td>{{ rm.elo_mu_pre|floatformat:2 }}</td>
+                    <td>{{ rm.elo_mu_post|floatformat:2 }}</td>
                 </tr>
             {% endwith %}
         {% endfor %}

@@ -3,7 +3,7 @@ from time import clock
 from django.core.management.base import BaseCommand
 
 from FRS.settings import SUPPORTED_YEARS
-from TBAW.models import Match, Alliance, Event, AllianceAppearance, RankingModel2015, ScoringModel
+from TBAW.models import Match, Alliance, Event, AllianceAppearance, RankingModel, ScoringModel
 from TBAW.requester import get_list_of_matches_json, get_event_json
 from util.check import match_exists, alliance_exists, alliance_appearance_exists
 from util.getters import get_team, get_event, get_alliance, get_instance_scoring_model
@@ -128,6 +128,13 @@ def add_matches_from_event(event_key: str) -> None:
             else:
                 winner = None
 
+            if winner == blue_alliance:
+                loser = red_alliance
+            elif winner == red_alliance:
+                loser = blue_alliance
+            else:
+                loser = None
+
             red_alliance.save()
             blue_alliance.save()
             match_obj = Match.objects.create(key=match['key'], comp_level=match['comp_level'],
@@ -157,31 +164,38 @@ def add_matches_from_event(event_key: str) -> None:
                 blue_appearance.seed = blue_seed
                 blue_appearance.save()
 
-            # Because 2015 had no win/loss things in their scoreboard but we want em anyway
-            if event.year == 2015 and match['comp_level'] == 'qm':
-                if winner is None:
-                    for team in red_alliance.teams.all():
-                        rm = RankingModel2015.objects.get(team=team, event=event)
-                        rm.qual_ties += 1
-                        rm.save()
-                    for team in blue_alliance.teams.all():
-                        rm = RankingModel2015.objects.get(team=team, event=event)
-                        rm.qual_ties += 1
-                        rm.save()
-                else:
-                    if winner == red_alliance:
-                        loser = blue_alliance
-                    else:
-                        loser = red_alliance
+            if winner is None:
+                for bt, rt in zip(blue_alliance.teams.all(), red_alliance.teams.all()):
+                    bt_rm = RankingModel.objects.get(team=bt, event=event)
+                    bt_rm.total_ties += 1
+                    bt.ties.add(match_obj)
 
-                    for team in winner.teams.all():
-                        rm = RankingModel2015.objects.get(team=team, event=event)
-                        rm.qual_losses += 1
-                        rm.save()
-                    for team in loser.teams.all():
-                        rm = RankingModel2015.objects.get(team=team, event=event)
-                        rm.qual_losses += 1
-                        rm.save()
+                    rt_rm = RankingModel.objects.get(team=rt, event=event)
+                    rt_rm.total_ties += 1
+                    rt.ties.add(match_obj)
+
+                    if match['comp_level'] == 'qm':
+                        bt_rm.qual_ties += 1
+                        rt_rm.qual_ties += 1
+
+                    bt_rm.save()
+                    rt_rm.save()
+            else:
+                for winning_team, losing_team in zip(winner.teams.all(), loser.teams.all()):
+                    winner_rm = RankingModel.objects.get(team=winning_team, event=event)
+                    winner_rm.total_wins += 1
+                    winning_team.wins.add(match_obj)
+
+                    loser_rm = RankingModel.objects.get(team=losing_team, event=event)
+                    loser_rm.total_losses += 1
+                    losing_team.losses.add(match_obj)
+
+                    if match['comp_level'] == 'qm':
+                        winner_rm.qual_wins += 1
+                        loser_rm.qual_losses += 1
+
+                    winner_rm.save()
+                    loser_rm.save()
 
             matches_created += 1
             event_matches += 1
