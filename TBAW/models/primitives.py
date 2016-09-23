@@ -33,7 +33,7 @@ class Team(models.Model):
     active_event_winstreak = models.PositiveSmallIntegerField(default=0)
     longest_event_winstreak = models.PositiveSmallIntegerField(default=0)
     event_wins_count = models.PositiveSmallIntegerField(default=0)
-    event_losses_count = models.PositiveSmallIntegerField(default=0)
+    event_attended_count = models.PositiveSmallIntegerField(default=0)
     event_winrate = models.FloatField(default=0.0)
 
     match_wins_count = models.PositiveSmallIntegerField(default=0)

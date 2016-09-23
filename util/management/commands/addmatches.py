@@ -1,9 +1,10 @@
 from time import clock
 
 from django.core.management.base import BaseCommand
+from django.db.models import F, ExpressionWrapper, FloatField
 
 from FRS.settings import SUPPORTED_YEARS
-from TBAW.models import Match, Alliance, Event, AllianceAppearance, RankingModel, ScoringModel
+from TBAW.models import Match, Alliance, Event, AllianceAppearance, RankingModel, Team, ScoringModel
 from TBAW.requester import get_list_of_matches_json, get_event_json
 from util.check import match_exists, alliance_exists, alliance_appearance_exists
 from util.getters import get_team, get_event, get_alliance, get_instance_scoring_model
@@ -143,8 +144,7 @@ def add_matches_from_event(event_key: str) -> None:
                                              scoring_model=parse_score_breakdown(int(match['key'][:4]),
                                                                                  match['score_breakdown']),
                                              blue_alliance=blue_alliance, red_alliance=red_alliance)
-            match_obj.alliances.add(red_alliance)
-            match_obj.alliances.add(blue_alliance)
+            match_obj.alliances.set([red_alliance, blue_alliance])
 
             if not alliance_appearance_exists(red_alliance, event):
                 red_appearance = AllianceAppearance.objects.create(alliance=red_alliance, event=event,
@@ -168,11 +168,11 @@ def add_matches_from_event(event_key: str) -> None:
                 for bt, rt in zip(blue_alliance.teams.all(), red_alliance.teams.all()):
                     bt_rm = RankingModel.objects.get(team=bt, event=event)
                     bt_rm.total_ties += 1
-                    bt.ties.add(match_obj)
+                    bt.match_ties_count += 1
 
                     rt_rm = RankingModel.objects.get(team=rt, event=event)
                     rt_rm.total_ties += 1
-                    rt.ties.add(match_obj)
+                    rt.match_ties_count += 1
 
                     if match['comp_level'] == 'qm':
                         bt_rm.qual_ties += 1
@@ -184,11 +184,11 @@ def add_matches_from_event(event_key: str) -> None:
                 for winning_team, losing_team in zip(winner.teams.all(), loser.teams.all()):
                     winner_rm = RankingModel.objects.get(team=winning_team, event=event)
                     winner_rm.total_wins += 1
-                    winning_team.wins.add(match_obj)
+                    winning_team.match_wins_count += 1
 
                     loser_rm = RankingModel.objects.get(team=losing_team, event=event)
                     loser_rm.total_losses += 1
-                    losing_team.losses.add(match_obj)
+                    losing_team.match_losses_count += 1
 
                     if match['comp_level'] == 'qm':
                         winner_rm.qual_wins += 1
@@ -197,6 +197,8 @@ def add_matches_from_event(event_key: str) -> None:
                     winner_rm.save()
                     loser_rm.save()
 
+            Team.objects.bulk_update(blue_alliance.teams.all() | red_alliance.teams.all(),
+                                     update_fields=['match_wins_count', 'match_losses_count', 'match_ties_count'])
             matches_created += 1
             event_matches += 1
 
@@ -224,6 +226,13 @@ def handle_event_winners() -> None:
     for m in matches:
         m.event.winning_alliance = m.winner
         m.event.save()
+
+    year = matches_of_2.first().event.year
+    Team.objects.filter(alliance__winning_alliance__year=year).update(event_wins_count=F('event_wins_count') + 1)
+    Team.objects.filter(event__year=year).update(event_attended_count=F('event_attended_count') + 1)
+    Team.objects.exclude(event_attended_count=0).annotate(
+        wr=ExpressionWrapper(F('event_wins_count') * 1.0 / F('event_attended_count'), output_field=FloatField())
+    ).update(event_winrate=F('wr'))
 
 
 class Command(BaseCommand):
