@@ -28,14 +28,21 @@ class Team(models.Model):
 
     # Stats that are too expensive to compute on the fly
     # see util.management.commands.update
+    # Yes, it is trivially easy to get some of these through basic querysets. However, this allows us for a much
+    # faster lookup at the expense of a very small amount of database space.
     active_event_winstreak = models.PositiveSmallIntegerField(default=0)
     longest_event_winstreak = models.PositiveSmallIntegerField(default=0)
+    event_wins_count = models.PositiveSmallIntegerField(default=0)
+    event_losses_count = models.PositiveSmallIntegerField(default=0)
+    event_winrate = models.FloatField(default=0.0)
 
-    # Yes, it is trivially easy to get these through basic Match querysets. However, this allows us for a much
-    # faster lookup at the expense of database space.
-    wins = models.ManyToManyField('TBAW.Match', related_name="wins")
-    losses = models.ManyToManyField('TBAW.Match', related_name="losses")
-    ties = models.ManyToManyField('TBAW.Match', related_name="ties")
+    match_wins_count = models.PositiveSmallIntegerField(default=0)
+    match_losses_count = models.PositiveSmallIntegerField(default=0)
+    match_ties_count = models.PositiveSmallIntegerField(default=0)
+    match_winrate = models.FloatField(default=0.0)
+
+    awards_count = models.PositiveSmallIntegerField(default=0)
+    blue_banners_count = models.PositiveSmallIntegerField(default=0)
 
     def __str__(self):
         return "{0} ({1})".format(self.nickname, self.team_number)
