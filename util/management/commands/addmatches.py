@@ -30,6 +30,7 @@ def add_matches_from_event(event_key: str) -> None:
             matches_skipped += 1
             print("({1}) Already added {0}".format(match['key'], matches_skipped))
         else:
+            # print('Adding {}'.format(match['key']), end='', flush=True)
             red_teams = [get_team(int(x[3:])) for x in match['alliances']['red']['teams']]
             blue_teams = [get_team(int(x[3:])) for x in match['alliances']['blue']['teams']]
             red_seed = None
@@ -43,39 +44,34 @@ def add_matches_from_event(event_key: str) -> None:
 
             event_json = get_event_json(event_key)
             event = get_event(event_key)
-            if match['comp_level'] in ['ef', 'qf', 'sf', 'f']:
-                if not alliance_exists(red_teams[0], red_teams[1], red_teams[2]):
-                    red_alliance = Alliance.objects.create()
-                    event.alliances.add(red_alliance)
-                    for x in red_teams:
-                        red_alliance.teams.add(x)
-                else:
-                    red_alliance = get_alliance(red_teams[0], red_teams[1], red_teams[2])
 
+            if not alliance_exists(red_teams[0], red_teams[1], red_teams[2]):
+                red_alliance = Alliance.objects.create()
+                for x in red_teams:
+                    red_alliance.teams.add(x)
+            else:
+                red_alliance = get_alliance(red_teams[0], red_teams[1], red_teams[2])
+
+            if not alliance_exists(blue_teams[0], blue_teams[1], blue_teams[2]):
+                blue_alliance = Alliance.objects.create()
+                for x in blue_teams:
+                    blue_alliance.teams.add(x)
+            else:
+                blue_alliance = get_alliance(blue_teams[0], blue_teams[1], blue_teams[2])
+
+            event.alliances.add(red_alliance)
+            event.alliances.add(blue_alliance)
+
+            if match['comp_level'] in ['ef', 'qf', 'sf', 'f']:
                 for data_seg in event_json['alliances']:
                     if red_teams[0].key in data_seg['picks']:
                         red_seed = current_seed
                         current_seed += 1
 
-                if not alliance_exists(blue_teams[0], blue_teams[1], blue_teams[2]):
-                    blue_alliance = Alliance.objects.create()
-                    event.alliances.add(blue_alliance)
-                    for x in blue_teams:
-                        blue_alliance.teams.add(x)
-                else:
-                    blue_alliance = get_alliance(blue_teams[0], blue_teams[1], blue_teams[2])
-
                 for data_seg in event_json['alliances']:
                     if blue_teams[0].key in data_seg['picks']:
                         blue_seed = current_seed
                         current_seed += 1
-            else:
-                red_alliance = Alliance.objects.create()
-                blue_alliance = Alliance.objects.create()
-
-                for x, y in zip(red_teams, blue_teams):
-                    red_alliance.teams.add(x)
-                    blue_alliance.teams.add(y)
 
             if event.year in [2015, 2016]:
                 if event.year == 2016:
@@ -145,6 +141,7 @@ def add_matches_from_event(event_key: str) -> None:
                                                                                  match['score_breakdown']),
                                              blue_alliance=blue_alliance, red_alliance=red_alliance)
             match_obj.alliances.set([red_alliance, blue_alliance])
+            # print('.', end='', flush=True)
 
             if not alliance_appearance_exists(red_alliance, event):
                 red_appearance = AllianceAppearance.objects.create(alliance=red_alliance, event=event,
@@ -180,6 +177,8 @@ def add_matches_from_event(event_key: str) -> None:
 
                     bt_rm.save()
                     rt_rm.save()
+                    bt.save()
+                    rt.save()
             else:
                 for winning_team, losing_team in zip(winner.teams.all(), loser.teams.all()):
                     winner_rm = RankingModel.objects.get(team=winning_team, event=event)
@@ -196,9 +195,10 @@ def add_matches_from_event(event_key: str) -> None:
 
                     winner_rm.save()
                     loser_rm.save()
+                    winning_team.save()
+                    losing_team.save()
 
-            Team.objects.bulk_update(blue_alliance.teams.all() | red_alliance.teams.all(),
-                                     update_fields=['match_wins_count', 'match_losses_count', 'match_ties_count'])
+            # print('.', flush=True)
             matches_created += 1
             event_matches += 1
 
