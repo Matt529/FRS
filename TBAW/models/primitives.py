@@ -309,13 +309,13 @@ class Award(models.Model):
         (14, "Highest Rookie Seed"),
     )
 
-    award_type = models.CharField(choices=award_type_choices, max_length=100)
+    award_type = models.PositiveSmallIntegerField(choices=award_type_choices)
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     recipients = models.ManyToManyField(Team)
     year = models.PositiveSmallIntegerField()
 
     def __str__(self):
-        return "{0} - {1} ({2})".format(self.recipients, self.name, self.event)
+        return "{0} - {1} ({2})".format(self.recipients.all(), self.name, self.event)
 
 
 class Robot(models.Model):

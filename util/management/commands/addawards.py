@@ -30,6 +30,11 @@ def add_single_event(event: Event) -> None:
         award_obj = Award.objects.create(name=name, award_type=award_type, event=event, year=year)
         for recipient in recipients:
             award_obj.recipients.add(recipient)
+            recipient.awards_count += 1
+            if award_obj.award_type in [t[0] for t in Award.blue_banner_choices]:
+                recipient.blue_banners_count += 1
+
+            recipient.save()
 
         awards_created += 1
 
@@ -49,7 +54,7 @@ class Command(BaseCommand):
         year = options['year']
         time_start = clock()
         if key is not '':
-            add_single_event(key)
+            add_single_event(Event.objects.get(key=key))
         else:
             if year == 0:
                 for yr in SUPPORTED_YEARS:
