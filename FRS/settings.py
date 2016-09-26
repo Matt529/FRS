@@ -149,7 +149,7 @@ LEADERBOARD_COUNT = 200
 # For Elo/Trueskill system
 DEFAULT_MU = 1500
 DEFAULT_SIGMA = DEFAULT_MU / 3
-SOFT_RESET_SCALE = 0.75
+SOFT_RESET_SCALE = 0.90
 
 # For model visualization at /plate/
 SPAGHETTI_SAUCE = {

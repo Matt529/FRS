@@ -16,7 +16,7 @@
             <tr>
                 <td>{{ forloop.counter }}</td>
                 <td><a href="{{ holder.0|url_finder }}">{{ holder.0 }}</a></td>
-                <td>{{ holder.1 }}</td>
+                <td>{{ holder.1|floatformat:-3 }}</td>
             </tr>
         {% endfor %}
         </tbody>

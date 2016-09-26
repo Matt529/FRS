@@ -53,11 +53,35 @@ def make_team_leaderboards() -> List[TeamLeaderboard]:
             field="-elo_mu"
         ),
         TeamLeaderboard(
-            description="Active Event Winstreak Leaderboard",
+            description="Active Event Winstreak Leaderboard (Excludes IRI and Championships)",
             field="-active_event_winstreak"
         ),
         TeamLeaderboard(
-            description="Longest Event Winstreak Leaderboard",
+            description="Longest Event Winstreak Leaderboard (Excludes IRI and Championships)",
             field="-longest_event_winstreak"
-        )
+        ),
+        TeamLeaderboard(
+            description="Most Event Wins Leaderboard",
+            field="-event_wins_count"
+        ),
+        TeamLeaderboard(
+            description="Highest Event Winrate Leaderboard",
+            field="-event_winrate"
+        ),
+        TeamLeaderboard(
+            description="Most Match Wins Leaderboard",
+            field="-match_wins_count"
+        ),
+        TeamLeaderboard(
+            description="Highest Match Winrate Leaderboard",
+            field="-match_winrate"
+        ),
+        TeamLeaderboard(
+            description="Most Awards Leaderboard",
+            field="-awards_count"
+        ),
+        TeamLeaderboard(
+            description="Most Blue Banners Leaderboard",
+            field="-blue_banners_count"
+        ),
     ]

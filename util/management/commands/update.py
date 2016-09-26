@@ -23,5 +23,5 @@ class Command(BaseCommand):
         pass
 
     def handle(self, *args, **options):
-        #  generators.event_win_streaks()
+        generators.event_win_streaks()
         populate_team_leaderboards()

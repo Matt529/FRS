@@ -37,7 +37,7 @@ def add_matches_from_event(event_key: str) -> None:
             blue_seed = None
 
             if match['score_breakdown'] is None or (
-                        match['alliances']['blue']['score'] == -1 and match['alliances']['red']['score'] == -1):
+                        match['alliances']['blue']['score'] == match['alliances']['red']['score'] == -1):
                 print("Skipping match {0} from event {1} (scores not found)".format(match['key'], event_key))
                 matches_skipped += 1
                 continue
@@ -217,6 +217,7 @@ def parse_score_breakdown(year: int, score_breakdown: dict) -> ScoringModel:
 
 
 def handle_event_winners() -> None:
+    print('Handling event winners...', flush=True)
     matches_of_3 = Match.objects.filter(comp_level__exact='f', match_number__exact=3, winner__isnull=False)
     matches_of_2 = Match.objects.filter(
         key__in=[x.key for x in Match.objects.filter(comp_level__exact='f', match_number__exact=2,
@@ -227,12 +228,19 @@ def handle_event_winners() -> None:
         m.event.winning_alliance = m.winner
         m.event.save()
 
-    year = matches_of_2.first().event.year
-    Team.objects.filter(alliance__winning_alliance__year=year).update(event_wins_count=F('event_wins_count') + 1)
-    Team.objects.filter(event__year=year).update(event_attended_count=F('event_attended_count') + 1)
+        for team in m.winner.teams.all():
+            team.event_wins_count += 1
+            team.save()
+
     Team.objects.exclude(event_attended_count=0).annotate(
         wr=ExpressionWrapper(F('event_wins_count') * 1.0 / F('event_attended_count'), output_field=FloatField())
     ).update(event_winrate=F('wr'))
+    Team.objects.exclude(match_losses_count=0, match_wins_count=0).annotate(
+        played=ExpressionWrapper(F('match_wins_count') + F('match_losses_count') + F('match_ties_count'),
+                                 output_field=FloatField())
+    ).annotate(
+        wr=ExpressionWrapper(F('match_wins_count') * 1.0 / F('played'), output_field=FloatField())
+    ).update(match_winrate=F('wr'))
 
 
 class Command(BaseCommand):

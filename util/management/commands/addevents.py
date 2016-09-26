@@ -62,7 +62,10 @@ def add_event(event_key: str, event_data=None) -> None:
         # Add the teams at creation time. Don't update the team list at update time due to time cost
         teams = event_data['teams']
         for t in teams:
-            event.teams.add(get_team(t['team_number']))
+            team = get_team(t['team_number'])
+            event.teams.add(team)
+            team.event_attended_count += 1
+            team.save()
 
         events_created += 1
         # print("Created event {0}".format(event_key))

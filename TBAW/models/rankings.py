@@ -37,11 +37,12 @@ class RankingModel(PolymorphicModel):
         pass
 
     def get_record(self) -> str:
-        return "{0}-{1}-{2}".format(self.qual_wins, self.qual_losses, self.qual_ties)
+        return "{0}-{1}-{2} ({3}-{4}-{5})".format(self.total_wins, self.total_losses, self.total_ties, self.qual_wins,
+                                                  self.qual_losses, self.qual_ties)
 
     def __repr__(self):
-        return "{0}. {1} [{2}-{3}-{4}] ({5})".format(self.rank, self.team, self.qual_wins, self.qual_losses,
-                                                     self.qual_ties, self.event)
+        return "{0}. {1} [{2}-{3}-{4}] ({5})".format(self.rank, self.team, self.total_wins, self.total_losses,
+                                                     self.total_ties, self.event)
 
 
 class RankingModel2016(RankingModel):
