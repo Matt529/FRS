@@ -7,7 +7,8 @@ var gulp = require('gulp'),
     typescript = require('gulp-typescript'),
     concat = require('gulp-concat'),
     scsslint = require('gulp-scss-lint'),
-    tslint = require('gulp-tslint');
+    tslint = require('gulp-tslint'),
+    flatten = require('gulp-flatten');
 
 var merge = require('merge2');  // Merging Gulp Streams
 var path = require('path');
@@ -22,13 +23,13 @@ const COMPILED_FRS_ROOT = path.join(COMPILED_ROOT, 'global');
 // TypeScript Constants
 const TS_SRC = path.join(STATIC_FRS_ROOT, 'ts', '**', '*.ts');       // Glob for selecting .ts files (for compilation)
 const TS_SRC_DTS = path.join(STATIC_FRS_ROOT, 'ts', '**', '*.d.ts'); // Glob for selecting .d.ts files specifically
-const TS_OUT = path.join(COMPILED_FRS_ROOT, 'ts');                   // Destination directory
+const TS_OUT = path.join(COMPILED_FRS_ROOT, 'js');                   // Destination directory
 
-const TS_CLEAN_DTS = path.join(COMPILED_ROOT, '**', 'ts', '**', '*.ts');    // Glob for cleaning compiled .d.ts files
-const TS_CLEAN_OUT_JS = path.join(COMPILED_ROOT, '**', 'ts', '**', '*.js'); // Glob for cleaning compiled .js files
+const TS_CLEAN_DTS = path.join(COMPILED_ROOT, '**', '*.ts');    // Glob for cleaning compiled .d.ts files
+const TS_CLEAN_OUT_JS = path.join(COMPILED_ROOT, '**', '*.js'); // Glob for cleaning compiled .js files
 
 // SASS Constants
-const SASS_SRC = path.join(STATIC_FRS_ROOT, 'css', '**', '*.scss');     // Glob for selecting .scss files (for compilation
+const SASS_SRC = path.join(STATIC_FRS_ROOT, '**', '*.scss');     // Glob for selecting .scss files (for compilation
 const SASS_OUT = path.join(COMPILED_FRS_ROOT, 'css');                  // Destination Directory
 
 const SASS_CLEAN_CSS = path.join(COMPILED_FRS_ROOT, 'css', '**', '*.css');  // Glob for cleaning compiled css files
@@ -55,6 +56,7 @@ function buildSass() {
         .pipe(sourcemaps.init())
         .pipe(sass().on('error', sass.logError))
         .pipe(sourcemaps.write())
+        .pipe(flatten({subPath: [1]}))
         .pipe(gulp.dest(SASS_OUT))
         .on('error', gutil.log);
 }
@@ -76,8 +78,8 @@ function buildTypescript() {
             target: 'ES5'
         }));
     return merge([
-        tsResult.dts.pipe(gulp.dest(TS_OUT)).on('error', gutil.log),
-        tsResult.js.pipe(sourcemaps.write()).pipe(gulp.dest(TS_OUT)).on('error', gutil.log)
+        tsResult.dts.pipe(flatten({subPath: [1]})).pipe(gulp.dest(TS_OUT)).on('error', gutil.log),
+        tsResult.js.pipe(flatten({subPath: [1]})).pipe(sourcemaps.write()).pipe(gulp.dest(TS_OUT)).on('error', gutil.log)
     ]);
 }
 

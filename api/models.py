@@ -23,3 +23,4 @@ class EventResource(ModelResource):
         queryset = Event.objects.all()
         resource_name = 'event'
         excludes = ['id']
+

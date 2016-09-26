@@ -20,7 +20,7 @@ class Team(models.Model):
     rookie_year = models.PositiveSmallIntegerField(null=True)
     motto = models.TextField(null=True)
 
-    # Modeled after TrueSkill, which is a Gaussian distribution with mu=25.0 and sigma = 25/3.
+    # Modeled after TrueSkill, which is a Gaussian distribution with mu=DEFAULT_ME and sigma=DEFAULT_SIGMA.
     elo_mu = models.FloatField(default=DEFAULT_MU)
     elo_sigma = models.FloatField(default=DEFAULT_SIGMA)
 
@@ -70,10 +70,9 @@ class Team(models.Model):
 
     def get_ties(self, year=None) -> QuerySet:
         if year is None:
-            return Match.objects.filter(alliances__teams__team_number=self.team_number).filter(winner__isnull=True)
+            return Match.objects.filter(alliances__teams__team_number=self.team_number, winner__isnull=True)
         else:
-            return Match.objects.filter(event__year=year).filter(alliances__teams__team_number=self.team_number).filter(
-                winner__isnull=True)
+            return Match.objects.filter(event__year=year).filter(alliances__teams__team_number=self.team_number, winner_isnull=True)
 
     def get_record(self, year=None) -> str:
         return "{0}-{1}-{2}".format(self.get_wins(year).count(), self.get_losses(year).count(),

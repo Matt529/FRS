@@ -2,7 +2,7 @@ secret_key.py
 */bower_components/
 *.sqlite3
 *.sql
-*.json
+/static/compiled
 
 # Created by https://www.gitignore.io/api/pycharm,python,django,virtualenv
 

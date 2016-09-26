@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'polymorphic',
     'django_spaghetti',
     'tastypie',
+    'annoying',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -74,8 +75,8 @@ ROOT_URLCONF = 'FRS.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
+        'DIRS': ['templates'],
+        'APP_DIRS': False,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',

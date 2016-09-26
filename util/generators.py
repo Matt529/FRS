@@ -5,6 +5,20 @@ from django.db.models.query import QuerySet
 from TBAW.models import Team, Event
 from leaderboard2.models import TeamLeaderboard
 
+_CHAMPIONS = {
+    'cmp',
+    'arc',
+    'cur',
+    'cars',
+    'carv',
+    'gal',
+    'hop',
+    'new',
+    'tes'
+}
+
+_CHAMPIONS_AND_IRI = _CHAMPIONS | {'iri'}
+
 
 def non_championship_teams(year: int) -> QuerySet:
     """
@@ -15,11 +29,8 @@ def non_championship_teams(year: int) -> QuerySet:
     Returns:
         A QuerySet (django.db.models.QuerySet) that contains Team objects of teams that did not attend the
         championship event in the given year.
-
     """
-    return Team.objects.exclude(
-        event__event_code__in=['cmp', 'arc', 'cur', 'cars', 'carv', 'gal', 'hop', 'new', 'tes']).filter(
-        event__year=year).distinct()
+    return Team.objects.exclude(event__event_code__in=_CHAMPIONS).filter(event__year=year).distinct()
 
 
 def event_win_streaks() -> None:
@@ -27,7 +38,7 @@ def event_win_streaks() -> None:
     for team in teams:
         streak = 0
         active_streak = 0
-        excluded_events = ['iri', 'cmp', 'new', 'cur', 'arc', 'gal', 'cars', 'tes', 'carv', 'hop']
+        excluded_events = _CHAMPIONS_AND_IRI
         for event in Event.objects.exclude(event_code__in=excluded_events).filter(teams=team).order_by('end_date'):
             if team in event.winning_alliance.teams.all():
                 streak += 1

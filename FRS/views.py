@@ -6,6 +6,7 @@ from django.template import RequestContext
 
 from TBAW.models import Team, Event
 from util.getters import reverse_model_url
+from util.viewutils import require_http_methods_plus
 
 
 def handle_404(request):
@@ -18,6 +19,7 @@ def landing(request):
     return render(request, 'FRS/landing.html')
 
 
+@require_http_methods_plus(['GET'])
 def search(request):
     query = request.GET['search']
 
@@ -32,6 +34,7 @@ def search(request):
         return render(request, 'FRS/search_found_nothing.html', {'query': query})
 
 
+@require_http_methods_plus(['GET'])
 def search_api(request):
     query = request.GET['search']
     team_fields = ('nickname',)

@@ -1,8 +1,10 @@
 import json
 
-from TBAW.models import Team, Event
 from django.core.serializers import serialize
 from django.http import JsonResponse, HttpResponseBadRequest
+
+from annoying.decorators import ajax_request
+from TBAW.models import Team, Event
 
 PAGE_AMOUNT = 50
 
@@ -19,9 +21,11 @@ def object_list_to_json(obj_list):
     return json.loads(serialize('json', obj_list))
 
 
+@ajax_request
 def team_json(request, team_number):
     obj = Team.objects.get(team_number=team_number)
-    return JsonResponse(object_to_json(obj), safe=False)
+    print(obj)
+    return obj
 
 
 def team_list_json(request, page):

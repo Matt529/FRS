@@ -1,14 +1,16 @@
-from django.shortcuts import render
+from annoying.decorators import render_to
 
 from leaderboard2.models import Leaderboard
 
 
+@render_to('leaderboard2/overview.html')
 def leaderboard_overview(request):
     leaderboards = Leaderboard.objects.all()
 
-    return render(request, 'leaderboard2/overview.html', context={'leaderboards': leaderboards})
+    return {'leaderboards': leaderboards}
 
 
+@render_to('leaderboard2/leaderboard_spec.html')
 def leaderboard(request, field):
     lb = Leaderboard.objects.filter(field__contains=field).first()
-    return render(request, 'leaderboard2/leaderboard_spec.html', context={'leaderboard': lb})
+    return {'leaderboard': lb}
