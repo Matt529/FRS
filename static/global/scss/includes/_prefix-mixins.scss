@@ -1,0 +1,87 @@
+@import "./options";
+
+// [text] means text is an optional part
+// <text> means text is a required part
+// [<text>] means text is required but determined conditionally (i.e. prefixing only generates some transitions)
+
+@mixin prefixed($property, $value) {
+  @if $webkit == true {
+    -webkit-#{$property}: #{$value};
+  }
+
+  @if $moz == true {
+    -moz-#{$property}: #{$value};
+  }
+
+  @if $ms == true {
+    -ms-#{$property}: #{$value};
+  }
+
+  @if $o == true {
+    -o-#{$property}: #{$value};
+  }
+
+  #{$property}: #{$value};
+}
+
+/*
+  Automatically prefix transitions for Webkit (-webkit), Opera (-o) and Mozilla (-moz). By default this just ensures the
+  property and transition type are prefixed appropriately. Optionally the value can also be prefixed if needed as is
+  sometimes the case.
+
+  Assumes the following syntax for the transition rule:
+  [<-prefix->]transition: [-prefix-]<value>, [<-prefix->]<transition type>;
+*/
+@mixin prefixed-transition($value, $transition, $prefixValue: false) {
+  @if $prefixValue == true {
+    @if $webkit == true {
+      -webkit-transition: -webkit-#{$value}, -webkit-#{$transition};
+    }
+
+    @if $moz == true {
+      -moz-transition: -moz-#{$value}, -moz-#{$transition};
+    }
+
+    @if $o == true {
+      -o-transition: -o-#{$value}, -o-#{$transition};
+    }
+  } @else {
+    @if $webkit == true {
+      -webkit-transition: #{$value}, -webkit-#{$transition};
+    }
+
+    @if $moz == true {
+      -moz-transition: #{$value}, -moz-#{$transition};
+    }
+
+    @if $o == true {
+      -o-transition: #{$value}, -o-#{$transition};
+    }
+  }
+
+  transition: #{$value}, #{$transition};
+}
+
+@mixin prefixed-with-value($property, $value, $noValuePrefix: false) {
+  @if $noValuePrefix == true {
+    @include prefixed($property, $value);
+  } @else {
+    @if $webkit == true {
+      -webkit-#{$property}: -webkit-#{$value};
+    }
+
+    @if $moz == true {
+      -moz-#{$property}: -moz-#{$value};
+    }
+
+    @if $ms == true {
+      -ms-#{$property}: -ms-#{$value};
+    }
+
+    @if $o == true {
+      -o-#{$property}: -o-#{$value};
+    }
+
+    #{$property}: #{$value};
+  }
+}

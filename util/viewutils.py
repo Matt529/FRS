@@ -26,8 +26,20 @@ class TemplateString(object):
     def format(self, *args, **kwargs) -> str:
         return self._format_string.format(*args, **kwargs)
 
+    def get_format_string(self):
+        return self._format_string
+
+    def __eq__(self, other: Union['TemplateString', str]) -> bool:
+        if isinstance(other, str):
+            return self._format_string == other
+        else:
+            return self._format_string == other._format_string
+
     def __call__(self, *args, **kwargs) -> str:
         return self.format(*args, **kwargs)
+
+    def __getitem__(self, item: int) -> str:
+        return self._format_string[item]
 
     def __str__(self) -> str:
         return 'TemplateStr["{}"]'.format(self._format_string)
@@ -48,7 +60,8 @@ class TemplateString(object):
             return TemplateString(other._format_string + self._format_string)
 
 
-def require_http_methods_plus(method_types: List[str], required_args: Union[Mapping[str, List[str]], List[str]]={}, method_props: Mapping[str, List[str]]={}):
+def require_http_methods_plus(method_types: List[str], required_args: Union[Mapping[str, List[str]], List[str]]={},
+                              method_props: Mapping[str, List[str]]={}):
     """
     Enhances the possible functionality of the standard require_http_methods function from django.
 

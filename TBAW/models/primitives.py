@@ -72,7 +72,8 @@ class Team(models.Model):
         if year is None:
             return Match.objects.filter(alliances__teams__team_number=self.team_number, winner__isnull=True)
         else:
-            return Match.objects.filter(event__year=year).filter(alliances__teams__team_number=self.team_number, winner_isnull=True)
+            return Match.objects.filter(event__year=year)\
+                .filter(alliances__teams__team_number=self.team_number, winner_isnull=True)
 
     def get_record(self, year=None) -> str:
         return "{0}-{1}-{2}".format(self.get_wins(year).count(), self.get_losses(year).count(),
