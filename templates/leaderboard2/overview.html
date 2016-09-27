@@ -1,18 +1,23 @@
 {% extends 'FRS/base_template.html' %}
+{% load url_finder %}
 
 {% block body %}
     <table class="uk-table">
         <thead>
         <tr>
             <th>Leaderboard Desc</th>
-            <th>Field</th>
+            <th>Leader(s)</th>
+            <th></th>
         </tr>
         </thead>
         <tbody>
         {% for leaderboard in leaderboards %}
             <tr>
                 <td><a href="{% url 'leaderboard_spec' leaderboard.field %}">{{ leaderboard.description }}</a></td>
-                <td>{{ leaderboard.field }}</td>
+                <td>{% for leader in leaderboard.get_leaders %}
+                    <a href="{{ leader|url_finder }}">{{ leader }}</a><br>
+                {% endfor %}</td>
+                <td>{{ leaderboard.get_leading_value|floatformat:-3 }}</td>
             </tr>
         {% endfor %}
         </tbody>
