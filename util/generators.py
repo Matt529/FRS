@@ -3,7 +3,7 @@ from typing import List
 from django.db.models.query import QuerySet
 
 from TBAW.models import Team, Event
-from leaderboard2.models import TeamLeaderboard
+from leaderboard2.models import TeamLeaderboard, ScoringLeaderboard2016
 
 _CHAMPIONS = {
     'cmp',
@@ -60,39 +60,68 @@ def event_win_streaks() -> None:
 def make_team_leaderboards() -> List[TeamLeaderboard]:
     return [
         TeamLeaderboard(
-            description="Elo Leaderboard",
-            field="-elo_mu"
+            description="Elo Rating",
+            field_1="-elo_mu"
         ),
         TeamLeaderboard(
-            description="Active Event Winstreak Leaderboard (Excludes IRI and Championships)",
-            field="-active_event_winstreak"
+            description="Active Event Winstreak (Excludes IRI and Championships)",
+            field_1="-active_event_winstreak"
         ),
         TeamLeaderboard(
-            description="Longest Event Winstreak Leaderboard (Excludes IRI and Championships)",
-            field="-longest_event_winstreak"
+            description="Longest Event Winstreak (Excludes IRI and Championships)",
+            field_1="-longest_event_winstreak"
         ),
         TeamLeaderboard(
-            description="Most Event Wins Leaderboard",
-            field="-event_wins_count"
+            description="Most Event Wins",
+            field_1="-event_wins_count"
         ),
         TeamLeaderboard(
-            description="Highest Event Winrate Leaderboard",
-            field="-event_winrate"
+            description="Highest Event Winrate",
+            field_1="-event_winrate"
         ),
         TeamLeaderboard(
-            description="Most Match Wins Leaderboard",
-            field="-match_wins_count"
+            description="Most Match Wins",
+            field_1="-match_wins_count"
         ),
         TeamLeaderboard(
-            description="Highest Match Winrate Leaderboard",
-            field="-match_winrate"
+            description="Highest Match Winrate",
+            field_1="-match_winrate"
         ),
         TeamLeaderboard(
-            description="Most Awards Leaderboard",
-            field="-awards_count"
+            description="Most Awards",
+            field_1="-awards_count"
         ),
         TeamLeaderboard(
-            description="Most Blue Banners Leaderboard",
-            field="-blue_banners_count"
+            description="Most Blue Banners",
+            field_1="-blue_banners_count"
+        ),
+    ]
+
+
+def make_scoring_2016_leaderboards() -> List[ScoringLeaderboard2016]:
+    return [
+        ScoringLeaderboard2016(
+            description='Highest Red Autonomous Score',
+            field_1='-red_auton_score',
+        ),
+        ScoringLeaderboard2016(
+            description='Highest Blue Autonomous Score',
+            field_1='-blue_auton_score',
+        ),
+        ScoringLeaderboard2016(
+            description='Highest Red Teleop Score',
+            field_1='-red_teleop_score',
+        ),
+        ScoringLeaderboard2016(
+            description='Highest Blue Teleop Score',
+            field_1='-blue_teleop_score',
+        ),
+        ScoringLeaderboard2016(
+            description='Highest Red Total Score',
+            field_1='-red_total_score',
+        ),
+        ScoringLeaderboard2016(
+            description='Highest Blue Total Score',
+            field_1='-blue_total_score',
         ),
     ]

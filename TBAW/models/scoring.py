@@ -18,7 +18,8 @@ class ScoringModel(PolymorphicModel):
         return
 
     def __str__(self):
-        return "blue: {0}, red: {1}".format(self.blue_total_score, self.red_total_score)
+        # return "blue: {0}, red: {1}".format(self.blue_total_score, self.red_total_score)
+        return "{0} (B: {1}, R: {2})".format(self.match_set.first(), self.blue_total_score, self.red_total_score)
 
 
 class ScoringModel2016(ScoringModel):

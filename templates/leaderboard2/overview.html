@@ -2,7 +2,7 @@
 {% load url_finder %}
 
 {% block body %}
-    <table class="uk-table" style="table-layout: fixed;">
+    <table class="uk-table no-sort" style="table-layout: fixed;">
         <thead>
         <tr>
             <th>Leaderboard Desc</th>
@@ -13,7 +13,7 @@
         <tbody>
         {% for leaderboard in leaderboards %}
             <tr>
-                <td><a href="{% url 'leaderboard_spec' leaderboard.field %}">{{ leaderboard.description }}</a></td>
+                <td><a href="{% url 'leaderboard_spec' leaderboard.field_1 %}">{{ leaderboard.description }}</a></td>
                 <td>{% for leader in leaderboard.get_leaders %}
                     <a href="{{ leader|url_finder }}">{{ leader }}</a><br>
                 {% endfor %}</td>

@@ -136,5 +136,9 @@ def reverse_model_url(model: Model) -> str:
             'team2': model.teams.all()[1].team_number,
             'team3': model.teams.all()[2].team_number
         })
+    elif type(model) in [models.ScoringModel2016, ScoringModel2015, ScoringModel2014]:
+        return reverse('event_view', kwargs={
+            'event_key': model.match_set.first().event.key
+        })
     else:
         return ''
