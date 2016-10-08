@@ -1,3 +1,4 @@
+from _operator import mul, truediv, add, sub
 from abc import ABCMeta, abstractmethod
 
 from django.db import models
@@ -9,8 +10,21 @@ from TBAW.models import Team, ScoringModel2016, RankingModel, Alliance
 
 class Leaderboard(PolymorphicModel):
     __metaclass__ = ABCMeta
+    operations_choices = [
+        ('+', '+'),
+        ('-', '-'),
+        ('*', '*'),
+        ('/', '/'),
+    ]
+    operations = {
+        '+': add,
+        '-': sub,
+        '*': mul,
+        '/': truediv,
+    }
 
     selector = models.CharField(default='-ret_field', null=True, max_length=50)
+    operator = models.CharField(default='+', choices=operations_choices, max_length=10)
     description = models.TextField(default="", null=False)
     field_1 = models.CharField(null=True, max_length=50)
     field_2 = models.CharField(null=True, max_length=50)
@@ -31,8 +45,10 @@ class Leaderboard(PolymorphicModel):
 
     def annotate_queryset(self, queryset):
         queryset = queryset.annotate(ret_field=F(self.field_1[self.field_1.startswith('-'):]))
+        operator = self.operations[self.operator]
         for extra_field in self.__get_fields():
-            queryset = queryset.annotate(ret_field=F('ret_field') + F(extra_field))
+            # queryset = queryset.annotate(ret_field=F('ret_field') + F(extra_field))
+            queryset = queryset.annotate(ret_field=operator(F('ret_field'), F(extra_field)))
 
         return queryset
 
