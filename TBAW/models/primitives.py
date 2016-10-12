@@ -44,9 +44,6 @@ class Team(models.Model):
     awards_count = models.PositiveSmallIntegerField(default=0)
     blue_banners_count = models.PositiveSmallIntegerField(default=0)
 
-    def test_func(self):
-        return self.team_number + self.elo_mu
-
     def __str__(self):
         return "{0} ({1})".format(self.nickname, self.team_number)
 
@@ -75,7 +72,7 @@ class Team(models.Model):
         if year is None:
             return Match.objects.filter(alliances__teams__team_number=self.team_number, winner__isnull=True)
         else:
-            return Match.objects.filter(event__year=year)\
+            return Match.objects.filter(event__year=year) \
                 .filter(alliances__teams__team_number=self.team_number, winner_isnull=True)
 
     def get_record(self, year=None) -> str:
