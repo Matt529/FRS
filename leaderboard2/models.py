@@ -1,8 +1,10 @@
 from _operator import mul, truediv, add, sub
 from abc import ABCMeta, abstractmethod
+from types import BuiltinFunctionType
 
 from django.db import models
 from django.db.models import F
+from django.db.models.functions import Greatest, Least
 from polymorphic.models import PolymorphicModel
 
 from TBAW.models import Team, ScoringModel2016, RankingModel, Alliance
@@ -10,17 +12,29 @@ from TBAW.models import Team, ScoringModel2016, RankingModel, Alliance
 
 class Leaderboard(PolymorphicModel):
     __metaclass__ = ABCMeta
+
+    ADDITION = '+'
+    SUBTRACTION = '-'
+    MULTIPLICATION = '*'
+    DIVISION = '/'
+    GREATEST = 'greatest'
+    LEAST = 'least'
+
     operations_choices = [
-        ('+', '+'),
-        ('-', '-'),
-        ('*', '*'),
-        ('/', '/'),
+        (ADDITION, '_operator.add'),
+        (SUBTRACTION, '_operator.sub'),
+        (MULTIPLICATION, '_operator.mul'),
+        (DIVISION, '_operator.truediv'),
+        (GREATEST, 'django.db.models.functions.Greatest'),
+        (LEAST, 'django.db.models.functions.Least')
     ]
     operations = {
-        '+': add,
-        '-': sub,
-        '*': mul,
-        '/': truediv,
+        ADDITION: add,
+        SUBTRACTION: sub,
+        MULTIPLICATION: mul,
+        DIVISION: truediv,
+        GREATEST: Greatest,
+        LEAST: Least
     }
 
     selector = models.CharField(default='-ret_field', null=True, max_length=50)
@@ -47,8 +61,14 @@ class Leaderboard(PolymorphicModel):
         queryset = queryset.annotate(ret_field=F(self.field_1[self.field_1.startswith('-'):]))
         operator = self.operations[self.operator]
         for extra_field in self.__get_fields():
-            # queryset = queryset.annotate(ret_field=F('ret_field') + F(extra_field))
-            queryset = queryset.annotate(ret_field=operator(F('ret_field'), F(extra_field)))
+            ret_field_wrapper = 'ret_field'
+            extra_field_wrapper = extra_field
+
+            if type(operator) is BuiltinFunctionType:
+                ret_field_wrapper = F('ret_field')
+                extra_field_wrapper = F(extra_field)
+
+            queryset = queryset.annotate(ret_field=operator(ret_field_wrapper, extra_field_wrapper))
 
         return queryset
 

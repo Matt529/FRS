@@ -101,27 +101,21 @@ def make_team_leaderboards() -> List[TeamLeaderboard]:
 def make_scoring_2016_leaderboards() -> List[ScoringLeaderboard2016]:
     return [
         ScoringLeaderboard2016(
-            description='Highest Red Autonomous Score',
-            field_1='-red_auton_score',
-        ),
-        ScoringLeaderboard2016(
-            description='Highest Blue Autonomous Score',
-            field_1='-blue_auton_score',
-        ),
-        ScoringLeaderboard2016(
-            description='Highest Red Teleop Score',
-            field_1='-red_teleop_score',
-        ),
-        ScoringLeaderboard2016(
-            description='Highest Blue Teleop Score',
-            field_1='-blue_teleop_score',
-        ),
-        ScoringLeaderboard2016(
-            description='Highest Red Total Score',
+            description='Highest Overall Score',
             field_1='-red_total_score',
+            field_2='-blue_total_score',
+            operator=ScoringLeaderboard2016.GREATEST
         ),
         ScoringLeaderboard2016(
-            description='Highest Blue Total Score',
-            field_1='-blue_total_score',
+            description='Highest Teleop Score',
+            field_1='-red_teleop_score',
+            field_2='-blue_teleop_score',
+            operator=ScoringLeaderboard2016.GREATEST
+        ),
+        ScoringLeaderboard2016(
+            description='Highest Autonomous Score',
+            field_1='-red_auton_score',
+            field_2='-blue_auton_score',
+            operator=ScoringLeaderboard2016.GREATEST
         ),
     ]

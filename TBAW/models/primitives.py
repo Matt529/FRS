@@ -44,6 +44,9 @@ class Team(models.Model):
     awards_count = models.PositiveSmallIntegerField(default=0)
     blue_banners_count = models.PositiveSmallIntegerField(default=0)
 
+    def test_func(self):
+        return self.team_number + self.elo_mu
+
     def __str__(self):
         return "{0} ({1})".format(self.nickname, self.team_number)
 
