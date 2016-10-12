@@ -1,6 +1,7 @@
 {% extends 'FRS/base_template.html' %}
 {% load match_level_humanizer %}
 {% load get_team_ranking_model %}
+{% load math %}
 {% block title %}{{ event.year }} {{ event.name }}{% endblock %}
 {% block body %}
     <h1>{{ event.name }} {{ event.year }}</h1><br>
@@ -23,6 +24,7 @@
             <th>Event Record</th>
             <th>Pre-Event Elo</th>
             <th>Post-Event Elo</th>
+            <th>Elo Change</th>
         </tr>
         </thead>
         <tbody>
@@ -34,6 +36,7 @@
                     <td>{{ rm.get_record }}</td>
                     <td>{{ rm.elo_mu_pre|floatformat:2 }}</td>
                     <td>{{ rm.elo_mu_post|floatformat:2 }}</td>
+                    <td>{{ rm.elo_mu_post|subtract:rm.elo_mu_pre|floatformat:2 }}</td>
                 </tr>
             {% endwith %}
         {% endfor %}
