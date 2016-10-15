@@ -3,7 +3,7 @@ secret_key.py
 *.sqlite3
 *.sql
 /static/compiled
-
+/static2/
 # Created by https://www.gitignore.io/api/pycharm,python,django,virtualenv
 
 ### PyCharm ###
