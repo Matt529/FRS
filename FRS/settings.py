@@ -34,7 +34,7 @@ except ImportError:
     from .secret_key import *
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'django_spaghetti',
     'tastypie',
     'annoying',
+    'whitenoise.runserver_nostatic',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -68,6 +69,7 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'FRS.urls'
@@ -75,7 +77,7 @@ ROOT_URLCONF = 'FRS.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['/home/FRS/templates'], # ['templates'],
+        'DIRS': [os.path.join(BASE_DIR, 'templates/')],
         'APP_DIRS': False,
         'OPTIONS': {
             'context_processors': [
@@ -143,7 +145,8 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 STATIC_ROOT = os.path.join(BASE_DIR, 'static2/')
-STATICFILES_DIRS = ["/home/FRS/static", "/home/FRS/static2"]
+if not DEBUG:
+    STATICFILES_DIRS = ["/home/FRS/static", "/home/FRS/static2"]
 
 # General settings
 SUPPORTED_YEARS = list(range(2015, 2017))
