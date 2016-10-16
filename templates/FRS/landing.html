@@ -35,152 +35,151 @@
     <form action="{% url 'search' %}" method="get" class="uk-form">
         {% csrf_token %}
         <label for="search"></label>
-        <input autofocus required type="search" name="search" id="search" placeholder="Search"
-               class="uk-form-large">
+        <input autofocus required type="search" name="search" id="search"
+               placeholder="Search for anything (e.g. 2791, 2016cmp)"
+               class="uk-form-large" style="width: 100%;">
     </form>
-    <style>
-    </style>
-    <script>
-        var teams = new Bloodhound({
-            datumTokenizer: Bloodhound.tokenizers.whitespace,
-            queryTokenizer: Bloodhound.tokenizers.whitespace,
-            prefetch: "{% static 'global/json/teams.json' %}"
-        });
-
-        var events = new Bloodhound({
-            datumTokenizer: Bloodhound.tokenizers.obj.whitespace('event'),
-            queryTokenizer: Bloodhound.tokenizers.whitespace,
-            prefetch: "{% static 'global/json/events_2016.json' %}"
-        });
-
-        $('#tpa .typeahead').typeahead(
-                null,
-                {
-                    name: 'teams',
-                    display: 'team',
-                    source: teams,
-                    templates: {
-                        header: '<h3 class="type-name">Teams</h3>'
-                    }
-                },
-                {
-                    name: 'events',
-                    display: 'event',
-                    source: events,
-                    templates: {
-                        header: '<h3 class="type-name">Events</h3>'
-                    }
-                });
-    </script>
-    <script>
-        {#        $.typeahead({#}
-        {#            input: ".search-js",#}
-        {#            order: "asc",#}
-        {#            source: {#}
-        {#                team: {#}
-        {#                    data: ["hello there"],#}
-        {#                    ajax: {#}
-        {#                        type: "GET",#}
-        {#                        url: "{% url 'search' %}",#}
-        {#                        data: {'search': $('#search').val()}#}
-        {#                    }#}
-        {#                }#}
-        {#            },#}
-        {#            hint: true,#}
-        {#            cache: true,#}
-        {#            callback: {#}
-        {#                onSendRequest: function(node, query) {#}
-        {#                    console.log('sent request');#}
-        {#                },#}
-        {#                onReceiveRequest: function(node, query) {#}
-        {#                    console.log('received request');#}
-        {#                }#}
-        {#            }#}
-        {#        });#}
-    </script>
-
-    <style>
-        .axis {
-            font: 10px sans-serif;
-        }
-
-        .axis path,
-        .axis line {
-            fill: none;
-            stroke: #000;
-            shape-rendering: crispEdges;
-        }
-    </style>
+    {#    <script>#}
+    {#        var teams = new Bloodhound({#}
+    {#            datumTokenizer: Bloodhound.tokenizers.whitespace,#}
+    {#            queryTokenizer: Bloodhound.tokenizers.whitespace,#}
+    {#            prefetch: "{% static 'global/json/teams.json' %}"#}
+    {#        });#}
+    {##}
+    {#        var events = new Bloodhound({#}
+    {#            datumTokenizer: Bloodhound.tokenizers.obj.whitespace('event'),#}
+    {#            queryTokenizer: Bloodhound.tokenizers.whitespace,#}
+    {#            prefetch: "{% static 'global/json/events_2016.json' %}"#}
+    {#        });#}
+    {##}
+    {#        $('#tpa .typeahead').typeahead(#}
+    {#                null,#}
+    {#                {#}
+    {#                    name: 'teams',#}
+    {#                    display: 'team',#}
+    {#                    source: teams,#}
+    {#                    templates: {#}
+    {#                        header: '<h3 class="type-name">Teams</h3>'#}
+    {#                    }#}
+    {#                },#}
+    {#                {#}
+    {#                    name: 'events',#}
+    {#                    display: 'event',#}
+    {#                    source: events,#}
+    {#                    templates: {#}
+    {#                        header: '<h3 class="type-name">Events</h3>'#}
+    {#                    }#}
+    {#                });#}
+    {#    </script>#}
+    {#    <script>#}
+    {#        $.typeahead({#}
+    {#            input: ".search-js",#}
+    {#            order: "asc",#}
+    {#            source: {#}
+    {#                team: {#}
+    {#                    data: ["hello there"],#}
+    {#                    ajax: {#}
+    {#                        type: "GET",#}
+    {#                        url: "{% url 'search' %}",#}
+    {#                        data: {'search': $('#search').val()}#}
+    {#                    }#}
+    {#                }#}
+    {#            },#}
+    {#            hint: true,#}
+    {#            cache: true,#}
+    {#            callback: {#}
+    {#                onSendRequest: function(node, query) {#}
+    {#                    console.log('sent request');#}
+    {#                },#}
+    {#                onReceiveRequest: function(node, query) {#}
+    {#                    console.log('received request');#}
+    {#                }#}
+    {#            }#}
+    {#        });#}
+    {#    </script>#}
+    {##}
+    {#    <style>#}
+    {#        .axis {#}
+    {#            font: 10px sans-serif;#}
+    {#        }#}
+    {##}
+    {#        .axis path,#}
+    {#        .axis line {#}
+    {#            fill: none;#}
+    {#            stroke: #000;#}
+    {#            shape-rendering: crispEdges;#}
+    {#        }#}
+    {#    </style>#}
     {# Tooltips #}
-    <script>
-
-        var margin = {top: 20, right: 20, bottom: 70, left: 40},
-                width = 600 - margin.left - margin.right,
-                height = 300 - margin.top - margin.bottom;
-
-        var x = d3.scale.ordinal().rangeRoundBands([0, width], .05);
-        var y = d3.scale.linear().range([height, 0]);
-
-        var xAxis = d3.svg.axis()
-                .scale(x)
-                .orient("bottom");
-
-        var yAxis = d3.svg.axis()
-                .scale(y)
-                .orient("left")
-                .ticks(10);
-
-        var svg = d3.select("body").append("svg")
-                .attr("width", width + margin.left + margin.right)
-                .attr("height", height + margin.top + margin.bottom)
-                .append("g")
-                .attr("transform",
-                        "translate(" + margin.left + "," + margin.top + ")");
-
-        d3.tsv("{% static 'compiled/global/test.tsv' %}", function (error, data) {
-            x.domain(data.map(function (d) {
-                return +d.team;
-            }));
-            y.domain([0, d3.max(data, function (d) {
-                return +d.elo;
-            })]);
-
-            svg.append("g")
-                    .attr("class", "x axis")
-                    .attr("transform", "translate(0," + height + ")")
-                    .call(xAxis)
-                    .selectAll("text")
-                    .style("text-anchor", "end")
-                    .attr("dx", "-.8em")
-                    .attr("dy", "-.55em")
-                    .attr("transform", "rotate(-90)");
-
-            svg.append("g")
-                    .attr("class", "y axis")
-                    .call(yAxis)
-                    .append("text")
-                    .attr("transform", "rotate(-90)")
-                    .attr("y", 6)
-                    .attr("dy", ".71em")
-                    .style("text-anchor", "end")
-                    .text("Value ($)");
-
-            svg.selectAll("bar")
-                    .data(data)
-                    .enter().append("rect")
-                    .style("fill", "steelblue")
-                    .attr("x", function (d) {
-                        return x(d.team);
-                    })
-                    .attr("width", x.rangeBand())
-                    .attr("y", function (d) {
-                        return y(d.elo);
-                    })
-                    .attr("height", function (d) {
-                        return height - y(d.elo);
-                    });
-        });
-    </script>
-
+    {#    <script>#}
+    {##}
+    {#        var margin = {top: 20, right: 20, bottom: 70, left: 40},#}
+    {#                width = 600 - margin.left - margin.right,#}
+    {#                height = 300 - margin.top - margin.bottom;#}
+    {##}
+    {#        var x = d3.scale.ordinal().rangeRoundBands([0, width], .05);#}
+    {#        var y = d3.scale.linear().range([height, 0]);#}
+    {##}
+    {#        var xAxis = d3.svg.axis()#}
+    {#                .scale(x)#}
+    {#                .orient("bottom");#}
+    {##}
+    {#        var yAxis = d3.svg.axis()#}
+    {#                .scale(y)#}
+    {#                .orient("left")#}
+    {#                .ticks(10);#}
+    {##}
+    {#        var svg = d3.select("body").append("svg")#}
+    {#                .attr("width", width + margin.left + margin.right)#}
+    {#                .attr("height", height + margin.top + margin.bottom)#}
+    {#                .append("g")#}
+    {#                .attr("transform",#}
+    {#                        "translate(" + margin.left + "," + margin.top + ")");#}
+    {##}
+    {#        d3.tsv("{% static 'compiled/global/test.tsv' %}", function (error, data) {#}
+    {#            x.domain(data.map(function (d) {#}
+    {#                return +d.team;#}
+    {#            }));#}
+    {#            y.domain([0, d3.max(data, function (d) {#}
+    {#                return +d.elo;#}
+    {#            })]);#}
+    {##}
+    {#            svg.append("g")#}
+    {#                    .attr("class", "x axis")#}
+    {#                    .attr("transform", "translate(0," + height + ")")#}
+    {#                    .call(xAxis)#}
+    {#                    .selectAll("text")#}
+    {#                    .style("text-anchor", "end")#}
+    {#                    .attr("dx", "-.8em")#}
+    {#                    .attr("dy", "-.55em")#}
+    {#                    .attr("transform", "rotate(-90)");#}
+    {##}
+    {#            svg.append("g")#}
+    {#                    .attr("class", "y axis")#}
+    {#                    .call(yAxis)#}
+    {#                    .append("text")#}
+    {#                    .attr("transform", "rotate(-90)")#}
+    {#                    .attr("y", 6)#}
+    {#                    .attr("dy", ".71em")#}
+    {#                    .style("text-anchor", "end")#}
+    {#                    .text("Value ($)");#}
+    {##}
+    {#            svg.selectAll("bar")#}
+    {#                    .data(data)#}
+    {#                    .enter().append("rect")#}
+    {#                    .style("fill", "steelblue")#}
+    {#                    .attr("x", function (d) {#}
+    {#                        return x(d.team);#}
+    {#                    })#}
+    {#                    .attr("width", x.rangeBand())#}
+    {#                    .attr("y", function (d) {#}
+    {#                        return y(d.elo);#}
+    {#                    })#}
+    {#                    .attr("height", function (d) {#}
+    {#                        return height - y(d.elo);#}
+    {#                    });#}
+    {#        });#}
+    {#    </script>#}
+    {##}
 
 {% endblock %}
