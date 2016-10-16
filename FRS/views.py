@@ -1,3 +1,5 @@
+import random
+
 from django.core.serializers import serialize
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect
@@ -10,7 +12,21 @@ from util.viewutils import require_http_methods_plus
 
 
 def handle_404(request):
-    response = render_to_response('FRS/404.html', context_instance=RequestContext(request))
+    gifs = [
+        '//zippy.gfycat.com/BeneficialSingleCurassow.webm',
+        '//i.imgur.com/7mtLFpn.mp4',
+        '//i.imgur.com/dEYwB1V.mp4',
+        '//i.imgur.com/nhklRqC.mp4',
+        '//fat.gfycat.com/MintyCelebratedFirefly.webm',
+        '//zippy.gfycat.com/BleakDeadHammerheadshark.webm',
+        '//i.imgur.com/LV3Qc1H.mp4',
+        '//i.imgur.com/1Yfuwrn.mp4',
+        '//i.imgur.com/2wU3y70.mp4',
+    ]
+
+    response = render_to_response('FRS/404.html', context={
+        'webm': random.choice(gifs),
+    }, context_instance=RequestContext(request))
     response.status_code = 404
     return response
 
