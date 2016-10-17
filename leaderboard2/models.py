@@ -37,7 +37,7 @@ class Leaderboard(PolymorphicModel):
         LEAST: Least
     }
 
-    ALL_TIME = "All Time"
+    ALL_TIME = "All"
     LEADERBOARD_YEARS = ['{}'.format(y) for y in range(2014, 2017)][::-1]
     categories = [ALL_TIME] + LEADERBOARD_YEARS
     category_choices = [(x, x) for x in categories]

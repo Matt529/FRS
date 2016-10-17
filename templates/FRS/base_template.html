@@ -48,7 +48,7 @@
                             <ul class="uk-nav uk-nav-navbar">
                                 {% show_leaderboard_categories as categories %}
                                 {% for category in categories %}
-                                    <li><a href="#">{{ category }}</a></li>
+                                    <li><a href="{% url 'category_overview' category %}">{{ category }}</a></li>
                                 {% endfor %}
                             </ul>
                         </div>
