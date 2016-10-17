@@ -1,8 +1,10 @@
+
 {% spaceless %}
     <!DOCTYPE html>
     <html lang="en">
     {% load staticfiles %}
     {% load static from staticfiles %}
+    {% load leaderboard_dropdown %}
     {% block head %}
         <head>
             <meta charset="UTF-8">
@@ -20,8 +22,6 @@
 
             {% block css %}
                 <link rel="stylesheet" href="{% static 'compiled/global/css/main.css' %}">
-                {#<link rel="stylesheet" type="text/css"#}
-                {#href="{% static 'bower_components/semantic/dist/semantic.min.css' %}">#}
             {% endblock %}
             {% block scripts %}
                 <script src="https://code.jquery.com/jquery-3.1.0.min.js"
@@ -33,7 +33,6 @@
                 <script src="{% static 'bower_components/uikit/js/uikit.min.js' %}"></script>
                 <script src="{% static 'bower_components/typeahead.js/dist/typeahead.bundle.min.js' %}"></script>
                 <script src="{% static 'bower_components/tablesorter/jquery.tablesorter.min.js' %}"></script>
-                {#<script src="{% static 'bower_components/semantic/dist/semantic.min.js' %}"></script>#}
             {% endblock %}
         </head>
     {% endblock %}
@@ -43,7 +42,17 @@
             <div class="wrapper-nav">
                 <a href="{% url 'landing' %}" class="uk-navbar-brand">FRS</a>
                 <ul class="uk-navbar-nav">
-                    <li><a href="{% url 'leaderboard_overview' %}">Leaderboard</a></li>
+                    <li class="uk-parent" data-uk-dropdown>
+                        <a href="{% url 'leaderboard_overview' %}">Leaderboard</a>
+                        <div class="uk-dropdown uk-dropdown-navbar">
+                            <ul class="uk-nav uk-nav-navbar">
+                                {% show_leaderboard_categories as categories %}
+                                {% for category in categories %}
+                                    <li><a href="#">{{ category }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </li>
                 </ul>
             </div>
         </nav>
@@ -66,6 +75,7 @@
             }
         });
 
+        {# Google Analytics #}
         {% if request.META.HTTP_HOST != "127.0.0.1:8000" %}
             (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
             (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),

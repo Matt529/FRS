@@ -104,18 +104,21 @@ def make_scoring_2016_leaderboards() -> List[ScoringLeaderboard2016]:
             description='Highest Overall Score',
             field_1='-red_total_score',
             field_2='-blue_total_score',
-            operator=ScoringLeaderboard2016.GREATEST
+            operator=ScoringLeaderboard2016.GREATEST,
+            category=ScoringLeaderboard2016.YEAR_2016
         ),
         ScoringLeaderboard2016(
             description='Highest Teleop Score',
             field_1='-red_teleop_score',
             field_2='-blue_teleop_score',
-            operator=ScoringLeaderboard2016.GREATEST
+            operator=ScoringLeaderboard2016.GREATEST,
+            category=ScoringLeaderboard2016.YEAR_2016
         ),
         ScoringLeaderboard2016(
             description='Highest Autonomous Score',
             field_1='-red_auton_score',
             field_2='-blue_auton_score',
-            operator=ScoringLeaderboard2016.GREATEST
+            operator=ScoringLeaderboard2016.GREATEST,
+            category=ScoringLeaderboard2016.YEAR_2016
         ),
     ]
