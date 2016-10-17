@@ -1,7 +1,8 @@
 from time import clock
 
 from django.core.management.base import BaseCommand
-from django.db.models import F, ExpressionWrapper, FloatField
+from django.db.models import F, Q, ExpressionWrapper, FloatField, Count
+from django.db import transaction
 
 from FRS.settings import SUPPORTED_YEARS
 from TBAW.models import Match, Alliance, Event, AllianceAppearance, RankingModel, Team, ScoringModel
@@ -218,30 +219,38 @@ def parse_score_breakdown(year: int, score_breakdown: dict) -> ScoringModel:
 
 def handle_event_winners() -> None:
     print('Handling event winners...', flush=True)
-    matches_of_3 = Match.objects.filter(comp_level__exact='f', match_number__exact=3, winner__isnull=False)
-    matches_of_2 = Match.objects.filter(
-        key__in=[x.key for x in Match.objects.filter(comp_level__exact='f', match_number__exact=2,
-                                                     winner__isnull=False) if not x.event.has_f3_match()])
-    matches = (matches_of_2 | matches_of_3)
 
-    for m in matches:
-        m.event.winning_alliance = m.winner
-        m.event.save()
+    match_of_3_or_2 = Q(comp_level='f') & (Q(match_number=3) | Q(match_number=2)) & Q(winner__isnull=False)
 
-        for team in m.winner.teams.all():
-            team.event_wins_count += 1
-            team.save()
+    # Find all 'f' level matches with match_number == 2 or 3
+    matches = Match.objects.filter(match_of_3_or_2)
 
-    Team.objects.exclude(event_attended_count=0).annotate(
-        wr=ExpressionWrapper(F('event_wins_count') * 1.0 / F('event_attended_count'), output_field=FloatField())
-    ).update(event_winrate=F('wr'))
-    Team.objects.exclude(match_losses_count=0, match_wins_count=0).annotate(
-        played=ExpressionWrapper(F('match_wins_count') + F('match_losses_count') + F('match_ties_count'),
-                                 output_field=FloatField())
-    ).annotate(
-        wr=ExpressionWrapper(F('match_wins_count') * 1.0 / F('played'), output_field=FloatField())
-    ).update(match_winrate=F('wr'))
+    # Find all event ids that occur more than once
+    dupes = matches.values('event').annotate(Count('id')).filter(id__count__gt=1).values('event')
+    dupes = {x['event'] for x in dupes}     # values returns a list of dicts
 
+    # Perform update in aggregate, in a single transaction
+    with transaction.atomic():
+        for m in matches:
+            # Do not update matches that were picked up in the match_number=2 query
+            # but went on to a 3rd match. That event_id would then appear twice.
+            if m.match_number == '2' and m.event_id in dupes:
+                dupes.remove(m.event_id)
+                continue
+
+            m.event.winning_alliance = m.winner
+            m.event.save()
+
+            m.winner.teams.all().update(event_wins_count=F('event_wins_count')+1)
+
+    # Update event winrates based on event wins and events attended
+    Team.objects.exclude(event_attended_count=0)\
+                .update(event_winrate=(F('event_wins_count') * 1.0 / F('event_attended_count')))
+
+    # Update match winrate based on total matches played and total matches won
+    Team.objects.exclude(match_losses_count=0, match_wins_count=0)\
+        .annotate(played=F('match_wins_count') + F('match_losses_count') + F('match_ties_count'))\
+        .update(match_winrate=ExpressionWrapper(F('match_wins_count') * 1.0 / F('played'), output_field=FloatField()))
 
 class Command(BaseCommand):
     help = "Adds matches to the database"
