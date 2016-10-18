@@ -13,7 +13,7 @@
         <tbody>
         {% for leaderboard in leaderboards %}
             <tr>
-                <td><a href="{% url 'leaderboard_spec' leaderboard.field_1 %}">{{ leaderboard.description }}</a></td>
+                <td><a href="{% url 'leaderboard_spec' leaderboard.category leaderboard.field_1 %}">{{ leaderboard.description }}</a></td>
                 <td>{% for leader in leaderboard.get_leaders %}
                     <a href="{{ leader|url_finder }}">{{ leader }}</a><br>
                 {% endfor %}</td>

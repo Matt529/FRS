@@ -11,8 +11,8 @@ def leaderboard_overview(request):
 
 
 @render_to('leaderboard2/leaderboard_spec.html')
-def leaderboard(request, field):
-    lb = Leaderboard.objects.filter(field_1__contains=field).first()
+def leaderboard(request, category, field):
+    lb = Leaderboard.objects.filter(category=category, field_1__contains=field).first()
     return {'leaderboard': lb}
 
 
