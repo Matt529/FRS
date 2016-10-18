@@ -34,7 +34,8 @@ except ImportError:
     from .secret_key import *
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
+
 
 ALLOWED_HOSTS = ['*']
 
@@ -144,9 +145,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
-STATIC_ROOT = os.path.join(BASE_DIR, 'static2/')
-if not DEBUG:
-    STATICFILES_DIRS = ["/home/FRS/static", "/home/FRS/static2"]
+STATIC_ROOT = os.path.join(BASE_DIR, 'static2')
 
 # General settings
 SUPPORTED_YEARS = list(range(2015, 2017))
