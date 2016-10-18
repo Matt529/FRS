@@ -13,8 +13,10 @@ __tba_url = 'https://www.thebluealliance.com/api/v2/'
 __team_template = TemplateString(__tba_url + 'team/frc{0}')
 __team_history_template = __team_template + '/history/robots'
 __team_participation_template = __team_template + '/years_participated'
-__team_list_template = TemplateString(__tba_url + 'teams/{0}')
+
+__team_by_page_template = TemplateString(__tba_url + 'teams/{0}')
 __event_by_year_template = TemplateString(__tba_url + 'events/{0}')
+
 __event_template = TemplateString(__tba_url + 'event/{0}')
 __event_ranking_template = __event_template + '/rankings'
 __event_stats_template = __event_template + '/stats'
@@ -32,7 +34,7 @@ def get_team_json(team_number: int) -> dict:
 def get_list_of_teams_json() -> List[dict]:
     teams = []
     for page in range(0, 13):
-        url = __team_list_template(page)
+        url = __team_by_page_template(page)
         teams += requests.get(url, headers=__api_key).json()
 
     return teams
