@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'tastypie',
     'annoying',
     'whitenoise.runserver_nostatic',
+    'debug_toolbar',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -71,6 +72,7 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'FRS.urls'
@@ -79,7 +81,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [os.path.join(BASE_DIR, 'templates/')],
-        'APP_DIRS': False,
+        'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -166,3 +168,5 @@ SPAGHETTI_SAUCE = {
 # For API request logging
 LOG_PATH = BASE_DIR + '/logs/api/'
 FILE_NUM = 1
+
+INTERNAL_IPS=('127.0.0.1',)

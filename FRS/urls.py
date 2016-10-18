@@ -1,4 +1,5 @@
 from django.conf.urls import url, include
+from django.conf import settings
 from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from tastypie.api import Api
@@ -25,3 +26,9 @@ urlpatterns += staticfiles_urlpatterns()
 urlpatterns += [
     url(r'^plate/', include('django_spaghetti.urls')),
 ]
+
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns += [
+        url(r'^__debug__/', include(debug_toolbar.urls)),
+    ]
