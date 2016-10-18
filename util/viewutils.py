@@ -4,64 +4,10 @@ from typing import List, Mapping, Union
 from django.http import QueryDict, HttpResponseNotAllowed
 from django.utils.decorators import available_attrs
 
+from util.templatestring import TemplateString
 
-class TemplateString(object):
-    """
-    Storing a formattable string for later use, can be called like a function and supports adding TemplateStrings
-    together and adding strings and TemplateStrings together. Internally uses str.format.
-
-    TemplateString("ab{}c")("foo") -> "abfooc"
-    TemplateString("ab{}c").format("foo") -> "abfooc"
-    TemplateString("foo{}baz") + TemplateString("Sweet {}!") -> TemplateString("foo{}barSweet {}!")
-    TemplateString("foo") + "{}baz" -> TemplateString("foo{}bar")
-    "foo" + TemplateString("{}baz") -> TemplateString("foo{}baz")
-
-    Does not support identity operations, TemplateStrings are immutable, a new copy is always made.
-
-    """
-
-    def __init__(self, fmt: str):
-        self._format_string = fmt
-
-    def format(self, *args, **kwargs) -> str:
-        return self._format_string.format(*args, **kwargs)
-
-    def get_format_string(self):
-        return self._format_string
-
-    def __eq__(self, other: Union['TemplateString', str]) -> bool:
-        if isinstance(other, str):
-            return self._format_string == other
-        else:
-            return self._format_string == other._format_string
-
-    def __call__(self, *args, **kwargs) -> str:
-        return self.format(*args, **kwargs)
-
-    def __getitem__(self, item: int) -> str:
-        return self._format_string[item]
-
-    def __str__(self) -> str:
-        return 'TemplateStr["{}"]'.format(self._format_string)
-
-    def __bytes__(self) -> bytes:
-        return bytes(str(self))
-
-    def __add__(self, other: Union['TemplateString', str]) -> 'TemplateString':
-        if isinstance(other, str):
-            return TemplateString(self._format_string + other)
-        else:
-            return TemplateString(self._format_string + other._format_string)
-
-    def __radd__(self, other: Union['TemplateString', str]) -> 'TemplateString':
-        if isinstance(other, str):
-            return TemplateString(other + self._format_string)
-        else:
-            return TemplateString(other._format_string + self._format_string)
-
-
-def require_http_methods_plus(method_types: List[str], required_args: Union[Mapping[str, List[str]], List[str]]={},
-                              method_props: Mapping[str, List[str]]={}):
+def require_http_methods_plus(method_types: List[str], required_args: Union[Mapping[str, List[str]], List[str]]=None,
+                              method_props: Mapping[str, List[str]]=None):
     """
     Enhances the possible functionality of the standard require_http_methods function from django.
 
@@ -82,6 +28,12 @@ def require_http_methods_plus(method_types: List[str], required_args: Union[Mapp
                         arguments
     :param method_props: Map from Request Method names to required method properties
     """
+
+    if required_args is None:
+        required_args = {}
+    if method_props is None:
+        method_props = {}
+
     invalid_type = TemplateString("{} is not one of the allowed request methods ({})!")
     missing_props = TemplateString("Request of type {} must have following properties: {}")
     missing_args = TemplateString("Request missing arguments. Has {}, missing {}")
