@@ -1,9 +1,10 @@
 from django.core.management.base import BaseCommand
 
 from FRS.settings import LEADERBOARD_COUNT
-from TBAW.models import Team, ScoringModel2016
-from leaderboard2.models import TeamLeaderboard, ScoringLeaderboard2016
+from TBAW.models import Team
+from leaderboard2.models import TeamLeaderboard, ScoringLeaderboard2015, ScoringLeaderboard2016
 from util import generators
+from util.getters import get_instance_scoring_model
 
 
 def populate_team_leaderboards():
@@ -18,13 +19,14 @@ def populate_team_leaderboards():
 
 
 def populate_scoring_leaderboards():
-    if ScoringLeaderboard2016.objects.count() > 0:
-        ScoringLeaderboard2016.objects.all().delete()
+    ScoringLeaderboard2015.objects.all().delete()
+    ScoringLeaderboard2016.objects.all().delete()
 
-    scoring_leaderboards = generators.make_scoring_2016_leaderboards()
+    scoring_leaderboards = generators.make_scoring_leaderboards()
     for slb in scoring_leaderboards:
+        slb_year = int(slb.__class__.__name__[-4:])
         slb.save()
-        qs = slb.annotate_queryset(ScoringModel2016.objects.all())
+        qs = slb.annotate_queryset(get_instance_scoring_model(slb_year).objects.all())
         slb.scoring_models.set(qs.order_by('-ret_field')[:LEADERBOARD_COUNT])
 
 

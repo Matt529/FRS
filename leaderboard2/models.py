@@ -7,7 +7,7 @@ from django.db.models import F
 from django.db.models.functions import Greatest, Least
 from polymorphic.models import PolymorphicModel
 
-from TBAW.models import Team, ScoringModel2016, RankingModel, Alliance
+from TBAW.models import Team, ScoringModel2016, ScoringModel2015, RankingModel, Alliance
 
 
 class Leaderboard(PolymorphicModel):
@@ -37,12 +37,18 @@ class Leaderboard(PolymorphicModel):
         LEAST: Least
     }
 
+    ALL_TIME = "Alltime"
+    LEADERBOARD_YEARS = ['{}'.format(y) for y in range(2015, 2017)][::-1]
+    categories = [ALL_TIME] + LEADERBOARD_YEARS
+    category_choices = [(x, x) for x in categories]
+
     selector = models.CharField(default='-ret_field', null=True, max_length=50)
     operator = models.CharField(default='+', choices=operations_choices, max_length=10)
     description = models.TextField(default="", null=False)
     field_1 = models.CharField(null=True, max_length=50)
     field_2 = models.CharField(null=True, max_length=50)
     field_3 = models.CharField(null=True, max_length=50)
+    category = models.CharField(null=False, max_length=50, default=ALL_TIME, choices=category_choices)
 
     def __get_fields(self):
         fields = []
@@ -111,6 +117,13 @@ class AllianceLeaderboard(Leaderboard):
 
 class ScoringLeaderboard2016(Leaderboard):
     scoring_models = models.ManyToManyField(ScoringModel2016)
+
+    def get_models(self):
+        return self.get_detailed_models(self.scoring_models.all())
+
+
+class ScoringLeaderboard2015(Leaderboard):
+    scoring_models = models.ManyToManyField(ScoringModel2015)
 
     def get_models(self):
         return self.get_detailed_models(self.scoring_models.all())
