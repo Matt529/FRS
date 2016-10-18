@@ -32,13 +32,14 @@
         })
     </script>
 
-    <form action="{% url 'search' %}" method="get" class="uk-form">
+    <form action="{% url 'search' %}" method="get" class="uk-form form-valign">
         {% csrf_token %}
         <label for="search"></label>
         <input autofocus required type="search" name="search" id="search"
                placeholder="Search for anything (e.g. 2791, 2016cmp)"
-               class="uk-form-large" style="width: 100%;">
+               class="uk-form-large">
     </form>
+
     {#    <script>#}
     {#        var teams = new Bloodhound({#}
     {#            datumTokenizer: Bloodhound.tokenizers.whitespace,#}
