@@ -7,7 +7,7 @@ from django.db.models import F
 from django.db.models.functions import Greatest, Least
 from polymorphic.models import PolymorphicModel
 
-from TBAW.models import Team, ScoringModel2016, RankingModel, Alliance
+from TBAW.models import Team, ScoringModel2016, ScoringModel2015, RankingModel, Alliance
 
 
 class Leaderboard(PolymorphicModel):
@@ -38,7 +38,7 @@ class Leaderboard(PolymorphicModel):
     }
 
     ALL_TIME = "Alltime"
-    LEADERBOARD_YEARS = ['{}'.format(y) for y in range(2014, 2017)][::-1]
+    LEADERBOARD_YEARS = ['{}'.format(y) for y in range(2015, 2017)][::-1]
     categories = [ALL_TIME] + LEADERBOARD_YEARS
     category_choices = [(x, x) for x in categories]
 
@@ -117,6 +117,13 @@ class AllianceLeaderboard(Leaderboard):
 
 class ScoringLeaderboard2016(Leaderboard):
     scoring_models = models.ManyToManyField(ScoringModel2016)
+
+    def get_models(self):
+        return self.get_detailed_models(self.scoring_models.all())
+
+
+class ScoringLeaderboard2015(Leaderboard):
+    scoring_models = models.ManyToManyField(ScoringModel2015)
 
     def get_models(self):
         return self.get_detailed_models(self.scoring_models.all())

@@ -3,7 +3,7 @@ from typing import List
 from django.db.models.query import QuerySet
 
 from TBAW.models import Team, Event
-from leaderboard2.models import TeamLeaderboard, ScoringLeaderboard2016
+from leaderboard2.models import Leaderboard, TeamLeaderboard, ScoringLeaderboard2015, ScoringLeaderboard2016
 
 _CHAMPIONS = {
     'cmp',
@@ -98,27 +98,48 @@ def make_team_leaderboards() -> List[TeamLeaderboard]:
     ]
 
 
-def make_scoring_2016_leaderboards() -> List[ScoringLeaderboard2016]:
+def make_scoring_leaderboards() -> List:
     return [
-        ScoringLeaderboard2016(
-            description='Highest Overall Score',
+        ScoringLeaderboard2015(
+            description='Highest Overall Score (2015)',
             field_1='-red_total_score',
             field_2='-blue_total_score',
-            operator=ScoringLeaderboard2016.GREATEST,
-            category='2016'
+            operator=Leaderboard.GREATEST,
+            category='2015'
         ),
-        ScoringLeaderboard2016(
-            description='Highest Teleop Score',
+        ScoringLeaderboard2015(
+            description='Highest Teleop Score (2015)',
             field_1='-red_teleop_score',
             field_2='-blue_teleop_score',
-            operator=ScoringLeaderboard2016.GREATEST,
+            operator=Leaderboard.GREATEST,
+            category='2015'
+        ),
+        ScoringLeaderboard2015(
+            description='Highest Autonomous Score (2015)',
+            field_1='-red_auton_score',
+            field_2='-blue_auton_score',
+            operator=Leaderboard.GREATEST,
+            category='2015'
+        ),
+        ScoringLeaderboard2016(
+            description='Highest Overall Score (2016)',
+            field_1='-red_total_score',
+            field_2='-blue_total_score',
+            operator=Leaderboard.GREATEST,
             category='2016'
         ),
         ScoringLeaderboard2016(
-            description='Highest Autonomous Score',
+            description='Highest Teleop Score (2016)',
+            field_1='-red_teleop_score',
+            field_2='-blue_teleop_score',
+            operator=Leaderboard.GREATEST,
+            category='2016'
+        ),
+        ScoringLeaderboard2016(
+            description='Highest Autonomous Score (2016)',
             field_1='-red_auton_score',
             field_2='-blue_auton_score',
-            operator=ScoringLeaderboard2016.GREATEST,
+            operator=Leaderboard.GREATEST,
             category='2016'
         ),
     ]
