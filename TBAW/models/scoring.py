@@ -297,8 +297,3 @@ class ScoringModel2015(ScoringModel):
         # https://github.com/the-blue-alliance/the-blue-alliance/issues/1563
         if self.blue_tote_count_far < 0:
             self.blue_tote_count_far = 0
-
-
-class ScoringModel2014(ScoringModel):
-    def setup(self, json):
-        pass
