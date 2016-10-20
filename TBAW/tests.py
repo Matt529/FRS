@@ -2,32 +2,35 @@ from django.test import TestCase
 from .requester import get_team_json, get_event_json
 from .models import Team, Event
 
+import collections
 import requests_mock
 from TBAW.resource_getter import Requester, AsyncRequester, HttpMethod, ResourceResult
 
 # save() is intentionally left out of setUp() methods, see Django docs
 
+UrlTestParams = collections.namedtuple('UrlTestParams', ['url', 'method', 'kwargs'])
 
 @requests_mock.Mocker()
 class AsyncRequestTestCase(TestCase):
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.test_urls = [
-            'http://www.test.com',
-            'http://www.tbaw.com',
-            'http://www.frs.party'
-        ]
-
     def setUp(self):
-        pass
+        self.test_urls = {
+            'GET': [
+                UrlTestParams('http://www.test.com', HttpMethod.GET, {'text': 'Hello World!'}),
+                UrlTestParams('http://www.tbaw.io', HttpMethod.GET, {'text': 'Wow look at all those robots!'})
+            ],
+            'POST': [
+                UrlTestParams('http://www.tbaw.io', HttpMethod.POST, {'text': "Probably shouldn't..."})
+            ],
+            'HEAD': [
+                UrlTestParams('http://www.frs.party', HttpMethod.HEAD, {'text': 'BYOR - Bring Your Own Robots'})
+            ]
+        }
 
     def _register_test_uris(self, mock: requests_mock.Mocker):
-        mock.register_uri('GET', self.test_urls[0], text='Hello World!')
-        mock.register_uri('GET', self.test_urls[1], text='Wow look at all those robots!')
-        mock.register_uri('POST', self.test_urls[1], text='Probably shouldn\'t...')
-        mock.register_uri('HEAD', self.test_urls[2], text='Only information you need is that we party.')
+        for urls in self.test_urls.values():
+            for url in urls:
+                mock.register_uri(url.method.name, url.url, **url.kwargs)
 
     def test_instantiation(self):
         requester = Requester()
@@ -41,11 +44,14 @@ class AsyncRequestTestCase(TestCase):
     def test_synchronous_requests(self, mocker):
         self._register_test_uris(mocker)
 
+        urls = self.test_urls['GET'] + self.test_urls['POST'] + self.test_urls['HEAD']
+        urls = [(x.url, x.method) for x in urls]
+
         requester = Requester()
-        requester.push_first(self.test_urls[0])
-        requester.push_first(self.test_urls[1])
-        requester.push_last(self.test_urls[1], HttpMethod.POST)
-        requester.push_last(self.test_urls[2], HttpMethod.HEAD, identifier='party')
+        requester.push_first(*urls[0])
+        requester.push_first(*urls[1])
+        requester.push_last(*urls[2])
+        requester.push_last(*urls[3], identifier='party')
 
         import requests
         result = requester.retrieve('party')
