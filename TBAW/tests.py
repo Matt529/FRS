@@ -4,33 +4,51 @@ from .models import Team, Event
 
 import collections
 import requests_mock
+from util.templatestring import TemplateLike
 from TBAW.resource_getter import Requester, AsyncRequester, HttpMethod, ResourceResult
 
 # save() is intentionally left out of setUp() methods, see Django docs
 
-UrlTestParams = collections.namedtuple('UrlTestParams', ['url', 'method', 'kwargs'])
+
+class UrlTestParams(object):
+
+    def __init__(self, url: TemplateLike, method: HttpMethod, mock_args: dict = None, *args, identifier: str = None):
+        self.url = url
+        self.method = method
+        self.mock_args = mock_args or {}    # type: dict
+        self.identifier = identifier or self.url
+
+    def register_mock(self, mock: requests_mock.Mocker):
+        mock.register_uri(self.method.name, self.url, **self.mock_args)
+
+    def add_self_front(self, requester: Requester):
+        requester.push_first(self.url, self.method, identifier=self.identifier)
+
+    def add_self_back(self, requester: Requester):
+        requester.push_last(self.url, self.method, identifier=self.identifier)
+
 
 @requests_mock.Mocker()
 class AsyncRequestTestCase(TestCase):
 
     def setUp(self):
-        self.test_urls = {
-            'GET': [
-                UrlTestParams('http://www.test.com', HttpMethod.GET, {'text': 'Hello World!'}),
-                UrlTestParams('http://www.tbaw.io', HttpMethod.GET, {'text': 'Wow look at all those robots!'})
-            ],
-            'POST': [
-                UrlTestParams('http://www.tbaw.io', HttpMethod.POST, {'text': "Probably shouldn't..."})
-            ],
-            'HEAD': [
-                UrlTestParams('http://www.frs.party', HttpMethod.HEAD, {'text': 'BYOR - Bring Your Own Robots'})
-            ]
-        }
+        self.fixtures = [
+            UrlTestParams('http://www.test.com', HttpMethod.GET, {'text': 'Hello World!'}),
+            UrlTestParams('http://www.tbaw.io', HttpMethod.GET, {'text': 'Wow look at all those robots!'}),
+            UrlTestParams('http://www.tbaw.io', HttpMethod.POST, {'text': "Probably shouldn't..."}),
+            UrlTestParams('http://www.frs.party', HttpMethod.HEAD, {'text': 'BYOR - Bring Your Own Robots'}, {'identifier': 'party'})
+        ]
+
+        self.GET_TEST_COM = self.fixtures[0]
+        self.GET_TBAW_IO = self.fixtures[1]
+        self.POST_TBAW_IO = self.fixtures[2]
+        self.HEAD_FRS_PARTY = self.fixtures[3]
+
 
     def _register_test_uris(self, mock: requests_mock.Mocker):
-        for urls in self.test_urls.values():
-            for url in urls:
-                mock.register_uri(url.method.name, url.url, **url.kwargs)
+
+        for url_params in self.fixtures:
+            url_params.register_mock(mock)
 
     def test_instantiation(self):
         requester = Requester()
@@ -44,14 +62,11 @@ class AsyncRequestTestCase(TestCase):
     def test_synchronous_requests(self, mocker):
         self._register_test_uris(mocker)
 
-        urls = self.test_urls['GET'] + self.test_urls['POST'] + self.test_urls['HEAD']
-        urls = [(x.url, x.method) for x in urls]
-
         requester = Requester()
-        requester.push_first(*urls[0])
-        requester.push_first(*urls[1])
-        requester.push_last(*urls[2])
-        requester.push_last(*urls[3], identifier='party')
+        self.GET_TEST_COM.add_self_front(requester)
+        self.POST_TBAW_IO.add_self_front(requester)
+        self.GET_TBAW_IO.add_self_back(requester)
+        self.HEAD_FRS_PARTY.add_self_back(requester)
 
         import requests
         result = requester.retrieve('party')
