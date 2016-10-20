@@ -3,8 +3,8 @@ from django.db.models import Model
 
 from TBAW import models
 from TBAW.models import Team, Event, Match, Alliance, ScoringModel2016, ScoringModel2015, \
-    RankingModel2016, \
-    RankingModel2015, ScoringModel, RankingModel
+    RankingModel2016, RankingModel2015, RankingModel2014, RankingModel2013, RankingModel2012, RankingModel2011, \
+    RankingModel2010, ScoringModel, RankingModel
 
 
 def get_team(team_number: int) -> Team:
@@ -111,6 +111,11 @@ def get_instance_ranking_model(year: int) -> RankingModel:
     return {
         2016: RankingModel2016,
         2015: RankingModel2015,
+        2014: RankingModel2014,
+        2013: RankingModel2013,
+        2012: RankingModel2012,
+        2011: RankingModel2011,
+        2010: RankingModel2010,
         # etc
     }.get(year)
 

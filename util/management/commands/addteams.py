@@ -5,6 +5,7 @@ from django.core.management.base import BaseCommand
 from TBAW.models import Team
 from TBAW.requester import get_list_of_teams_json, get_team_json, get_team_years_participated
 from util.check import team_exists
+from util.data_logger import log_bad_data
 from util.getters import get_previous_team
 
 teams_updated = 0
@@ -23,7 +24,7 @@ def add_team(team_number: int, team_data=None) -> None:
     if team_data is None:
         team_data = get_team_json(team_number)
 
-    print("Adding team {0}".format(team_number))
+    # print("Adding team {0}".format(team_number))
     website = team_data['website']
     name = team_data['name']
     locality = team_data['locality']
@@ -34,13 +35,14 @@ def add_team(team_number: int, team_data=None) -> None:
     nickname = team_data['nickname']
     motto = team_data['motto']
 
-    # Sometimes teams have null records, for reasons unknown. Check if null records were indeed ever active
+    # Sometimes teams have participated but have null records, for reasons unknown. Check if they were ever active.
     # examples: 146, 413
     if name is None:
         years_participated = get_team_years_participated(team_number)
         if len(years_participated) == 0:
             teams_skipped += 1
-            return
+            log_bad_data('{}'.format(team_number), 'Zero years participated')
+            return None
 
     # Handle empty rookie year data field by guessing that it's equal to the year of the team before it
     # may not be perfect but it's the best option we've got
@@ -65,6 +67,9 @@ def add_team(team_number: int, team_data=None) -> None:
         team.save()
         teams_created += 1
         # print("Created team {0}".format(team_number))
+
+    if teams_created % 500 == 0:
+        print('Created team {}'.format(team_number))
 
 
 class Command(BaseCommand):
