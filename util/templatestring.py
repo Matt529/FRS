@@ -1,7 +1,8 @@
 from typing import Union
 
-StringLike = Union[str, 'TemplateString']
+import string
 
+TemplateLike = Union[str, 'TemplateString']
 
 class TemplateString(object):
     """
@@ -11,7 +12,7 @@ class TemplateString(object):
     TemplateString("ab{}c")("foo") -> "abfooc"
     TemplateString("ab{}c").format("foo") -> "abfooc"
     TemplateString("foo{}baz") + TemplateString("Sweet {}!") -> TemplateString("foo{}barSweet {}!")
-    TemplateString("foo") + "{}baz" -> TemplateString("foo{}bar")
+    TemplateString("foo") + "{}baz" -> TemplateString("foo{}baz")
     "foo" + TemplateString("{}baz") -> TemplateString("foo{}baz")
 
     Does not support identity operations, TemplateStrings are immutable, a new copy is always made.
@@ -20,14 +21,15 @@ class TemplateString(object):
 
     def __init__(self, fmt: str):
         self._format_string = fmt
+        self._template = string.Template(fmt)
 
     def format(self, *args, **kwargs) -> str:
-        return self._format_string.format(*args, **kwargs)
+        return self._template.safe_substitute(*args, **kwargs)
 
     def get_format_string(self):
         return self._format_string
 
-    def __eq__(self, other: StringLike) -> bool:
+    def __eq__(self, other: TemplateLike) -> bool:
         if isinstance(other, str):
             return self._format_string == other
         else:
@@ -45,13 +47,13 @@ class TemplateString(object):
     def __bytes__(self) -> bytes:
         return bytes(str(self))
 
-    def __add__(self, other: StringLike) -> 'TemplateString':
+    def __add__(self, other: TemplateLike) -> 'TemplateString':
         if isinstance(other, str):
             return TemplateString(self._format_string + other)
         else:
             return TemplateString(self._format_string + other._format_string)
 
-    def __radd__(self, other: StringLike) -> 'TemplateString':
+    def __radd__(self, other: TemplateLike) -> 'TemplateString':
         if isinstance(other, str):
             return TemplateString(other + self._format_string)
         else:
