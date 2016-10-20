@@ -34,9 +34,9 @@ def require_http_methods_plus(method_types: List[str], required_args: Union[Mapp
     if method_props is None:
         method_props = {}
 
-    invalid_type = TemplateString("{} is not one of the allowed request methods ({})!")
-    missing_props = TemplateString("Request of type {} must have following properties: {}")
-    missing_args = TemplateString("Request missing arguments. Has {}, missing {}")
+    invalid_type = TemplateString("${method} is not one of the allowed request methods (${types})!")
+    missing_props = TemplateString("Request of type ${method} must have following properties: ${props}")
+    missing_args = TemplateString("Request missing arguments. Has ${args}, missing ${missing}")
 
     def decorator(func):
         @wraps(func, assigned=available_attrs(func))
@@ -44,16 +44,16 @@ def require_http_methods_plus(method_types: List[str], required_args: Union[Mapp
 
             # Verify method is at least a valid metho type
             if request.method not in method_types:
-                print("METHOD NOT ALLOWED", invalid_type(request.method, method_types))
+                print("METHOD NOT ALLOWED", invalid_type(method=request.method, types=method_types))
                 return HttpResponseNotAllowed(method_types)
 
             # Check that all required properties are in QueryDict, if any are required
             method_dict = getattr(request, request.method)
             if request.method in method_props and len([x for x in method_props[request.method] if x not in method_dict]) > 0:
-                print("METHOD NOT ALLOWED", missing_props(request.method, method_props))
+                print("METHOD NOT ALLOWED", missing_props(method=request.method, props=method_props))
                 return HttpResponseNotAllowed(
                     method_types,
-                    reason=missing_props(request.method, method_props)
+                    reason=missing_props(method=request.method, props=method_props)
                 )
 
             # Sanitize, either required_args is a list or map, normalize to a list
@@ -67,7 +67,7 @@ def require_http_methods_plus(method_types: List[str], required_args: Union[Mapp
                 print("METHOD NOT ALLOWED", missing_args(required_args_list-missing_args_list, missing_args_list))
                 return HttpResponseNotAllowed(
                     method_types,
-                    reason=missing_args(required_args_list-missing_args_list, missing_args_list)
+                    reason=missing_args(args=(required_args_list-missing_args_list), missing=missing_args_list)
                 )
 
             return func(request, *args, **kwargs)
