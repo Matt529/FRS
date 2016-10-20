@@ -5,7 +5,7 @@ from django.core.management.base import BaseCommand
 from FRS.settings import SUPPORTED_YEARS
 from TBAW.models import Event, RankingModel
 from TBAW.requester import get_event_statistics_json, get_event_rankings_json, get_teams_at_event
-from util.getters import get_event, get_instance_ranking_model
+from util.getters import get_event, get_instance_ranking_model, get_team
 
 events_added = 0
 teams_added = 0
@@ -54,6 +54,48 @@ def add_event(key: str) -> None:
         new_model.save()
         event.rankingmodel_set.add(new_model)
 
+        teams_added += 1
+
+    events_added += 1
+
+
+def add_event_new(key: str) -> None:
+    """
+    Needs testing -- RankingModel objects need new setup functions. Once tested and the old add_event function is
+    removed, this should run in O(n) rather than O(n^2).
+
+    Args:
+        key: an event key
+    """
+    global teams_skipped, teams_added, events_added
+    stats = get_event_statistics_json(key)
+    rankings = get_event_rankings_json(key)
+    event = get_event(key)
+    model = get_instance_ranking_model(int(key[:4]))
+
+    for ranking_data in rankings[1:]:
+        team_num = ranking_data[1]
+        team = get_team(team_number=int(team_num))
+        if RankingModel.objects.filter(event=event, team=team).exists():
+            teams_skipped += 1
+            continue
+
+        try:
+            opr = stats['oprs']['{}'.format(team_num)]
+            dpr = stats['dprs']['{}'.format(team_num)]
+            ccwms = stats['ccwms']['{}'.format(team_num)]
+        except KeyError:
+            teams_skipped += 1
+            continue
+
+        new_model = model.objects.create()
+        new_model.team = team
+        new_model.tba_opr = opr
+        new_model.tba_dpr = dpr
+        new_model.tba_ccwms = ccwms
+        new_model.setup(ranking_data)
+        new_model.save()
+        event.rankingmodel_set.add(new_model)
         teams_added += 1
 
     events_added += 1

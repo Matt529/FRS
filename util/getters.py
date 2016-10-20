@@ -2,8 +2,9 @@ from django.core.urlresolvers import reverse
 from django.db.models import Model
 
 from TBAW import models
-from TBAW.models import Team, Event, Match, Alliance, ScoringModel2016, ScoringModel2015, ScoringModel2014, \
-    RankingModel2016, RankingModel2015, ScoringModel, RankingModel
+from TBAW.models import Team, Event, Match, Alliance, ScoringModel2016, ScoringModel2015, \
+    RankingModel2016, \
+    RankingModel2015, ScoringModel, RankingModel
 
 
 def get_team(team_number: int) -> Team:
@@ -93,9 +94,8 @@ def get_instance_scoring_model(year: int) -> ScoringModel:
     return {
         2016: ScoringModel2016,
         2015: ScoringModel2015,
-        2014: ScoringModel2014,
         # etc
-    }.get(year)
+    }.get(year, ScoringModel)
 
 
 def get_instance_ranking_model(year: int) -> RankingModel:
@@ -136,7 +136,7 @@ def reverse_model_url(model: Model) -> str:
             'team2': model.teams.all()[1].team_number,
             'team3': model.teams.all()[2].team_number
         })
-    elif type(model) in [models.ScoringModel2016, ScoringModel2015, ScoringModel2014]:
+    elif type(model) in [ScoringModel2016, ScoringModel2015, ScoringModel]:
         return reverse('event_view', kwargs={
             'event_key': model.match_set.first().event.key
         })

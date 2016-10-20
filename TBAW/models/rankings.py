@@ -110,3 +110,79 @@ class RankingModel2014(RankingModel):
                 self.qual_losses = record[1]
                 self.qual_ties = record[2]
                 self.played = int(data_field[8])
+
+
+class RankingModel2013(RankingModel):
+    qual_score = models.PositiveSmallIntegerField(null=True)
+    climb_points = models.PositiveSmallIntegerField(null=True)
+    auton_points = models.PositiveSmallIntegerField(null=True)
+    teleop_points = models.PositiveSmallIntegerField(null=True)
+
+    def setup(self, rankings_json) -> None:
+        for data_field in rankings_json[1:]:
+            if int(data_field[1]) == self.team.team_number:
+                if "HP" in data_field:  # Week 1 events in 2013 seem to have different API returns from TBA
+                    record_str = data_field[7]
+                    played = data_field[9]
+                else:
+                    record_str = data_field[6]
+                    played = data_field[8]
+
+                self.rank = int(data_field[0])
+                self.qual_score = int(float(data_field[2]))
+                self.auton_points = int(float(data_field[3]))
+                self.climb_points = int(float(data_field[4]))
+                self.teleop_points = int(float(data_field[5]))
+                record = [int(s) for s in record_str.split('-') if s.isdigit()]
+                self.qual_wins = record[0]
+                self.qual_losses = record[1]
+                self.qual_ties = record[2]
+                self.played = int(played)
+
+
+class RankingModel2012(RankingModel):
+    qual_score = models.PositiveSmallIntegerField(null=True)
+    auton_points = models.PositiveSmallIntegerField(null=True)
+    bridge_points = models.PositiveSmallIntegerField(null=True)
+    teleop_points = models.PositiveSmallIntegerField(null=True)
+    coopertition_points = models.PositiveSmallIntegerField(null=True)
+
+    def setup(self, rankings_json) -> None:
+        for data_field in rankings_json[1:]:
+            if int(data_field[1]) == self.team.team_number:
+                self.rank = data_field[0]
+                self.qual_score = data_field[2]
+                self.auton_points = data_field[3]
+                self.bridge_points = data_field[4]
+                self.teleop_points = data_field[5]
+                self.coopertition_points = data_field[6]
+                record = [int(s) for s in data_field[7].split('-') if s.isdigit()]
+                self.qual_wins = record[0]
+                self.qual_losses = record[1]
+                self.qual_ties = record[2]
+                self.played = int(data_field[8])
+
+
+class RankingModel2011(RankingModel):
+    qual_score = models.PositiveSmallIntegerField(null=True)
+    ranking_score = models.PositiveSmallIntegerField(null=True)
+
+    def setup(self, rankings_json) -> None:
+        for data_field in rankings_json[1:]:
+            if int(data_field[1]) == self.team.team_number:
+                self.rank = int(data_field[0])
+                self.qual_wins = int(data_field[2])
+                self.qual_losses = int(data_field[3])
+                self.qual_ties = int(data_field[4])
+                self.played = int(data_field[5])
+                self.qual_score = int(data_field[6])
+                self.ranking_score = int(data_field[7])
+
+
+class RankingModel2010(RankingModel):
+    seeding_score = models.PositiveSmallIntegerField(null=True)
+    coopertition_bonus = models.PositiveSmallIntegerField(null=True)
+    hanging_points = models.PositiveSmallIntegerField(null=True)
+
+    def setup(self, rankings_json) -> None:
+        pass
