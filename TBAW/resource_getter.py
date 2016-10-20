@@ -45,7 +45,7 @@ class Resource(object):
         return self.result
 
 
-class ResourceGetter(metaclass=abc.ABCMeta):
+class Requester(metaclass=abc.ABCMeta):
 
     def __init__(self):
         self._resource_queue = collections.deque()
@@ -119,7 +119,7 @@ def _async_make_request(resource: Resource, *args, **kwargs):
 _shared_pool = ProcessPoolExecutor(10)
 
 
-class AsyncResourceGetter(ResourceGetter):
+class AsyncRequester(Requester):
 
     def __init__(self):
         super().__init__()
@@ -160,7 +160,7 @@ class AsyncResourceGetter(ResourceGetter):
         if identifier in self._resource_map:
             with self._work_lock:
                 resource = self._resource_map[identifier]
-                
+
             future = self._futures[identifier] = _shared_pool.submit(_async_make_request, resource, forced)
             future.add_done_callback(self.__future_done(identifier))
 
