@@ -2,8 +2,59 @@ from django.test import TestCase
 from .requester import get_team_json, get_event_json
 from .models import Team, Event
 
+import requests_mock
+from TBAW.resource_getter import Requester, AsyncRequester, HttpMethod, ResourceResult
 
 # save() is intentionally left out of setUp() methods, see Django docs
+
+
+@requests_mock.Mocker()
+class AsyncRequestTestCase(TestCase):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.test_urls = [
+            'http://www.test.com',
+            'http://www.tbaw.com',
+            'http://www.frs.party'
+        ]
+
+    def setUp(self):
+        pass
+
+    def _register_test_uris(self, mock: requests_mock.Mocker):
+        mock.register_uri('GET', self.test_urls[0], text='Hello World!')
+        mock.register_uri('GET', self.test_urls[1], text='Wow look at all those robots!')
+        mock.register_uri('POST', self.test_urls[1], text='Probably shouldn\'t...')
+        mock.register_uri('HEAD', self.test_urls[2], text='Only information you need is that we party.')
+
+    def test_instantiation(self):
+        requester = Requester()
+        async_requester = AsyncRequester()
+
+        self.assertIsNotNone(requester, "Instantiation of synchronous resource getter failed.")
+        self.assertIsNotNone(async_requester, "Instantiation of asynchronous resource getter failed.")
+        self.assertIsInstance(async_requester, Requester,
+                              "Asynchronous requester does not extend synchronous requester.")
+
+    def test_synchronous_requests(self, mocker):
+        self._register_test_uris(mocker)
+
+        requester = Requester()
+        requester.push_first(self.test_urls[0])
+        requester.push_first(self.test_urls[1])
+        requester.push_last(self.test_urls[1], HttpMethod.POST)
+        requester.push_last(self.test_urls[2], HttpMethod.HEAD, identifier='party')
+
+        import requests
+        result = requester.retrieve('party')
+        self.assertIsNotNone(result, 'Requester returns None for result on retrieve')
+        self.assertIsInstance(result, ResourceResult, 'Requester does not return a Resource Result object')
+        self.assertIsInstance(result.response, requests.Response, 'Result object does not contain a Response object')
+        self.assertEqual(result.response.status_code, 200, 'Response Status was non-successful: %d' % result.response.status_code)
+        self.assertEqual(result.response.text, 'Only information you need is that we party.', 'Incorrect text response')
+
 
 
 class TeamTestCase(TestCase):

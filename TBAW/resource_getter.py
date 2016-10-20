@@ -1,4 +1,4 @@
-from typing import Callable, Dict, Union, Tuple
+from typing import Callable, Dict, Union, List, Tuple
 
 from util.templatestring import TemplateLike
 
@@ -13,6 +13,7 @@ import collections
 from abc import abstractmethod
 from threading import Lock
 
+
 class HttpMethod(enum.Enum):
     HEAD = 0
     GET = 1
@@ -23,9 +24,16 @@ class HttpMethod(enum.Enum):
     def __str__(self):
         return self.name
 
-ResourceResult = collections.namedtuple('ResourceResult', ['url', 'response'])
+
+class ResourceResult(object):
+
+    def __init__(self, url: str, response: requests.Response):
+        self.url = url
+        self.response = response
+
 AsyncResourceCallback = Callable[[ResourceResult, Exception], None]
 UrlArgs = Dict[str, str]
+
 
 class Resource(object):
     def __init__(self, resource_url: TemplateLike, method: HttpMethod = HttpMethod.GET, url_args: UrlArgs = None, **kwargs):
@@ -44,6 +52,12 @@ class Resource(object):
 
         return self.result
 
+_ResourceDescriptor = collections.namedtuple('ResourceDescriptor', ['identifier', 'url', 'method', 'args', 'kwargs'])
+
+
+def make_resource_descriptor(url: str, method: HttpMethod, *args, identifier: str = None, **kwargs):
+    return _ResourceDescriptor(identifier, url, method, args, kwargs)
+
 
 class Requester(metaclass=abc.ABCMeta):
 
@@ -54,6 +68,24 @@ class Requester(metaclass=abc.ABCMeta):
     @staticmethod
     def get(resource_url: TemplateLike, method: HttpMethod = HttpMethod.GET, *args, **kwargs) -> ResourceResult:
         return ResourceResult(requests.request(method=method.name, url=resource_url.format(*args), **kwargs))
+
+    def push_all_last(self, res: _ResourceDescriptor, *args: List[_ResourceDescriptor]):
+        args = [res, *args]     # type: List[_ResourceDescriptor]
+
+        if not all([isinstance(x, _ResourceDescriptor) for x in args]):
+            raise TypeError('All arguments must be a Resource Descriptor')
+
+        for res in args:
+            self.push_last(res.url, res.method, *res.args, identifier=res.identifier, **res.kwargs)
+
+    def push_all_first(self, res: _ResourceDescriptor, *args: List[_ResourceDescriptor]):
+        args = [res, *args]
+
+        if not all([isinstance(x, _ResourceDescriptor) for x in args]):
+            raise TypeError('All arguments must be a Resource Descriptor')
+
+        for res in args:
+            self.push_first(res.url, res.method, *res.args, identifier=res.identifier, **res.kwargs)
 
     def push_last(self, resource_url: TemplateLike, method: HttpMethod = HttpMethod.GET, *args, identifier: str = None, **kwargs) -> None:
         identifier = identifier or resource_url
@@ -89,7 +121,7 @@ class Requester(metaclass=abc.ABCMeta):
         raise KeyError("No resource with identifier: %s" % identifier)
 
     @abstractmethod
-    def retrieve_all(self, forced: bool = False) -> dict:
+    def retrieve_all(self, forced: bool = False) -> Dict[str, ResourceResult]:
         results = {}
 
         while not self.is_empty_queue():
