@@ -42,10 +42,11 @@
             <div class="wrapper-nav">
                 <a href="{% url 'landing' %}" class="uk-navbar-brand">FRS</a>
                 <ul class="uk-navbar-nav">
-                    <li class="uk-parent" data-uk-dropdown>
-                        <a href="{% url 'leaderboard_overview' %}">Leaderboard <i class="fa fa-angle-down"></i></a>
+                    <li class="uk-parent" data-uk-dropdown="{mode:'click'}">
+                        <a href="#">Leaderboard <i class="fa fa-angle-down"></i></a>
                         <div class="uk-dropdown uk-dropdown-navbar">
                             <ul class="uk-nav uk-nav-navbar">
+                                <li><a href="{% url 'leaderboard_overview' %}">All Leaderboards</a></li>
                                 {% show_leaderboard_categories as categories %}
                                 {% for category in categories %}
                                     <li><a href="{% url 'category_overview' category %}">{{ category }}</a></li>
