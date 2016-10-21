@@ -4,10 +4,11 @@ from time import clock
 from django.core.management.base import BaseCommand
 
 from FRS.settings import SUPPORTED_YEARS
-from TBAW.models import Event
+from TBAW.models import Event, Alliance
 from TBAW.requester import get_event_json, get_list_of_events_json
-from util.check import event_exists
-from util.getters import get_team
+from util.check import event_exists, alliance_exists
+from util.data_logger import log_bad_data
+from util.getters import get_team, get_alliance
 
 events_updated = 0
 events_created = 0
@@ -47,6 +48,29 @@ def add_event(event_key: str, event_data=None) -> None:
                                                    venue_address=event_data['venue_address'],
                                                    timezone=event_data['timezone'], website=event_data['website'],
                                                    official=event_data['official'], end_date=date_obj)
+
+        for alliance in event_data['alliances']:
+            teams = [get_team(int(x[3:])) for x in alliance['picks']]
+            if not alliance_exists(teams[0], teams[1], teams[2]):
+                alliance_obj = Alliance.objects.create()
+            else:
+                alliance_obj = get_alliance(teams[0], teams[1], teams[2])
+
+            for t in teams:
+                alliance_obj.teams.add(t)
+
+            alliance_obj.captain = teams[0]
+            alliance_obj.first_pick = teams[1]
+            alliance_obj.second_pick = teams[2]
+
+            try:
+                if alliance['backup'] is not None:
+                    alliance_obj.backup = get_team(int(alliance['backup']['in'][3:]))
+            except KeyError:
+                pass
+
+            alliance_obj.save()
+
         events_updated += 1
         # print("Updated event {0}".format(event_key))
     # We only want to analyze data from official events or IRI/Cheezy Champs
@@ -67,10 +91,30 @@ def add_event(event_key: str, event_data=None) -> None:
             team.event_attended_count += 1
             team.save()
 
+        for alliance in event_data['alliances']:
+            teams = [get_team(int(x[3:])) for x in alliance['picks']]
+            if not alliance_exists(teams[0], teams[1], teams[2]):
+                alliance_obj = Alliance.objects.create()
+            else:
+                alliance_obj = get_alliance(teams[0], teams[1], teams[2])
+
+            for t in teams:
+                alliance_obj.teams.add(t)
+
+            alliance_obj.captain = teams[0]
+            alliance_obj.first_pick = teams[1]
+            alliance_obj.second_pick = teams[2]
+
+            if alliance['backup'] is not None:
+                alliance_obj.backup = get_team(int(alliance['backup']['in'][3:]))
+
+            alliance_obj.save()
+
         events_created += 1
         # print("Created event {0}".format(event_key))
     else:
         events_skipped += 1
+        log_bad_data(event_key, 'Not an official event')
         print("Skipped event {0}".format(event_key))
 
 

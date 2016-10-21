@@ -5,6 +5,7 @@ from django.core.management.base import BaseCommand
 from FRS.settings import SUPPORTED_YEARS
 from TBAW.models import Event, RankingModel
 from TBAW.requester import get_event_statistics_json, get_event_rankings_json, get_teams_at_event
+from util.data_logger import log_bad_data
 from util.getters import get_event, get_instance_ranking_model, get_team
 
 events_added = 0
@@ -15,12 +16,12 @@ teams_skipped = 0
 def add_all(year: int) -> None:
     events = Event.objects.filter(year=year)
     for event in events:
-        add_event(event.key)
+        add_event_new(event.key)
 
 
 def add_event(key: str) -> None:
     global teams_added, events_added, teams_skipped
-    print("({1}) Adding stats for event {0}...".format(key, events_added + 1))
+    print("({1}) Adding stats for event {0}...".format(key, events_added + 1), flush=True)
     stats = get_event_statistics_json(key)
     rankings = get_event_rankings_json(key)
     event = get_event(key)
@@ -72,6 +73,7 @@ def add_event_new(key: str) -> None:
     rankings = get_event_rankings_json(key)
     event = get_event(key)
     model = get_instance_ranking_model(int(key[:4]))
+    flag_2013 = False
 
     for ranking_data in rankings[1:]:
         team_num = ranking_data[1]
@@ -81,13 +83,18 @@ def add_event_new(key: str) -> None:
             continue
 
         try:
+            if "HP" in rankings[0]:
+                flag_2013 = True
             opr = stats['oprs']['{}'.format(team_num)]
             dpr = stats['dprs']['{}'.format(team_num)]
             ccwms = stats['ccwms']['{}'.format(team_num)]
-        except KeyError:
+        except (KeyError, IndexError):
             teams_skipped += 1
+            log_bad_data('{} @ {}'.format(team_num, key), 'Cannot find OPR/DPR/CCWMS')
             continue
 
+        if flag_2013:
+            ranking_data.remove("0")  # Week 1 events in 2013 seem to have different API returns from TBA
         new_model = model.objects.create()
         new_model.team = team
         new_model.tba_opr = opr
@@ -99,6 +106,7 @@ def add_event_new(key: str) -> None:
         teams_added += 1
 
     events_added += 1
+    print('Added {}'.format(key), flush=True)
 
 
 class Command(BaseCommand):
@@ -113,7 +121,7 @@ class Command(BaseCommand):
         year = options['year']
         time_start = clock()
         if key is not '':
-            add_event(key)
+            add_event_new(key)
         else:
             if year == 0:
                 for yr in SUPPORTED_YEARS:

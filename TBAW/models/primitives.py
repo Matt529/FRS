@@ -112,6 +112,11 @@ class Team(models.Model):
 
 class Alliance(models.Model):
     teams = models.ManyToManyField(Team)
+    captain = models.ForeignKey(Team, related_name='captain', null=True)
+    first_pick = models.ForeignKey(Team, related_name='first_pick', null=True)
+    second_pick = models.ForeignKey(Team, related_name='second_pick', null=True)
+    backup = models.ForeignKey(Team, related_name='backup', null=True)
+
     elo_mu = models.FloatField(default=DEFAULT_MU)
     elo_sigma = models.FloatField(default=DEFAULT_SIGMA)
 

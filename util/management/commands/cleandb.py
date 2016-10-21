@@ -1,16 +1,18 @@
 from django.core.management.base import BaseCommand
 
-from TBAW.models import Team, Alliance, Event, ScoringModel, Match
+from TBAW.models import Team, Alliance, Event, ScoringModel, Match, RankingModel
 
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
         sure = input('Are you sure (Y/N)? ')
         if sure in ['y', 'Y']:
-            Team.objects.all().delete()
             Alliance.objects.all().delete()
-            Event.objects.all().delete()
-            ScoringModel.objects.all().delete()
+            # RankingModel.objects.filter(event__key='2013cama').delete()
+            # Team.objects.all().delete()
+            # Alliance.objects.all().delete()
+            # Event.objects.all().delete()
+            # ScoringModel.objects.all().delete()
         elif sure == 'm':
             Match.objects.all().delete()
             ScoringModel.objects.all().delete()

@@ -33,7 +33,7 @@ class RankingModel(PolymorphicModel):
     objects = BulkUpdateManager()
 
     @abstractmethod
-    def setup(self, rankings_json) -> None:
+    def setup(self, data_field) -> None:
         pass
 
     def get_record(self) -> str:
@@ -52,20 +52,18 @@ class RankingModel2016(RankingModel):
     goals_points = models.PositiveSmallIntegerField(null=True)
     defense_points = models.PositiveSmallIntegerField(null=True)
 
-    def setup(self, rankings_json):
-        for data_field in rankings_json[1:]:
-            if int(data_field[1]) == self.team.team_number:
-                self.rank = int(data_field[0])
-                self.ranking_score = int(float(data_field[2]))
-                self.auton_points = int(float(data_field[3]))
-                self.scale_challenge_points = int(float(data_field[4]))
-                self.goals_points = int(float(data_field[5]))
-                self.defense_points = int(float(data_field[6]))
-                record = [int(s) for s in data_field[7].split('-') if s.isdigit()]
-                self.wins = record[0]
-                self.losses = record[1]
-                self.ties = record[2]
-                self.played = int(data_field[8])
+    def setup(self, data_field):
+        self.rank = int(data_field[0])
+        self.ranking_score = int(float(data_field[2]))
+        self.auton_points = int(float(data_field[3]))
+        self.scale_challenge_points = int(float(data_field[4]))
+        self.goals_points = int(float(data_field[5]))
+        self.defense_points = int(float(data_field[6]))
+        record = [int(s) for s in data_field[7].split('-') if s.isdigit()]
+        self.wins = record[0]
+        self.losses = record[1]
+        self.ties = record[2]
+        self.played = int(data_field[8])
 
 
 class RankingModel2015(RankingModel):
@@ -76,17 +74,15 @@ class RankingModel2015(RankingModel):
     litter_points = models.PositiveSmallIntegerField(null=True)
     tote_points = models.PositiveSmallIntegerField(null=True)
 
-    def setup(self, rankings_json):
-        for data_field in rankings_json[1:]:
-            if int(data_field[1]) == self.team.team_number:
-                self.rank = int(data_field[0])
-                self.qual_average = float(data_field[2])
-                self.auton_points = int(data_field[3])
-                self.container_points = int(data_field[4])
-                self.coopertition_points = int(data_field[5])
-                self.litter_points = int(data_field[6])
-                self.tote_points = int(data_field[7])
-                self.played = int(data_field[8])
+    def setup(self, data_field):
+        self.rank = int(data_field[0])
+        self.qual_average = float(data_field[2])
+        self.auton_points = int(data_field[3])
+        self.container_points = int(data_field[4])
+        self.coopertition_points = int(data_field[5])
+        self.litter_points = int(data_field[6])
+        self.tote_points = int(data_field[7])
+        self.played = int(data_field[8])
 
 
 class RankingModel2014(RankingModel):
@@ -96,20 +92,18 @@ class RankingModel2014(RankingModel):
     auton_points = models.PositiveSmallIntegerField(null=True)
     teleop_points = models.PositiveSmallIntegerField(null=True)
 
-    def setup(self, rankings_json):
-        for data_field in rankings_json[1:]:
-            if int(data_field[1]) == self.team.team_number:
-                self.rank = int(data_field[0])
-                self.qual_score = int(float(data_field[2]))
-                self.assist_points = int(float(data_field[3]))
-                self.auton_points = int(float(data_field[4]))
-                self.truss_catch_points = int(float(data_field[5]))
-                self.teleop_points = int(float(data_field[6]))
-                record = [int(s) for s in data_field[7].split('-') if s.isdigit()]
-                self.qual_wins = record[0]
-                self.qual_losses = record[1]
-                self.qual_ties = record[2]
-                self.played = int(data_field[8])
+    def setup(self, data_field):
+        self.rank = int(data_field[0])
+        self.qual_score = int(float(data_field[2]))
+        self.assist_points = int(float(data_field[3]))
+        self.auton_points = int(float(data_field[4]))
+        self.truss_catch_points = int(float(data_field[5]))
+        self.teleop_points = int(float(data_field[6]))
+        record = [int(s) for s in data_field[7].split('-') if s.isdigit()]
+        self.qual_wins = record[0]
+        self.qual_losses = record[1]
+        self.qual_ties = record[2]
+        self.played = int(data_field[8])
 
 
 class RankingModel2013(RankingModel):
@@ -118,26 +112,17 @@ class RankingModel2013(RankingModel):
     auton_points = models.PositiveSmallIntegerField(null=True)
     teleop_points = models.PositiveSmallIntegerField(null=True)
 
-    def setup(self, rankings_json) -> None:
-        for data_field in rankings_json[1:]:
-            if int(data_field[1]) == self.team.team_number:
-                if "HP" in data_field:  # Week 1 events in 2013 seem to have different API returns from TBA
-                    record_str = data_field[7]
-                    played = data_field[9]
-                else:
-                    record_str = data_field[6]
-                    played = data_field[8]
-
-                self.rank = int(data_field[0])
-                self.qual_score = int(float(data_field[2]))
-                self.auton_points = int(float(data_field[3]))
-                self.climb_points = int(float(data_field[4]))
-                self.teleop_points = int(float(data_field[5]))
-                record = [int(s) for s in record_str.split('-') if s.isdigit()]
-                self.qual_wins = record[0]
-                self.qual_losses = record[1]
-                self.qual_ties = record[2]
-                self.played = int(played)
+    def setup(self, data_field) -> None:
+        self.rank = int(data_field[0])
+        self.qual_score = int(float(data_field[2]))
+        self.auton_points = int(float(data_field[3]))
+        self.climb_points = int(float(data_field[4]))
+        self.teleop_points = int(float(data_field[5]))
+        record = [int(s) for s in data_field[6].split('-') if s.isdigit()]
+        self.qual_wins = record[0]
+        self.qual_losses = record[1]
+        self.qual_ties = record[2]
+        self.played = int(data_field[8])
 
 
 class RankingModel2012(RankingModel):
@@ -147,36 +132,32 @@ class RankingModel2012(RankingModel):
     teleop_points = models.PositiveSmallIntegerField(null=True)
     coopertition_points = models.PositiveSmallIntegerField(null=True)
 
-    def setup(self, rankings_json) -> None:
-        for data_field in rankings_json[1:]:
-            if int(data_field[1]) == self.team.team_number:
-                self.rank = data_field[0]
-                self.qual_score = data_field[2]
-                self.auton_points = data_field[3]
-                self.bridge_points = data_field[4]
-                self.teleop_points = data_field[5]
-                self.coopertition_points = data_field[6]
-                record = [int(s) for s in data_field[7].split('-') if s.isdigit()]
-                self.qual_wins = record[0]
-                self.qual_losses = record[1]
-                self.qual_ties = record[2]
-                self.played = int(data_field[8])
+    def setup(self, data_field) -> None:
+        self.rank = int(data_field[0])
+        self.qual_score = int(float(data_field[2]))
+        self.auton_points = int(float(data_field[3]))
+        self.bridge_points = int(float(data_field[4]))
+        self.teleop_points = int(float(data_field[5]))
+        self.coopertition_points = int(data_field[6])
+        record = [int(s) for s in data_field[7].split('-') if s.isdigit()]
+        self.qual_wins = record[0]
+        self.qual_losses = record[1]
+        self.qual_ties = record[2]
+        self.played = int(data_field[8])
 
 
 class RankingModel2011(RankingModel):
     qual_score = models.PositiveSmallIntegerField(null=True)
-    ranking_score = models.PositiveSmallIntegerField(null=True)
+    ranking_score = models.FloatField(null=True)
 
-    def setup(self, rankings_json) -> None:
-        for data_field in rankings_json[1:]:
-            if int(data_field[1]) == self.team.team_number:
-                self.rank = int(data_field[0])
-                self.qual_wins = int(data_field[2])
-                self.qual_losses = int(data_field[3])
-                self.qual_ties = int(data_field[4])
-                self.played = int(data_field[5])
-                self.qual_score = int(data_field[6])
-                self.ranking_score = int(data_field[7])
+    def setup(self, data_field) -> None:
+        self.rank = int(data_field[0])
+        self.qual_wins = int(data_field[2])
+        self.qual_losses = int(data_field[3])
+        self.qual_ties = int(data_field[4])
+        self.played = int(data_field[5])
+        self.qual_score = int(float(data_field[6]))
+        self.ranking_score = float(data_field[7])
 
 
 class RankingModel2010(RankingModel):
@@ -184,5 +165,9 @@ class RankingModel2010(RankingModel):
     coopertition_bonus = models.PositiveSmallIntegerField(null=True)
     hanging_points = models.PositiveSmallIntegerField(null=True)
 
-    def setup(self, rankings_json) -> None:
-        pass
+    def setup(self, data_field) -> None:
+        self.rank = int(data_field[0])
+        self.played = int(data_field[2])
+        self.seeding_score = int(float(data_field[3]))
+        self.coopertition_bonus = int(float(data_field[4]))
+        self.hanging_points = int(float(data_field[5]))

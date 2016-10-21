@@ -50,6 +50,11 @@ def add_matches_from_event(event_key: str) -> None:
                 red_alliance = Alliance.objects.create()
                 for x in red_teams:
                     red_alliance.teams.add(x)
+
+                red_alliance.captain = red_teams[0]
+                red_alliance.first_pick = red_teams[1]
+                red_alliance.second_pick = red_teams[2]
+                red_alliance.save()
             else:
                 red_alliance = get_alliance(red_teams[0], red_teams[1], red_teams[2])
 
@@ -57,6 +62,11 @@ def add_matches_from_event(event_key: str) -> None:
                 blue_alliance = Alliance.objects.create()
                 for x in blue_teams:
                     blue_alliance.teams.add(x)
+
+                blue_alliance.captain = blue_teams[0]
+                blue_alliance.first_pick = blue_teams[1]
+                blue_alliance.second_pick = blue_teams[2]
+                blue_alliance.save()
             else:
                 blue_alliance = get_alliance(blue_teams[0], blue_teams[1], blue_teams[2])
 

@@ -36,7 +36,6 @@ except ImportError:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-
 ALLOWED_HOSTS = ['*']
 
 # Application definition
@@ -103,7 +102,7 @@ DATABASES = {
         # 'ENGINE': 'django.db.backends.sqlite3',
         # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'FRS',
+        'NAME': 'FRS_test',
         'USER': 'FRS_user',
         'PASSWORD': 'password',
         'HOST': 'localhost',
@@ -150,7 +149,7 @@ STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 STATIC_ROOT = os.path.join(BASE_DIR, 'static2')
 
 # General settings
-SUPPORTED_YEARS = list(range(2015, 2017))
+SUPPORTED_YEARS = list(range(2010, 2017))
 LEADERBOARD_COUNT = 200
 
 # For Elo/Trueskill system
@@ -166,7 +165,7 @@ SPAGHETTI_SAUCE = {
 }
 
 # For API request logging
-LOG_PATH = BASE_DIR + '/logs/api/'
+LOG_PATH = os.path.join(BASE_DIR, 'logs')
 FILE_NUM = 1
 
-INTERNAL_IPS=('127.0.0.1',)
+INTERNAL_IPS = ('127.0.0.1',)
