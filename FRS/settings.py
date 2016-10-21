@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'tastypie',
     'annoying',
     'debug_toolbar',
+    'django_extensions',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -102,7 +103,7 @@ DATABASES = {
         # 'ENGINE': 'django.db.backends.sqlite3',
         # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'FRS_test',
+        'NAME': 'frs',
         'USER': 'FRS_user',
         'PASSWORD': 'password',
         'HOST': 'localhost',

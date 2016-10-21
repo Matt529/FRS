@@ -2,10 +2,9 @@ from django.test import TestCase
 from .requester import get_team_json, get_event_json
 from .models import Team, Event
 
-import collections
 import requests_mock
 from util.templatestring import TemplateLike
-from TBAW.resource_getter import Requester, AsyncRequester, HttpMethod, ResourceResult
+from TBAW.resource_getter import Requester, AsyncRequester, HttpMethod, ResourceResult, make_resource_descriptor
 
 # save() is intentionally left out of setUp() methods, see Django docs
 
@@ -16,27 +15,30 @@ class UrlTestParams(object):
         self.url = url
         self.method = method
         self.mock_args = mock_args or {}    # type: dict
-        self.identifier = identifier or self.url
+        self.identifier = identifier
 
     def register_mock(self, mock: requests_mock.Mocker):
         mock.register_uri(self.method.name, self.url, **self.mock_args)
 
     def add_self_front(self, requester: Requester):
-        requester.push_first(self.url, self.method, identifier=self.identifier)
+        self.identifier = requester.push_first(self.url, self.method, identifier=self.identifier)
 
     def add_self_back(self, requester: Requester):
-        requester.push_last(self.url, self.method, identifier=self.identifier)
+        self.identifier = requester.push_last(self.url, self.method, identifier=self.identifier)
+
+    def __str__(self):
+        return 'UrlTest[%s as %s, %s]' % (self.url, self.identifier, self.mock_args)
 
 
 @requests_mock.Mocker()
-class AsyncRequestTestCase(TestCase):
+class NewRequesterTestCase(TestCase):
 
     def setUp(self):
         self.fixtures = [
             UrlTestParams('http://www.test.com', HttpMethod.GET, {'text': 'Hello World!'}),
             UrlTestParams('http://www.tbaw.io', HttpMethod.GET, {'text': 'Wow look at all those robots!'}),
             UrlTestParams('http://www.tbaw.io', HttpMethod.POST, {'text': "Probably shouldn't..."}),
-            UrlTestParams('http://www.frs.party', HttpMethod.HEAD, {'text': 'BYOR - Bring Your Own Robots'}, {'identifier': 'party'})
+            UrlTestParams('http://www.frs.party', HttpMethod.HEAD, {'text': 'BYOR - Bring Your Own Robots'}, identifier='party')
         ]
 
         self.GET_TEST_COM = self.fixtures[0]
@@ -44,13 +46,11 @@ class AsyncRequestTestCase(TestCase):
         self.POST_TBAW_IO = self.fixtures[2]
         self.HEAD_FRS_PARTY = self.fixtures[3]
 
-
     def _register_test_uris(self, mock: requests_mock.Mocker):
-
         for url_params in self.fixtures:
             url_params.register_mock(mock)
 
-    def test_instantiation(self):
+    def test_instantiation(self, mocker):
         requester = Requester()
         async_requester = AsyncRequester()
 
@@ -58,6 +58,37 @@ class AsyncRequestTestCase(TestCase):
         self.assertIsNotNone(async_requester, "Instantiation of asynchronous resource getter failed.")
         self.assertIsInstance(async_requester, Requester,
                               "Asynchronous requester does not extend synchronous requester.")
+
+
+    def test_synchronous_push(self, mocker):
+        self._register_test_uris(mocker)
+
+        requester = Requester()
+        self.GET_TEST_COM.add_self_front(requester)
+        self.POST_TBAW_IO.add_self_front(requester)
+
+        self.assertEqual(len(requester), 2)
+
+        self.GET_TBAW_IO.add_self_back(requester)
+        self.HEAD_FRS_PARTY.add_self_back(requester)
+
+        self.assertEqual(len(requester), 4)
+
+    def test_synchronous_remove(self, mocker):
+        requester = Requester()
+
+        self.GET_TEST_COM.add_self_front(requester)
+        self.POST_TBAW_IO.add_self_front(requester)
+        self.GET_TBAW_IO.add_self_back(requester)
+        self.HEAD_FRS_PARTY.add_self_back(requester)
+
+        frs_party = requester.remove_last()
+        self.assertIsInstance(frs_party, str)
+        self.assertEqual(frs_party, self.HEAD_FRS_PARTY.identifier)
+
+        tbaw_io_post = requester.remove_first()
+        self.assertIsInstance(tbaw_io_post, str)
+        self.assertEqual(tbaw_io_post, self.POST_TBAW_IO.identifier)
 
     def test_synchronous_requests(self, mocker):
         self._register_test_uris(mocker)
@@ -69,12 +100,54 @@ class AsyncRequestTestCase(TestCase):
         self.HEAD_FRS_PARTY.add_self_back(requester)
 
         import requests
-        result = requester.retrieve('party')
+        first_test_fixture = self.HEAD_FRS_PARTY
+        result = requester.retrieve(first_test_fixture.identifier)
+
         self.assertIsNotNone(result, 'Requester returns None for result on retrieve')
         self.assertIsInstance(result, ResourceResult, 'Requester does not return a Resource Result object')
         self.assertIsInstance(result.response, requests.Response, 'Result object does not contain a Response object')
         self.assertEqual(result.response.status_code, 200, 'Response Status was non-successful: %d' % result.response.status_code)
-        self.assertEqual(result.response.text, 'Only information you need is that we party.', 'Incorrect text response')
+        self.assertEqual(result.response.text, first_test_fixture.mock_args['text'], 'Incorrect text response')
+
+        with self.assertRaises(ValueError):
+            requester.retrieve(first_test_fixture.identifier)
+
+        results = requester.retrieve_all()
+        self.assertIsInstance(results, dict, 'Requester did not return dictionary mapping strings to results.')
+        for result in results.values():
+            self.assertIsInstance(result, ResourceResult, 'Not all results from Requester are correct result type.')
+
+        all_except_first = [x for x in self.fixtures if x != first_test_fixture]
+        for fixture in all_except_first:
+            self.assertTrue(fixture.identifier in results, "Resource '%s' (alias for '%s') did not appear in results although it should've!" % (fixture.identifier, fixture.url))
+
+            result = results[fixture.identifier]
+
+            self.assertIsInstance(result, ResourceResult, 'Requester does not return a Resource Result object')
+            self.assertIsInstance(result.response, requests.Response, 'Result object does not contain a Response object')
+            self.assertEqual(result.response.status_code, 200, 'Status code indicates failure')
+            self.assertEqual(result.response.text, fixture.mock_args['text'], 'Incorrect text response')
+
+        self.GET_TBAW_IO.add_self_front(requester)
+        self.HEAD_FRS_PARTY.add_self_front(requester)
+
+        tbaw_io = requester.remove_last()
+        frs_party = requester.remove_first()
+
+        with self.assertRaises(IndexError):
+            requester.remove_first()
+        with self.assertRaises(IndexError):
+            requester.remove_last()
+
+        self.assertIsInstance(tbaw_io, str)
+        self.assertEqual(tbaw_io, self.GET_TBAW_IO.identifier)
+        self.assertIsInstance(frs_party, str)
+        self.assertEqual(frs_party, self.HEAD_FRS_PARTY.identifier)
+
+        requester.push_all_first(*[make_resource_descriptor(x.url, x.method, identifier=x.identifier) for x in self.fixtures])
+        self.assertEqual(len(self.fixtures), len(requester), 'Not all fixtures pushed onto requester queue')
+
+
 
 
 
