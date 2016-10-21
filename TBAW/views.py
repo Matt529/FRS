@@ -13,13 +13,13 @@ def team_view(request, team_number):
     if Team.objects.filter(team_number=team_number).exists():
         team = get_team(team_number)
         events = Event.objects.filter(year=date.today().year, teams__team_number=team.team_number).order_by('end_date')
-        awards_count = team.get_awards().count()
 
         return {
-                  'team': team,
-                  'events': events,
-                  'awards_count': awards_count,
-                }
+            'team': team,
+            'events': events,
+            'awards_count': team.awards_count,
+            'blue_banners_count': team.blue_banners_count
+        }
     else:
         return handle_404(request)
 
@@ -31,9 +31,9 @@ def event_view(request, event_key):
         ranking_models = RankingModel.objects.filter(event=event)
 
         return {
-                  'event': event,
-                  'ranking_models': ranking_models,
-            }
+            'event': event,
+            'ranking_models': ranking_models,
+        }
     else:
         return handle_404(request)
 

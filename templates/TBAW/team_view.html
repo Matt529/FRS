@@ -17,7 +17,8 @@
     </div>
 
     <p>
-        Won {{ awards_count }} award{{ awards_count|pluralize }} all-time{% if awards_count > 0 %}:
+        Won {{ awards_count }} award{{ awards_count|pluralize }} all-time{% if awards_count > 0 %}, with
+        {{ blue_banners_count }} blue banners:
         <ul class="uk-list">
             {% for award in team.count_awards %}
                 <li>&bull; {{ award.1 }}x {{ award.0 }}</li>
