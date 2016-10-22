@@ -21,8 +21,8 @@
         Won {{ awards_count }} award{{ awards_count|pluralize }} all-time{% if awards_count > 0 %}, with
         {{ blue_banners_count }} blue banners:
         <ul class="uk-list">
-            {% for award in team.count_awards %}
-                <li>&bull; {{ award.0 }}x {{ award.1 }} at {% for event in award.2 %}
+            {% for award in team.count_awards.items %}
+                <li>&bull; {{ award.1|length }}x {{ award.0 }} at {% for event in award.1 %}
                     <a href="{% url 'event_view' event.key %}">
                         {{ event.name.strip }} {{ event.year }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}
                 </li>
