@@ -21,19 +21,9 @@
         {{ blue_banners_count }} blue banners:
         <ul class="uk-list">
             {% for award in team.count_awards %}
-                <li>&bull; {{ award.1 }}x {{ award.0 }}</li>
+                <li>&bull; {{ award.0 }}x {{ award.1 }} at {% for event in award.2 %}<a href="{% url 'event_view' event.key %}">{{ event.name.strip }} {{ event.year }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</li>
             {% endfor %}
         </ul>
     {% else %}.
     {% endif %}
-
-
-    <p>
-        Competed in {{ events.count }} event{{ events.count|pluralize }} in {{ events.first.year }}:
-        {% for event in events %}
-            <a href="{% url 'event_view' event.key %}">{{ event.name.strip }}{% if not forloop.last %},{% endif %}</a>
-        {% endfor %}
-    </p>
-
-
 {% endblock %}

@@ -99,9 +99,22 @@ class Team(models.Model):
         else:
             return Award.objects.filter(recipients=self, year=year)
 
-    def count_awards(self) -> QuerySet:
+    def count_awards_old(self) -> QuerySet:
         return Team.objects.filter(team_number=self.team_number).values_list('award__name'). \
             annotate(count=models.Count('award__award_type')).order_by('-count')
+
+    def count_awards(self):
+        awards = []
+        added_types = []
+        award_types = set(self.award_set.values_list('award_type', flat=True))
+
+        for award_type in award_types:
+            if award_type not in added_types:
+                events = Event.objects.filter(award__award_type=award_type, award__recipients=self)
+                awards.append((events.count(), Award.choice_to_display(award_type), events))
+                added_types.append(award_type)
+
+        return sorted(awards, key=lambda t: -t[0])
 
     def get_max_opr(self) -> float:
         return self.rankingmodel_set.order_by('-tba_opr').first().tba_opr
@@ -112,10 +125,6 @@ class Team(models.Model):
 
 class Alliance(models.Model):
     teams = models.ManyToManyField(Team)
-    captain = models.ForeignKey(Team, related_name='captain', null=True)
-    first_pick = models.ForeignKey(Team, related_name='first_pick', null=True)
-    second_pick = models.ForeignKey(Team, related_name='second_pick', null=True)
-    backup = models.ForeignKey(Team, related_name='backup', null=True)
 
     elo_mu = models.FloatField(default=DEFAULT_MU)
     elo_sigma = models.FloatField(default=DEFAULT_SIGMA)
@@ -190,6 +199,12 @@ class Event(models.Model):
 
     def __str__(self):
         return "{0}".format(self.key)
+
+    def __eq__(self, other):
+        if isinstance(other, Event):
+            return self.key == other.key
+        else:
+            return False
 
     def has_f3_match(self) -> bool:
         """
@@ -322,6 +337,24 @@ class Award(models.Model):
     def __str__(self):
         return "{0} - {1} ({2})".format(self.recipients.all(), self.name, self.event)
 
+    @classmethod
+    def choice_to_display(cls, choice):
+        """
+
+        Args:
+            choice: a number inside award_type_choices
+
+        Returns:
+            The string associated with the choice. Works the same as some_award.get_award_type_display() but is a
+            class method.
+
+        """
+        for c in Award.award_type_choices:
+            if c[0] == choice:
+                return c[1]
+
+        return None
+
 
 class Robot(models.Model):
     key = models.CharField(max_length=13, null=True)  # e.g. frc2791_2016
@@ -333,6 +366,12 @@ class Robot(models.Model):
 class AllianceAppearance(models.Model):
     alliance = models.ForeignKey(Alliance, null=True)
     event = models.ForeignKey(Event, null=True)
+
+    captain = models.ForeignKey(Team, related_name='captain', null=True)
+    first_pick = models.ForeignKey(Team, related_name='first_pick', null=True)
+    second_pick = models.ForeignKey(Team, related_name='second_pick', null=True)
+    backup = models.ForeignKey(Team, related_name='backup', null=True)
+
     seed = models.PositiveSmallIntegerField(null=True)
     elo_mu_pre = models.FloatField(null=True)
     elo_mu_post = models.FloatField(null=True)

@@ -75,6 +75,24 @@ def add_event_new(key: str) -> None:
     model = get_instance_ranking_model(int(key[:4]))
     flag_2013 = False
 
+    if not rankings or len(rankings) == 1:  # for cmp events since they don't have any rankings
+        for team in event.teams.all():
+            if model.objects.filter(team=team, event=event).exists():
+                teams_skipped += 1
+                continue
+
+            new_model = model.objects.create()
+            new_model.team = team
+            new_model.tba_opr = 0
+            new_model.tba_dpr = 0
+            new_model.tba_ccwms = 0
+            new_model.save()
+            event.rankingmodel_set.add(new_model)
+            teams_added += 1
+
+        events_added += 1
+        return
+
     for ranking_data in rankings[1:]:
         team_num = ranking_data[1]
         team = get_team(team_number=int(team_num))
@@ -89,9 +107,15 @@ def add_event_new(key: str) -> None:
             dpr = stats['dprs']['{}'.format(team_num)]
             ccwms = stats['ccwms']['{}'.format(team_num)]
         except (KeyError, IndexError):
-            teams_skipped += 1
-            log_bad_data('{} @ {}'.format(team_num, key), 'Cannot find OPR/DPR/CCWMS')
-            continue
+            if event.event_code == 'cmp':
+                opr = 0
+                dpr = 0
+                ccwms = 0
+            else:
+                print('skipping', flush=True)
+                teams_skipped += 1
+                log_bad_data('{} @ {}'.format(team_num, key), 'Cannot find OPR/DPR/CCWMS')
+                continue
 
         if flag_2013:
             ranking_data.remove("0")  # Week 1 events in 2013 seem to have different API returns from TBA
@@ -104,6 +128,18 @@ def add_event_new(key: str) -> None:
         new_model.save()
         event.rankingmodel_set.add(new_model)
         teams_added += 1
+
+    if event.rankingmodel_set.count() != event.teams.count():
+        for team in event.teams.all():
+            if not event.rankingmodel_set.filter(team=team).exists():
+                new_model = model.objects.create()
+                new_model.team = team
+                new_model.tba_opr = 0
+                new_model.tba_dpr = 0
+                new_model.tba_ccwms = 0
+                new_model.save()
+                event.rankingmodel_set.add(new_model)
+                teams_added += 1
 
     events_added += 1
     print('Added {}'.format(key), flush=True)

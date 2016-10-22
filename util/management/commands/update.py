@@ -37,4 +37,4 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         # generators.event_win_streaks()
         populate_team_leaderboards()
-        populate_scoring_leaderboards()
+        # populate_scoring_leaderboards()

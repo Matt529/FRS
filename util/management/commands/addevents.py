@@ -4,9 +4,9 @@ from time import clock
 from django.core.management.base import BaseCommand
 
 from FRS.settings import SUPPORTED_YEARS
-from TBAW.models import Event, Alliance
+from TBAW.models import Event, Alliance, AllianceAppearance
 from TBAW.requester import get_event_json, get_list_of_events_json
-from util.check import event_exists, alliance_exists
+from util.check import event_exists, alliance_exists, alliance_appearance_exists
 from util.data_logger import log_bad_data
 from util.getters import get_team, get_alliance
 
@@ -40,14 +40,7 @@ def add_event(event_key: str, event_data=None) -> None:
         date_obj -= timedelta(days=1)
 
     if event_exists(event_key):
-        Event.objects.filter(key=event_key).update(name=event_data['name'], short_name=event_data['short_name'],
-                                                   event_code=event_data['event_code'],
-                                                   event_type=event_data['event_type'],
-                                                   event_district=event_data['event_district'], year=event_data['year'],
-                                                   location=event_data['location'],
-                                                   venue_address=event_data['venue_address'],
-                                                   timezone=event_data['timezone'], website=event_data['website'],
-                                                   official=event_data['official'], end_date=date_obj)
+        event = Event.objects.get(key=event_key)
 
         for alliance in event_data['alliances']:
             teams = [get_team(int(x[3:])) for x in alliance['picks']]
@@ -57,22 +50,29 @@ def add_event(event_key: str, event_data=None) -> None:
                 alliance_obj = get_alliance(teams[0], teams[1], teams[2])
 
             for t in teams:
-                alliance_obj.teams.add(t)
+                if t not in alliance_obj.teams.all():
+                    alliance_obj.teams.add(t)
 
-            alliance_obj.captain = teams[0]
-            alliance_obj.first_pick = teams[1]
-            alliance_obj.second_pick = teams[2]
+            if not alliance_appearance_exists(alliance=alliance_obj, event=event):
+                app = AllianceAppearance.objects.create(alliance=alliance_obj, event=event)
+            else:
+                continue
+
+            app.captain = teams[0]
+            app.first_pick = teams[1]
+            app.second_pick = teams[2]
 
             try:
                 if alliance['backup'] is not None:
-                    alliance_obj.backup = get_team(int(alliance['backup']['in'][3:]))
+                    app.backup = get_team(int(alliance['backup']['in'][3:]))
             except KeyError:
                 pass
 
-            alliance_obj.save()
+            app.save()
 
         events_updated += 1
         # print("Updated event {0}".format(event_key))
+
     # We only want to analyze data from official events or IRI/Cheezy Champs
     elif (event_data['official'] is True and event_data['event_type_string'] != 'Offseason') or \
             event_data['event_code'] == 'iri':
@@ -99,16 +99,25 @@ def add_event(event_key: str, event_data=None) -> None:
                 alliance_obj = get_alliance(teams[0], teams[1], teams[2])
 
             for t in teams:
-                alliance_obj.teams.add(t)
+                if t not in alliance_obj.teams.all():
+                    alliance_obj.teams.add(t)
 
-            alliance_obj.captain = teams[0]
-            alliance_obj.first_pick = teams[1]
-            alliance_obj.second_pick = teams[2]
+            if not alliance_appearance_exists(alliance=alliance_obj, event=event):
+                app = AllianceAppearance.objects.create(alliance=alliance_obj, event=event)
+            else:
+                continue
 
-            if alliance['backup'] is not None:
-                alliance_obj.backup = get_team(int(alliance['backup']['in'][3:]))
+            app.captain = teams[0]
+            app.first_pick = teams[1]
+            app.second_pick = teams[2]
 
-            alliance_obj.save()
+            try:
+                if alliance['backup'] is not None:
+                    app.backup = get_team(int(alliance['backup']['in'][3:]))
+            except KeyError:
+                pass
+
+            app.save()
 
         events_created += 1
         # print("Created event {0}".format(event_key))

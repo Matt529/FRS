@@ -12,13 +12,14 @@ from util.getters import get_team, get_event, get_alliance
 def team_view(request, team_number):
     if Team.objects.filter(team_number=team_number).exists():
         team = get_team(team_number)
-        events = Event.objects.filter(year=date.today().year, teams__team_number=team.team_number).order_by('end_date')
+        events_this_year = Event.objects.filter(year=date.today().year, teams__team_number=team.team_number).order_by(
+            'end_date')
 
         return {
             'team': team,
-            'events': events,
+            'events': events_this_year,
             'awards_count': team.awards_count,
-            'blue_banners_count': team.blue_banners_count
+            'blue_banners_count': team.blue_banners_count,
         }
     else:
         return handle_404(request)

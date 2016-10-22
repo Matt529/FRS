@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from TBAW.models import Team, Alliance, Event, ScoringModel, Match, RankingModel
+from TBAW.models import Team, Alliance, Event, ScoringModel, Match, RankingModel, AllianceAppearance
 
 
 class Command(BaseCommand):
@@ -8,6 +8,7 @@ class Command(BaseCommand):
         sure = input('Are you sure (Y/N)? ')
         if sure in ['y', 'Y']:
             Alliance.objects.all().delete()
+            AllianceAppearance.objects.all().delete()
             # RankingModel.objects.filter(event__key='2013cama').delete()
             # Team.objects.all().delete()
             # Alliance.objects.all().delete()
