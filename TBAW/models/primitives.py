@@ -1,8 +1,10 @@
 from bulk_update.manager import BulkUpdateManager
 from django.db import models
 from django.db.models.query import QuerySet
+from django.conf import settings
 
-from FRS.settings import DEFAULT_MU, DEFAULT_SIGMA
+from typing import Dict, List
+from collections import OrderedDict
 
 
 class Team(models.Model):
@@ -21,8 +23,8 @@ class Team(models.Model):
     motto = models.TextField(null=True)
 
     # Modeled after TrueSkill, which is a Gaussian distribution with mu=DEFAULT_ME and sigma=DEFAULT_SIGMA.
-    elo_mu = models.FloatField(default=DEFAULT_MU)
-    elo_sigma = models.FloatField(default=DEFAULT_SIGMA)
+    elo_mu = models.FloatField(default=settings.DEFAULT_MU)
+    elo_sigma = models.FloatField(default=settings.DEFAULT_SIGMA)
 
     objects = BulkUpdateManager()
 
@@ -80,15 +82,14 @@ class Team(models.Model):
                                     self.get_ties(year).count())
 
     def get_winrate(self) -> float:
-        return Team.objects.filter(team_number=self.team_number).annotate(
+        team = Team.objects.filter(team_number=self.team_number).annotate(
             num_played=models.ExpressionWrapper(models.Count('alliance__match', distinct=True),
                                                 output_field=models.FloatField()),
             num_wins=models.ExpressionWrapper(models.Count('alliance__winner', distinct=True),
                                               output_field=models.FloatField())
-        ).annotate(
-            win_rate=models.ExpressionWrapper(models.F('num_wins') / models.F('num_played'),
-                                              output_field=models.FloatField())
-        ).first().win_rate
+        ).first()
+
+        return team.num_wins/team.num_played
 
     def get_elo_standing(self) -> int:
         return Team.objects.filter(elo_mu__gte=self.elo_mu).count()
@@ -103,18 +104,21 @@ class Team(models.Model):
         return Team.objects.filter(team_number=self.team_number).values_list('award__name'). \
             annotate(count=models.Count('award__award_type')).order_by('-count')
 
-    def count_awards(self):
-        awards = []
-        added_types = []
+    def count_awards(self) -> Dict[str, List[Event]]:
+        awards = {}
         award_types = set(self.award_set.values_list('award_type', flat=True))
+        types_to_names = {t: Award.choice_to_display(t) for t in award_types}
 
-        for award_type in award_types:
-            if award_type not in added_types:
-                events = Event.objects.filter(award__award_type=award_type, award__recipients=self)
-                awards.append((events.count(), Award.choice_to_display(award_type), events))
-                added_types.append(award_type)
+        # get_events = lambda award_t: Event.objects.filter(award__award_type=award_t, award__recipients=self).values_list(flat=True)
+        # This is great if the if statement in the below loop is not required...
+        # awards = {types_to_names[t]: get_events(t) for t in award_types}
 
-        return sorted(awards, key=lambda t: -t[0])
+        for award_t in award_types:
+            award = types_to_names[award_t]
+            if award not in awards:
+                awards[award] = Event.objects.filter(award__award_type=award_t, award__recipients=self).values_list(flat=True)
+
+        return OrderedDict(sorted(awards.items(), key=lambda entry: -len(entry[1])))
 
     def get_max_opr(self) -> float:
         return self.rankingmodel_set.order_by('-tba_opr').first().tba_opr
@@ -126,8 +130,8 @@ class Team(models.Model):
 class Alliance(models.Model):
     teams = models.ManyToManyField(Team)
 
-    elo_mu = models.FloatField(default=DEFAULT_MU)
-    elo_sigma = models.FloatField(default=DEFAULT_SIGMA)
+    elo_mu = models.FloatField(default=settings.DEFAULT_MU)
+    elo_sigma = models.FloatField(default=settings.DEFAULT_SIGMA)
 
     objects = BulkUpdateManager()
 
