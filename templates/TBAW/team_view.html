@@ -10,7 +10,8 @@
             <h4>Rating: {{ team.elo_mu|floatformat:2 }} ({{ team.get_elo_standing|ordinal|intcomma }} overall)</h4>
         </div>
         <div class="uk-width-1-2"><h4 class="uk-text-right">Rookie year: {{ team.rookie_year }}</h4></div>
-        <div class="uk-width-1-2"><h4>All-time Record: {{ team.get_record }}</h4></div>
+        <div class="uk-width-1-2"><h4>All-time Record: {{ team.get_record }} ({{ team.get_winrate|floatformat:-2 }}%
+            winrate)</h4></div>
         <div class="uk-width-1-2"><h4 class="uk-text-right">
             <a href="https://www.google.com/maps/place/{{ team.location }}/">{{ team.location }}</a>
         </h4></div>
@@ -21,7 +22,10 @@
         {{ blue_banners_count }} blue banners:
         <ul class="uk-list">
             {% for award in team.count_awards %}
-                <li>&bull; {{ award.0 }}x {{ award.1 }} at {% for event in award.2 %}<a href="{% url 'event_view' event.key %}">{{ event.name.strip }} {{ event.year }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</li>
+                <li>&bull; {{ award.0 }}x {{ award.1 }} at {% for event in award.2 %}
+                    <a href="{% url 'event_view' event.key %}">
+                        {{ event.name.strip }} {{ event.year }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}
+                </li>
             {% endfor %}
         </ul>
     {% else %}.
