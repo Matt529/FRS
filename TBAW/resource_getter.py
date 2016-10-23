@@ -132,7 +132,6 @@ class Requester(object):
             resource = self._resource_map[identifier]
 
             result = resource.make_request(forced=forced)
-            self._resource_queue.remove(identifier)
             return result
 
         raise KeyError("No resource with identifier: %s" % identifier)
@@ -145,6 +144,7 @@ class Requester(object):
             cur_identifier = self._resource_queue.popleft()
             cur_resource = self._resource_map[cur_identifier]
             results[cur_identifier] = cur_resource.make_request(forced=forced)
+            del self._resource_map[cur_identifier]
 
         return results
 
@@ -162,9 +162,7 @@ class Requester(object):
     @abstractmethod
     def _remove(self, identifier: str) -> TemplateLike:
         if identifier in self._resource_map:
-            resource = self._resource_map[identifier]
             del self._resource_map[identifier]
-
             return identifier
         raise KeyError("No resource with identifier: %s" % identifier)
 
