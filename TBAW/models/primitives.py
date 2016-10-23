@@ -104,7 +104,7 @@ class Team(models.Model):
         return Team.objects.filter(team_number=self.team_number).values_list('award__name'). \
             annotate(count=models.Count('award__award_type')).order_by('-count')
 
-    def count_awards(self) -> Dict[str, List[Event]]:
+    def count_awards(self) -> Dict[str, List['Event']]:
         awards = {}
         award_types = set(self.award_set.values_list('award_type', flat=True))
         types_to_names = {t: Award.choice_to_display(t) for t in award_types}
