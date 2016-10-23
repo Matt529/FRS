@@ -4,8 +4,12 @@ from .models import Team, Event
 
 import requests_mock
 import requests
+
+from concurrent.futures import Future, ThreadPoolExecutor
 from util.templatestring import TemplateLike
-from TBAW.resource_getter import Requester, AsyncRequester, HttpMethod, ResourceResult, make_resource_descriptor
+
+import TBAW.resource_getter as resource_getter
+from TBAW.resource_getter import Requester, AsyncRequester, HttpMethod, ResourceResult
 
 # save() is intentionally left out of setUp() methods, see Django docs
 
@@ -183,6 +187,15 @@ class SyncRequesterTestCase(TestCase):
 @requests_mock.Mocker()
 class AsyncRequesterTestCase(TestCase):
 
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+
+        # Use different shared pool for testing, cannot really use requests_mock across processes
+        # as required in a ProcessPoolExecutor. At least not without too much work.
+        cls._old_shared_pool = resource_getter._shared_pool
+        resource_getter._shared_pool = ThreadPoolExecutor(10)
+
     def setUp(self):
         self.fixtures = [
             UrlTestParams('http://www.test.com', HttpMethod.GET, {'text': 'Hello World!'}),
@@ -211,6 +224,135 @@ class AsyncRequesterTestCase(TestCase):
                               "Asynchronous requester does not extend synchronous requester.")
 
     def test_identifier_set(self, mocker):
+        self._register_test_uris(mocker)
+
+        requester = self.requester
+
+        self.GET_TEST_COM.add_self_front(requester)
+        self.HEAD_FRS_PARTY.add_self_back(requester)
+
+        self.assertIsNotNone(self.GET_TEST_COM.identifier)
+        self.assertIsNotNone(self.HEAD_FRS_PARTY.identifier)
+        self.assertIn(self.GET_TEST_COM.identifier, requester._resource_queue)
+        self.assertIn(self.HEAD_FRS_PARTY.identifier, requester._resource_map)
+        self.assertEqual(self.HEAD_FRS_PARTY.identifier, 'party')
+
+    def test_push(self, mocker):
+        self._register_test_uris(mocker)
+
+        requester = self.requester
+        self.GET_TEST_COM.add_self_front(requester)
+        self.POST_TBAW_IO.add_self_front(requester)
+
+        self.assertEqual(len(requester), 2)
+
+        self.GET_TBAW_IO.add_self_back(requester)
+        self.HEAD_FRS_PARTY.add_self_back(requester)
+
+        self.assertEqual(len(requester), 4)
+
+    def test_remove(self, mocker):
+        requester = self.requester
+
+        self.GET_TEST_COM.add_self_front(requester)
+        self.POST_TBAW_IO.add_self_front(requester)
+        self.GET_TBAW_IO.add_self_back(requester)
+        self.HEAD_FRS_PARTY.add_self_back(requester)
+
+        frs_party = requester.remove_last()
+        self.assertIsInstance(frs_party, str)
+        self.assertEqual(frs_party, self.HEAD_FRS_PARTY.identifier)
+
+        tbaw_io_post = requester.remove_first()
+        self.assertIsInstance(tbaw_io_post, str)
+        self.assertEqual(tbaw_io_post, self.POST_TBAW_IO.identifier)
+
+        self.assertIn(self.GET_TEST_COM.identifier, requester._resource_queue)
+        self.assertIn(self.GET_TBAW_IO.identifier, requester._resource_queue)
+        self.assertNotIn(self.POST_TBAW_IO.identifier, requester._resource_queue)
+        self.assertNotIn(self.HEAD_FRS_PARTY.identifier, requester._resource_queue)
+
+    def test_retrieve(self, mocker):
+        self._register_test_uris(mocker)
+
+        requester = self.requester
+
+        self.POST_TBAW_IO.add_self_front(requester)
+        self.GET_TBAW_IO.add_self_front(requester)
+        self.HEAD_FRS_PARTY.add_self_back(requester)
+
+        future = requester.retrieve(self.GET_TBAW_IO.identifier)
+
+        self.assertIsNotNone(future)
+        self.assertIsInstance(future, Future)
+
+        result = future.result()    # type: ResourceResult
+
+        self.assertIsNotNone(result)
+        self.assertIsInstance(result, ResourceResult)
+        self.assertIsInstance(result.response, requests.Response)
+        self.assertIsInstance(result.url, str)
+
+        self.assertEqual(self.GET_TBAW_IO.url, result.url)
+        self.assertEqual(result.response.status_code, 200)
+        self.assertEqual(result.response.text, self.GET_TBAW_IO.mock_args['text'])
+
+        result_clone = future.result()      # type: ResourceResult
+        self.assertIs(result, result_clone)
+
+    def test_retrieve_all(self, mocker):
+        self._register_test_uris(mocker)
+
+        requester = self.requester
+
+        fixtures = [self.POST_TBAW_IO, self.GET_TBAW_IO, self.HEAD_FRS_PARTY]
+
+        for i in range(len(fixtures)//2 + 1):
+            fixtures[i].add_self_front(requester)
+
+        for i in range(len(fixtures)//2 + 1, len(fixtures)):
+            fixtures[i].add_self_back(requester)
+
+        requester.retrieve(self.POST_TBAW_IO.identifier)
+        results = requester.retrieve_all()
+
+        self.assertIsInstance(results, dict)
+        self.assertEqual(len(results), len(fixtures))
+
+        for fixture in fixtures:
+            self.assertIn(fixture.identifier, results)
+            self.assertIsInstance(results[fixture.identifier], Future)
+
+            result = results[fixture.identifier].result()
+
+            self.assertIsInstance(result.response, requests.Response)
+            self.assertEqual(result.response.text, fixture.mock_args['text'])
+            self.assertEqual(result.response.status_code, 200)
+            self.assertNotIn(fixture.identifier, requester._resource_queue)
+            self.assertNotIn(fixture.identifier, requester._resource_map)
+
+        results = requester.retrieve_all()
+        self.assertEqual(len(results), 0)
+
+    def test_exception_cases(self, mocker):
+        requester = self.requester
+
+        with self.assertRaises(KeyError):
+            requester.retrieve(self.GET_TBAW_IO.identifier)
+
+        with self.assertRaises(KeyError):
+            requester._remove(self.POST_TBAW_IO.identifier)
+
+        with self.assertRaises(IndexError):
+            requester.remove_first()
+
+        with self.assertRaises(IndexError):
+            requester.remove_last()
+
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        resource_getter._shared_pool = cls._old_shared_pool
 
 
 class TeamTestCase(TestCase):

@@ -218,7 +218,11 @@ class AsyncRequester(Requester):
             identifier = self._resource_queue.popleft()
         return self._remove(identifier)
 
-    def retrieve(self, identifier: str, forced: bool = False) -> ResourceResult:
+    def retrieve(self, identifier: str, forced: bool = False) -> Future:
+        with self._work_lock:
+            if identifier in self._futures:
+                return self._futures[identifier]
+
         if identifier in self._resource_map:
             with self._work_lock:
                 resource = self._resource_map[identifier]
@@ -229,17 +233,20 @@ class AsyncRequester(Requester):
 
         raise KeyError("No resource with identifier: %s" % identifier)
 
-    def retrieve_all(self, forced: bool = False) -> dict:
+    def retrieve_all(self, forced: bool = False) -> Dict[str, Future]:
         results = {}
-        while not self.is_empty_queue():
-            with self._work_lock:
+        with self._work_lock:
+            while not self.is_empty_queue():
                 identifier = self._resource_queue.popleft()
-                resource = self._resource_map[identifier]
-                future = self._futures[identifier] = _shared_pool.submit(_async_make_request, resource, forced)
 
-            future.add_done_callback(self.__future_done(identifier))
+                if identifier in self._futures:
+                    future = self._futures[identifier]
+                else:
+                    resource = self._resource_map[identifier]
+                    future = self._futures[identifier] = _shared_pool.submit(_async_make_request, resource, forced)
+                    future.add_done_callback(self.__future_done(identifier))
 
-            results[identifier] = future
+                results[identifier] = future
 
         return results
 
@@ -255,21 +262,18 @@ class AsyncRequester(Requester):
 
     def _remove(self, identifier: str) -> TemplateLike:
         if identifier in self._futures:
-            future = self._futures[identifier]
             del self._futures[identifier]
-        else:
-            raise KeyError("No resource with identifier: %s" % identifier)
 
         with self._work_lock:
             if identifier in self._resource_map:
                 del self._resource_map[identifier]
-            self._resource_queue.remove(identifier)
+            else:
+                raise KeyError("No resource with identifier: %s" % identifier)
 
         return identifier
 
     def __future_done(self, identifier: str) -> Callable[[Future], None]:
         def handler(future: Future) -> None:
             if future.done():
-                with self._work_lock:
-                    self._resource_queue.remove(identifier)
+                self._remove(identifier)
         return handler
