@@ -10,14 +10,14 @@ from util.templatestring import TemplateString
 __api_key = {'X-TBA-App-Id': 'frs:frs:1'}
 __tba_url = 'https://www.thebluealliance.com/api/v2/'
 
-__team_template = TemplateString(__tba_url + 'team/frc${team}')
+__team_template = TemplateString(__tba_url + 'team/frc{team}')
 __team_history_template = __team_template + '/history/robots'
 __team_participation_template = __team_template + '/years_participated'
 
-__team_by_page_template = TemplateString(__tba_url + 'teams/${page}')
-__event_by_year_template = TemplateString(__tba_url + 'events/${year}')
+__team_by_page_template = TemplateString(__tba_url + 'teams/{page}')
+__event_by_year_template = TemplateString(__tba_url + 'events/{year}')
 
-__event_template = TemplateString(__tba_url + 'event/${event}')
+__event_template = TemplateString(__tba_url + 'event/{event}')
 __event_ranking_template = __event_template + '/rankings'
 __event_stats_template = __event_template + '/stats'
 __event_teams_template = __event_template + '/teams'
