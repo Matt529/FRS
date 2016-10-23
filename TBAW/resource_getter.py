@@ -5,7 +5,7 @@ from util.templatestring import TemplateLike
 import uuid
 import enum
 
-from concurrent.futures import ProcessPoolExecutor, Future
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, Future
 
 import requests
 import collections
@@ -368,6 +368,17 @@ class Requester(object):
 def _async_make_request(resource: Resource, *args, **kwargs):
     return resource.make_request(*args, **kwargs)
 
+#
+#   The default for AsyncRequester is currently to use a ThreadPool. Threads in python suffer from GIL (Global
+#   Interpreter Lock) and, similar to Node.js, the Threads never run truly Asynchronously, but are instead interleaved,
+#   this still provides meaningful benefits for IO but will be much more bounded than using a ProcessPool, which makes
+#   ensuring IPC works a bit more complicated (serializing a requests.Response object may either just work or require
+#   some painful monkey patching...).
+#
+#   So if the ThreadPool ends up being insufficient for our purposes, making the default use the shared ProcessPool
+#   may be more beneficial and has a guaranteed speed up (by avoiding GIL and being truly async) *if* it works.
+#
+
 # shared process pool to ensure we never exceed 10 processes
 _shared_pool = ProcessPoolExecutor(10)
 
@@ -377,22 +388,31 @@ class AsyncRequester(Requester):
     Queues resources and handles resource retrieval using the requests API.
 
     The retrievals in this case are done asynchronously using processes (and not threads) to avoid Global Interpreter
-    Lock. This should be noted since any data sent to the process must be serialized and sent to the process, making use
-    of python's built in IPC.
+    Lock. When initializing a ThreadPool is used by default. This means the benefits may be reduced by Global
+    Interpreter Lock. If use_threads is set to false then a global shared process pool (of 10 processes) are used. By
+    being separate processes, they avoid Global Interpreter Lock but IPC requires any data that needs to be
+    communicated to be picklable (serializable).
     """
 
-    def __init__(self):
+    def __init__(self, use_threads: bool = True):
+        """
+        :param use_threads:
+            If true, use personal ThreadPool, otherwise use global shared process pool (see class docs for details)
+        """
         super().__init__()
 
         # Reentrant Lock to ensure no spawned threads screw up queue/map/future-map state
         self._work_lock = RLock()
-
+        self._pool = ThreadPoolExecutor(10) if use_threads else _shared_pool
         # Cached futures
         self._futures = {}      # type: Dict[str, Future]
 
     @staticmethod
     def get(resource_url: TemplateLike, method: HttpMethod = HttpMethod.GET, *args, **kwargs) -> Future:
         return _shared_pool.submit(_async_make_request, Resource(resource_url, method, *args, **kwargs))
+
+    def request(self, resource_url: TemplateLike, method: HttpMethod = HttpMethod.GET, *args, **kwargs) -> Future:
+        return self._pool.submit(_async_make_request, Resource(resource_url, method, *args, **kwargs))
 
     def push_last(self, resource_url: TemplateLike, method: HttpMethod = HttpMethod.GET, *args, identifier: str = None, **kwargs) -> TemplateLike:
         """
@@ -507,7 +527,7 @@ class AsyncRequester(Requester):
         if identifier in self._resource_map:
             with self._work_lock:
                 resource = self._resource_map[identifier]
-                future = self._futures[identifier] = _shared_pool.submit(_async_make_request, resource, forced)
+                future = self._futures[identifier] = self._pool.submit(_async_make_request, resource, forced)
             future.add_done_callback(self.__future_done(identifier))
 
             return future
@@ -538,7 +558,7 @@ class AsyncRequester(Requester):
                 #     future = self._futures[identifier]
                 # else:
                 #     resource = self._resource_map[identifier]
-                #     future = self._futures[identifier] = _shared_pool.submit(_async_make_request, resource, forced)
+                #     future = self._futures[identifier] = self._pool.submit(_async_make_request, resource, forced)
                 #     future.add_done_callback(self.__future_done(identifier))
 
                 results[identifier] = self.retrieve(identifier)
