@@ -1,8 +1,10 @@
 from operator import itemgetter
+from concurrent.futures import Future
 from typing import List
 
 import requests
 
+from TBAW.resource_getter import AsyncRequester
 from TBAW.models import Team
 from util.getters import get_team
 from util.templatestring import TemplateString
@@ -109,6 +111,11 @@ def get_teams_at_event(event_key: str) -> List[Team]:
 def get_awards_from_event_json(event_key: str) -> List[dict]:
     url = __event_awards_template(event=event_key)
     return requests.get(url, headers=__api_key).json()
+
+
+def get_awards_from_event_json_async(requester: AsyncRequester, event_key: str) -> Future:
+    url = __event_awards_template(event=event_key)
+    return requester.get(url, headers=__api_key)
 
 
 def get_team_robots_history_json(team_number: int) -> dict:
