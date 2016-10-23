@@ -378,6 +378,8 @@ def _async_make_request(resource: Resource, *args, **kwargs):
 #   So if the ThreadPool ends up being insufficient for our purposes, making the default use the shared ProcessPool
 #   may be more beneficial and has a guaranteed speed up (by avoiding GIL and being truly async) *if* it works.
 #
+#   If we decide to use processes in the future, see: https://github.com/ross/requests-futures
+#
 
 # shared process pool to ensure we never exceed 10 processes
 _shared_pool = ProcessPoolExecutor(10)
