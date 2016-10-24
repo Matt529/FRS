@@ -1,7 +1,6 @@
 {% extends 'FRS/base_template.html' %}
-{% load match_level_humanizer %}
-{% load get_team_ranking_model %}
-{% load get_from_dict %}
+{% load humanizers %}
+{% load getters %}
 {% load math %}
 {% block title %}{{ event.year }} {{ event.name }}{% endblock %}
 {% block body %}
@@ -30,7 +29,7 @@
         </thead>
         <tbody>
         {% for team in event.teams.all %}
-            {% with ranking_models|get_team_rm:team as rm %}
+            {% with ranking_models|get_from_dict:team.team_number as rm %}
                 <tr>
                     <td><a href="{% url 'team_view' team.team_number %}">{{ team.nickname }}</a></td>
                     <td>{{ team.team_number }}</td>

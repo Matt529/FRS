@@ -13,4 +13,4 @@ comp_level_dict = {
 
 @register.filter(name='match_humanize')
 def match_humanize(value):
-    return comp_level_dict.get(value)
+    return comp_level_dict.get(value, default="Unknown")

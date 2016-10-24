@@ -15,7 +15,7 @@ event_matches = 0
 
 
 def add_all_matches(year: int) -> None:
-    events = Event.objects.filter(year=year).order_by('end_date')
+    events = Event.objects.filter(year=year).order_by('end_date').values('key').all()
     for event in events:
         add_matches_from_event(event.key)
 

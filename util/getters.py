@@ -1,10 +1,37 @@
 from django.core.urlresolvers import reverse
 from django.db.models import Model, Count
 
+from util.templatestring import TemplateString
 from TBAW import models
 from TBAW.models import Team, Event, Match, Alliance, ScoringModel2016, ScoringModel2015, \
     RankingModel2016, RankingModel2015, RankingModel2014, RankingModel2013, RankingModel2012, RankingModel2011, \
     RankingModel2010, ScoringModel, RankingModel
+from django.conf import settings
+
+import sys
+import collections
+from functools import reduce
+
+def class_from_str(name: str):
+    try:
+        return reduce(getattr, name.split('.'), sys.modules[__name__])
+    except:
+        return None
+
+__RANKING_MODEL_TEMPLATE = TemplateString("RankingModel{}")
+__SCORING_MODEL_TEMPLATE = TemplateString("ScoringModel{}")
+
+YEAR_TO_SCORING_MODEL = collections.OrderedDict()
+YEAR_TO_RANKING_MODEL = collections.OrderedDict()
+
+for year in settings.SUPPORTED_YEARS:
+    ranking_model_t = class_from_str(__RANKING_MODEL_TEMPLATE(year))
+    scoring_model_t = class_from_str(__SCORING_MODEL_TEMPLATE(year))
+
+    if ranking_model_t is not None:
+        YEAR_TO_RANKING_MODEL[year] = ranking_model_t
+    if scoring_model_t is not None:
+        YEAR_TO_SCORING_MODEL[year] = scoring_model_t
 
 
 def get_team(team_number: int) -> Team:
@@ -91,11 +118,7 @@ def get_instance_scoring_model(year: int) -> ScoringModel:
         An instance of ScoringModel relating to whatever year you want.
 
     """
-    return {
-        2016: ScoringModel2016,
-        2015: ScoringModel2015,
-        # etc
-    }.get(year, ScoringModel)
+    return YEAR_TO_SCORING_MODEL.get(year, ScoringModel)
 
 
 def get_instance_ranking_model(year: int) -> RankingModel:
@@ -108,19 +131,10 @@ def get_instance_ranking_model(year: int) -> RankingModel:
         An instance of RankingModel relating to whatever year you want.
 
     """
-    return {
-        2016: RankingModel2016,
-        2015: RankingModel2015,
-        2014: RankingModel2014,
-        2013: RankingModel2013,
-        2012: RankingModel2012,
-        2011: RankingModel2011,
-        2010: RankingModel2010,
-        # etc
-    }.get(year)
+    return YEAR_TO_RANKING_MODEL.get(year)
 
 
-def make_team_tr(name: str, url: str, holder: Model, stat) -> dict:
+def make_team_table_row(name: str, url: str, holder: Model, stat) -> dict:
     return {
         'name': name,
         'url': url,
@@ -131,17 +145,19 @@ def make_team_tr(name: str, url: str, holder: Model, stat) -> dict:
 
 
 def reverse_model_url(model: Model) -> str:
-    if type(model) is models.Team:
+    if isinstance(model, models.Team):
         return reverse('team_view', kwargs={'team_number': model.team_number})
-    elif type(model) is models.Event:
+    elif isinstance(model, models.Event):
         return reverse('event_view', kwargs={'event_key': model.key})
-    elif type(model) is models.Alliance:
+    elif isinstance(model, models.Alliance):
+        alliance = Alliance.objects.prefetch_related('teams').get(model.id)     # type: Alliance
+        teams = alliance.teams.values('team_number').all()
         return reverse('alliance_view', kwargs={
-            'team1': model.teams.all()[0].team_number,
-            'team2': model.teams.all()[1].team_number,
-            'team3': model.teams.all()[2].team_number
+            'team1': teams[0].team_number,
+            'team2': teams[1].team_number,
+            'team3': teams[2].team_number
         })
-    elif type(model) in [ScoringModel2016, ScoringModel2015, ScoringModel]:
+    elif isinstance(model, tuple(YEAR_TO_SCORING_MODEL.values())):
         return reverse('event_view', kwargs={
             'event_key': model.match_set.first().event.key
         })

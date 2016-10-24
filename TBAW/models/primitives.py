@@ -105,7 +105,7 @@ class Team(models.Model):
 
     def count_awards(self) -> Dict[str, List['Event']]:
         awards = {}
-        award_types = set(self.award_set.values_list('award_type', flat=True))
+        award_types = set(self.award_set.values_list('award_type', flat=True).all())
         types_to_names = {t: Award.choice_to_display(t) for t in award_types}
 
         # get_events = lambda award_t: Event.objects.filter(award__award_type=award_t, award__recipients=self).values_list(flat=True)
@@ -155,7 +155,7 @@ class Alliance(models.Model):
 
 
 class Event(models.Model):
-    key = models.CharField(max_length=10, db_index=True)  # e.g. 2016cmp
+    key = models.CharField(max_length=10, unique=True)  # e.g. 2016cmp
     name = models.CharField(max_length=100)  # e.g. Finger Lakes Regional
     short_name = models.CharField(null=True, max_length=50)  # e.g. Finger Lakes
     event_code = models.CharField(max_length=7)  # e.g. cmp
@@ -221,7 +221,7 @@ class Event(models.Model):
 
 
 class Match(models.Model):
-    key = models.CharField(max_length=20)  # yyyy{EVENT_CODE}_{COMP_LEVEL}m{MATCH_NUMBER}, e.g. 2016nyro_f1m2
+    key = models.CharField(max_length=20, unique=True)  # yyyy{EVENT_CODE}_{COMP_LEVEL}m{MATCH_NUMBER}, e.g. 2016nyro_f1m2
     comp_level = models.CharField(max_length=6)  # e.g. qm, ef, qf, sf, f
     set_number = models.CharField(null=True, max_length=20)  # in 2016nyro_qf3m2, the set number is 3
 
