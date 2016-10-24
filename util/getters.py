@@ -1,5 +1,5 @@
 from django.core.urlresolvers import reverse
-from django.db.models import Model
+from django.db.models import Model, Count
 
 from TBAW import models
 from TBAW.models import Team, Event, Match, Alliance, ScoringModel2016, ScoringModel2015, \
@@ -17,7 +17,7 @@ def get_team(team_number: int) -> Team:
         a Team object associated with the number
 
     """
-    return Team.objects.get(team_number=team_number)
+    return Team.objects.get(id=team_number)
 
 
 def get_previous_team(team_number: int) -> Team:
@@ -78,7 +78,7 @@ def get_alliance(team1: Team, team2: Team, team3: Team) -> Alliance:
         Alliance containing the three teams provided.
 
     """
-    return Alliance.objects.filter(teams=team1).filter(teams=team2).get(teams=team3)
+    return Alliance.objects.annotate(t=Count('teams')).filter(t=3, teams=team1).filter(teams=team2).get(teams=team3)
 
 
 def get_instance_scoring_model(year: int) -> ScoringModel:

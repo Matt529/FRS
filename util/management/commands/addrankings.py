@@ -75,6 +75,10 @@ def add_event_new(key: str) -> None:
     model = get_instance_ranking_model(int(key[:4]))
     flag_2013 = False
 
+    if RankingModel.objects.filter(event=event).exists():
+        print("Skipping RMs for {}".format(key))
+        return
+
     if not rankings or len(rankings) == 1:  # for cmp events since they don't have any rankings
         for team in event.teams.all():
             if model.objects.filter(team=team, event=event).exists():
@@ -117,8 +121,9 @@ def add_event_new(key: str) -> None:
                 log_bad_data('{} @ {}'.format(team_num, key), 'Cannot find OPR/DPR/CCWMS')
                 continue
 
-        if flag_2013:
+        if flag_2013 and event.year == 2013:
             ranking_data.remove("0")  # Week 1 events in 2013 seem to have different API returns from TBA
+
         new_model = model.objects.create()
         new_model.team = team
         new_model.tba_opr = opr

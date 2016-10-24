@@ -75,20 +75,11 @@ class Team(models.Model):
             return Match.objects.filter(event__year=year) \
                 .filter(alliances__teams__team_number=self.team_number, winner_isnull=True)
 
-    def get_record(self, year=None) -> str:
-        return "{0}-{1}-{2}".format(self.get_wins(year).count(), self.get_losses(year).count(),
-                                    self.get_ties(year).count())
+    def get_record(self) -> str:
+        return "{0}-{1}-{2}".format(self.match_wins_count, self.match_losses_count, self.match_ties_count)
 
     def get_winrate(self) -> float:
-        return Team.objects.filter(team_number=self.team_number).annotate(
-            num_played=models.ExpressionWrapper(models.Count('alliance__match', distinct=True),
-                                                output_field=models.FloatField()),
-            num_wins=models.ExpressionWrapper(models.Count('alliance__winner', distinct=True),
-                                              output_field=models.FloatField())
-        ).annotate(
-            win_rate=models.ExpressionWrapper(models.F('num_wins') / models.F('num_played'),
-                                              output_field=models.FloatField())
-        ).first().win_rate
+        return self.match_winrate * 100.0
 
     def get_elo_standing(self) -> int:
         return Team.objects.filter(elo_mu__gte=self.elo_mu).count()

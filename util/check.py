@@ -1,3 +1,5 @@
+from django.db.models import Count
+
 from TBAW.models import Team, Event, Match, Alliance, AllianceAppearance
 
 
@@ -56,7 +58,8 @@ def alliance_exists(team1: Team, team2: Team, team3: Team) -> bool:
 
     """
 
-    return Alliance.objects.filter(teams=team1).filter(teams=team2).filter(teams=team3).exists()
+    return Alliance.objects.annotate(t=Count('teams')).filter(t=3).filter(teams=team1).filter(teams=team2).filter(
+        teams=team3).exists()
 
 
 def alliance_appearance_exists(alliance: Alliance, event: Event) -> bool:
