@@ -85,8 +85,9 @@
                         </a>
                     {% endwith %}</td>
                 {% endwith %}
-                {% with match_scorings|get_from_dict:match.scoring_model_id as scoring_model %}
+                {% with match_scorings|get_from_dict:match as scoring_model %}
                 <td class="red-alliance">{{ scoring_model.red_total_score }}</td>
+
                 <td class="blue-alliance">{{ scoring_model.blue_total_score }}</td>
                 {% endwith %}
             </tr>

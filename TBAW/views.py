@@ -58,11 +58,11 @@ def event_view(request, event_key):
 
         # Assembling Scoring Model Lookup Table
         scoring_model_ids = [m.scoring_model_id for m in matches]
-        models = {m.id: m for m in ScoringModel.objects.filter(Q(id__in=scoring_model_ids))}
+        models = {m.id: m for m in ScoringModel.objects.filter(Q(id__in=scoring_model_ids)).all()}
         matches_to_scoring_models = {m: models[m.scoring_model_id] for m in matches}
 
         # Assemble RankingModel Lookup Table
-        ranking_models = RankingModel.objects.filter(event__key=event_key).annotate(team_number=F('team__team_number')).all()
+        ranking_models = RankingModel.objects.select_related('event').filter(event__key=event_key).annotate(team_number=F('team__team_number')).all()
         ranking_models = {x.team_number: x for x in ranking_models}
 
         return {
@@ -70,7 +70,7 @@ def event_view(request, event_key):
             'ranking_models': ranking_models,
             'matches': matches,
             'match_alliances': matches_to_alliances,
-            'match_scorings' : matches_to_scoring_models
+            'match_scorings': matches_to_scoring_models
         }
     else:
         return handle_404(request)
