@@ -19,6 +19,7 @@
         <caption>Teams in Attendance</caption>
         <thead>
         <tr>
+            <th>Rank</th>
             <th>Team</th>
             <th>Team Number</th>
             <th>Event Record</th>
@@ -31,6 +32,7 @@
         {% for team in event.teams.all %}
             {% with ranking_models|get_from_dict:team.team_number as rm %}
                 <tr>
+                    <td>{{ rm.rank }}</td>
                     <td><a href="{% url 'team_view' team.team_number %}">{{ team.nickname }}</a></td>
                     <td>{{ team.team_number }}</td>
                     <td>{{ rm.get_record }}</td>
@@ -66,28 +68,27 @@
                 </td>
 
                 {% with match_alliances|get_from_dict:match as alliances %}
-                <td class="red-alliance">
-                    {% with alliances.0 as red %}
-                        <a href="{% url 'alliance_view' red.0.team_number red.1.team_number red.2.team_number %}">
-                            {{ red.0.label }}<br>
-                            {{ red.1.label }}<br>
-                            {{ red.2.label }}
-                        </a>
-                    {% endwith %}
-                </td>
-                <td class="blue-alliance">
-                    {% with alliances.1 as blue %}
-                        <a href="{% url 'alliance_view' blue.0.team_number blue.1.team_number blue.2.team_number %}">
-                            {{ blue.0.label }}<br>
-                            {{ blue.1.label }}<br>
-                            {{ blue.2.label }}
-                        </a>
-                    {% endwith %}</td>
+                    <td class="red-alliance">
+                        {% with alliances.0 as red %}
+                            <a href="{% url 'alliance_view' red.0.team_number red.1.team_number red.2.team_number %}">
+                                {{ red.0.label }}<br>
+                                {{ red.1.label }}<br>
+                                {{ red.2.label }}
+                            </a>
+                        {% endwith %}
+                    </td>
+                    <td class="blue-alliance">
+                        {% with alliances.1 as blue %}
+                            <a href="{% url 'alliance_view' blue.0.team_number blue.1.team_number blue.2.team_number %}">
+                                {{ blue.0.label }}<br>
+                                {{ blue.1.label }}<br>
+                                {{ blue.2.label }}
+                            </a>
+                        {% endwith %}</td>
                 {% endwith %}
                 {% with match_scorings|get_from_dict:match as scoring_model %}
-                <td class="red-alliance">{{ scoring_model.red_total_score }}</td>
-
-                <td class="blue-alliance">{{ scoring_model.blue_total_score }}</td>
+                    <td class="red-alliance">{{ scoring_model.red_total_score }}</td>
+                    <td class="blue-alliance">{{ scoring_model.blue_total_score }}</td>
                 {% endwith %}
             </tr>
         {% endfor %}
