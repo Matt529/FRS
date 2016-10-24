@@ -1,10 +1,10 @@
+from collections import OrderedDict
+from typing import Dict, List
+
 from bulk_update.manager import BulkUpdateManager
+from django.conf import settings
 from django.db import models
 from django.db.models.query import QuerySet
-from django.conf import settings
-
-from typing import Dict, List
-from collections import OrderedDict
 
 
 class Team(models.Model):
@@ -77,19 +77,11 @@ class Team(models.Model):
             return Match.objects.filter(event__year=year) \
                 .filter(alliances__teams__team_number=self.team_number, winner_isnull=True)
 
-    def get_record(self, year=None) -> str:
-        return "{0}-{1}-{2}".format(self.get_wins(year).count(), self.get_losses(year).count(),
-                                    self.get_ties(year).count())
+    def get_record(self) -> str:
+        return "{0}-{1}-{2}".format(self.match_wins_count, self.match_losses_count, self.match_ties_count)
 
     def get_winrate(self) -> float:
-        team = Team.objects.filter(team_number=self.team_number).annotate(
-            num_played=models.ExpressionWrapper(models.Count('alliance__match', distinct=True),
-                                                output_field=models.FloatField()),
-            num_wins=models.ExpressionWrapper(models.Count('alliance__winner', distinct=True),
-                                              output_field=models.FloatField())
-        ).first()
-
-        return team.num_wins/team.num_played
+        return self.match_winrate * 100.0
 
     def get_elo_standing(self) -> int:
         return Team.objects.filter(elo_mu__gte=self.elo_mu).count()
@@ -116,7 +108,8 @@ class Team(models.Model):
         for award_t in award_types:
             award = types_to_names[award_t]
             if award not in awards:
-                awards[award] = Event.objects.filter(award__award_type=award_t, award__recipients=self).values_list(flat=True)
+                awards[award] = Event.objects.filter(award__award_type=award_t, award__recipients=self).values_list(
+                    flat=True)
 
         return OrderedDict(sorted(awards.items(), key=lambda entry: -len(entry[1])))
 

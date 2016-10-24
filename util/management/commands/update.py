@@ -5,6 +5,7 @@ from TBAW.models import Team
 from leaderboard2.models import TeamLeaderboard, ScoringLeaderboard2015, ScoringLeaderboard2016
 from util import generators
 from util.getters import get_instance_scoring_model
+from util.management.commands.addmatches import handle_event_winners
 
 
 def populate_team_leaderboards():
@@ -35,6 +36,8 @@ class Command(BaseCommand):
         pass
 
     def handle(self, *args, **options):
+        Team.objects.all().update(event_winrate=0.0, event_wins_count=0, match_winrate=0.0)
+        handle_event_winners()
         # generators.event_win_streaks()
         populate_team_leaderboards()
         # populate_scoring_leaderboards()

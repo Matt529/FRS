@@ -1,10 +1,9 @@
 from time import clock
 
 from django.core.management.base import BaseCommand
-from django.db.models import F, Q, ExpressionWrapper, FloatField, Count
 from django.db import transaction
+from django.db.models import F, Q, ExpressionWrapper, FloatField, Count
 
-from FRS.settings import SUPPORTED_YEARS
 from TBAW.models import Match, Alliance, Event, AllianceAppearance, RankingModel, Team, ScoringModel
 from TBAW.requester import get_list_of_matches_json, get_event_json
 from util.check import match_exists, alliance_exists, alliance_appearance_exists
@@ -37,7 +36,7 @@ def add_matches_from_event(event_key: str) -> None:
             red_seed = None
             blue_seed = None
 
-            if match['score_breakdown'] is None or (
+            if (match['score_breakdown'] is None and int(match['key'][:4]) >= 2015) or (
                         match['alliances']['blue']['score'] == match['alliances']['red']['score'] == -1):
                 print("Skipping match {0} from event {1} (scores not found)".format(match['key'], event_key))
                 matches_skipped += 1
@@ -51,9 +50,6 @@ def add_matches_from_event(event_key: str) -> None:
                 for x in red_teams:
                     red_alliance.teams.add(x)
 
-                red_alliance.captain = red_teams[0]
-                red_alliance.first_pick = red_teams[1]
-                red_alliance.second_pick = red_teams[2]
                 red_alliance.save()
             else:
                 red_alliance = get_alliance(red_teams[0], red_teams[1], red_teams[2])
@@ -63,9 +59,6 @@ def add_matches_from_event(event_key: str) -> None:
                 for x in blue_teams:
                     blue_alliance.teams.add(x)
 
-                blue_alliance.captain = blue_teams[0]
-                blue_alliance.first_pick = blue_teams[1]
-                blue_alliance.second_pick = blue_teams[2]
                 blue_alliance.save()
             else:
                 blue_alliance = get_alliance(blue_teams[0], blue_teams[1], blue_teams[2])
@@ -111,28 +104,33 @@ def add_matches_from_event(event_key: str) -> None:
                 winner = blue_alliance
             elif red_total_points > blue_total_points:
                 winner = red_alliance
-            elif match['comp_level'] in ['ef', 'qf', 'sf', 'f'] and event.year == 2016:
-                red_breach_capture_points = red_score_breakdown['breach{0}'.format(pt_str)] + red_score_breakdown[
-                    'capture{0}'.format(pt_str)]
-                blue_breach_capture_points = blue_score_breakdown['breach{0}'.format(pt_str)] + blue_score_breakdown[
-                    'capture{0}'.format(pt_str)]
-                red_auto_points = red_score_breakdown['auto{0}'.format(pt_str)]
-                blue_auto_points = blue_score_breakdown['auto{0}'.format(pt_str)]
+            elif match['comp_level'] in ['ef', 'qf', 'sf', 'f']:
+                if event.year == 2016:
+                    red_breach_capture_points = red_score_breakdown['breach{0}'.format(pt_str)] + red_score_breakdown[
+                        'capture{0}'.format(pt_str)]
+                    blue_breach_capture_points = blue_score_breakdown['breach{0}'.format(pt_str)] + \
+                                                 blue_score_breakdown['capture{0}'.format(pt_str)]
+                    red_auto_points = red_score_breakdown['auto{0}'.format(pt_str)]
+                    blue_auto_points = blue_score_breakdown['auto{0}'.format(pt_str)]
 
-                if red_total_points + red_foul_points > blue_total_points + blue_foul_points:
-                    winner = red_alliance
-                elif red_total_points + red_foul_points < blue_total_points + blue_foul_points:
-                    winner = blue_alliance
-                elif red_breach_capture_points > blue_breach_capture_points:
-                    winner = red_alliance
-                elif blue_breach_capture_points > red_breach_capture_points:
-                    winner = blue_alliance
-                elif red_auto_points > blue_auto_points:
-                    winner = red_alliance
-                elif blue_auto_points > red_auto_points:
-                    winner = blue_alliance
-                else:
+                    if red_total_points + red_foul_points > blue_total_points + blue_foul_points:
+                        winner = red_alliance
+                    elif red_total_points + red_foul_points < blue_total_points + blue_foul_points:
+                        winner = blue_alliance
+                    elif red_breach_capture_points > blue_breach_capture_points:
+                        winner = red_alliance
+                    elif blue_breach_capture_points > red_breach_capture_points:
+                        winner = blue_alliance
+                    elif red_auto_points > blue_auto_points:
+                        winner = red_alliance
+                    elif blue_auto_points > red_auto_points:
+                        winner = blue_alliance
+                    else:
+                        winner = None
+                elif event.year == 2015:
                     winner = None
+                elif event.year in [2010, 2011, 2012, 2013, 2014]:
+                    winner = None  # Elims were replayed in case of a tie
             else:
                 winner = None
 
@@ -145,12 +143,16 @@ def add_matches_from_event(event_key: str) -> None:
 
             red_alliance.save()
             blue_alliance.save()
+
+            if not match['score_breakdown']:
+                sm = parse_old_matches(int(match['key'][:4]), red_score=red_total_points, blue_score=blue_total_points)
+            else:
+                sm = parse_score_breakdown(int(match['key'][:4]), match['score_breakdown'])
+
             match_obj = Match.objects.create(key=match['key'], comp_level=match['comp_level'],
                                              set_number=match['set_number'], match_number=match['match_number'],
-                                             event=event, winner=winner,
-                                             scoring_model=parse_score_breakdown(int(match['key'][:4]),
-                                                                                 match['score_breakdown']),
-                                             blue_alliance=blue_alliance, red_alliance=red_alliance)
+                                             event=event, winner=winner, scoring_model=sm, blue_alliance=blue_alliance,
+                                             red_alliance=red_alliance)
             match_obj.alliances.set([red_alliance, blue_alliance])
             # print('.', end='', flush=True)
 
@@ -227,6 +229,14 @@ def parse_score_breakdown(year: int, score_breakdown: dict) -> ScoringModel:
     return model
 
 
+def parse_old_matches(year: int, red_score: int, blue_score: int) -> ScoringModel:
+    model = get_instance_scoring_model(year).objects.create()
+    model.red_total_score = red_score
+    model.blue_total_score = blue_score
+    model.save()
+    return model
+
+
 def handle_event_winners() -> None:
     print('Handling event winners...', flush=True)
 
@@ -237,7 +247,7 @@ def handle_event_winners() -> None:
 
     # Find all event ids that occur more than once
     dupes = matches.values('event').annotate(Count('id')).filter(id__count__gt=1).values('event')
-    dupes = {x['event'] for x in dupes}     # values returns a list of dicts
+    dupes = {x['event'] for x in dupes}  # values returns a list of dicts
 
     # Perform update in aggregate, in a single transaction
     with transaction.atomic():
@@ -251,16 +261,17 @@ def handle_event_winners() -> None:
             m.event.winning_alliance = m.winner
             m.event.save()
 
-            m.winner.teams.all().update(event_wins_count=F('event_wins_count')+1)
+            m.winner.teams.all().update(event_wins_count=F('event_wins_count') + 1)
 
     # Update event winrates based on event wins and events attended
-    Team.objects.exclude(event_attended_count=0)\
-                .update(event_winrate=(F('event_wins_count') * 1.0 / F('event_attended_count')))
+    Team.objects.exclude(event_attended_count=0) \
+        .update(event_winrate=(F('event_wins_count') * 1.0 / F('event_attended_count')))
 
     # Update match winrate based on total matches played and total matches won
-    Team.objects.exclude(match_losses_count=0, match_wins_count=0)\
-        .annotate(played=F('match_wins_count') + F('match_losses_count') + F('match_ties_count'))\
+    Team.objects.exclude(match_losses_count=0, match_wins_count=0) \
+        .annotate(played=F('match_wins_count') + F('match_losses_count') + F('match_ties_count')) \
         .update(match_winrate=ExpressionWrapper(F('match_wins_count') * 1.0 / F('played'), output_field=FloatField()))
+
 
 class Command(BaseCommand):
     help = "Adds matches to the database"
@@ -277,7 +288,7 @@ class Command(BaseCommand):
             add_matches_from_event(event)
         else:
             if year == 0:
-                for yr in SUPPORTED_YEARS:
+                for yr in [2015, 2016]:  # SUPPORTED_YEARS:
                     add_all_matches(yr)
             else:
                 add_all_matches(year)
