@@ -38,11 +38,19 @@ def event_view(request, event_key):
                 'label': str(t)
             }
 
+        #
+        # Optimizations here rely on lookup tables which may use an *excessive* amount of memory to load this page, to
+        # offload this task of caching to the Django ORM, we may be able to change queries to use select_related and
+        # prefetch_related.
+        #
+
         # Assembling Alliances Lookup Table
         alliance_ids = [m.red_alliance_id for m in matches] + [m.blue_alliance_id for m in matches]
         alliances_by_id = {a.id: a for a in Alliance.objects.prefetch_related('teams').filter(id__in=alliance_ids)}
         alliances_by_match = {m: (alliances_by_id[m.red_alliance_id], alliances_by_id[m.blue_alliance_id])
                               for m in matches}
+
+        # Dictionary matching Match instances to list of pairs of the form (team_number, string representation)
         matches_to_alliances = {
             m: (tuple(create_team_map(t) for t in alliances_by_match[m][0].teams.all()),
                 tuple(create_team_map(t) for t in alliances_by_match[m][1].teams.all()))
