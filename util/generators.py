@@ -39,7 +39,7 @@ def event_win_streaks() -> None:
         streak = 0
         active_streak = 0
         excluded_events = _CHAMPIONS_AND_IRI
-        for event in Event.objects.exclude(event_code__in=excluded_events).filter(teams=team).order_by('end_date'):
+        for event in Event.objects.exclude(event_code__in=excluded_events).exclude(winning_alliance=None).filter(teams=team).order_by('end_date'):
             if team in event.winning_alliance.teams.all():
                 streak += 1
                 active_streak += 1
