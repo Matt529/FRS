@@ -34,9 +34,9 @@ def require_http_methods_plus(method_types: List[str], required_args: Union[Mapp
     if method_props is None:
         method_props = {}
 
-    invalid_type = TemplateString("${method} is not one of the allowed request methods (${types})!")
-    missing_props = TemplateString("Request of type ${method} must have following properties: ${props}")
-    missing_args = TemplateString("Request missing arguments. Has ${args}, missing ${missing}")
+    invalid_type = TemplateString("${method} is not one of the allowed request methods ({types})!")
+    missing_props = TemplateString("Request of type ${method} must have following properties: {props}")
+    missing_args = TemplateString("Request missing arguments. Has ${args}, missing {missing}")
 
     def decorator(func):
         @wraps(func, assigned=available_attrs(func))

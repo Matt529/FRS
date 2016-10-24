@@ -1,8 +1,7 @@
 from typing import Union
 
-import string
-
 TemplateLike = Union[str, 'TemplateString']
+
 
 class TemplateString(object):
     """
@@ -19,12 +18,11 @@ class TemplateString(object):
 
     """
 
-    def __init__(self, fmt: str):
+    def __init__(self, fmt: str, *args):
         self._format_string = fmt
-        self._template = string.Template(fmt)
 
     def format(self, *args, **kwargs) -> str:
-        return self._template.safe_substitute(*args, **kwargs)
+        return self._format_string.format(*args, **kwargs)
 
     def get_format_string(self):
         return self._format_string
