@@ -87,11 +87,6 @@ class Command(BaseCommand):
 
         years = [year, *args]
 
-        if len(years) > 1:
-            query = functools.reduce(lambda cur_q, next_year: cur_q | Q(year=next_year), years[1:], Q(year=years[0]))
-        else:
-            query = Q(year=year)
-
         requester = AsyncRequester(use_threads=False)
         event_futures = []  # type: List[Future]
 
@@ -100,7 +95,7 @@ class Command(BaseCommand):
                 add_single_event(event, future.result().response.json())
             return handle
 
-        for event in Event.objects.filter(query):
+        for event in Event.objects.filter(year__in=years):
             event_futures.append(get_awards_from_event_json_async(requester, event.key))
             event_futures[-1].add_done_callback(create_handler(event))
             print("Requesting json data for event: {}".format(event.key))

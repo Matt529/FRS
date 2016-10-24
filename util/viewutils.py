@@ -6,6 +6,7 @@ from django.utils.decorators import available_attrs
 
 from util.templatestring import TemplateString
 
+
 def require_http_methods_plus(method_types: List[str], required_args: Union[Mapping[str, List[str]], List[str]]=None,
                               method_props: Mapping[str, List[str]]=None):
     """
@@ -116,3 +117,4 @@ def read_request_body_to(request, method: str='POST') -> None:
     :return:
     """
     setattr(request, method.upper(), QueryDict(request.body))
+

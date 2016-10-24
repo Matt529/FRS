@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 import os
 
 from django.utils.crypto import get_random_string
+from debug_toolbar.settings import PANELS_DEFAULTS
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -60,6 +61,8 @@ INSTALLED_APPS = [
     'annoying',
     'debug_toolbar',
     'django_extensions',
+    'vcs_info_panel',
+    'template_profiler_panel',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -141,6 +144,11 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+DEBUG_TOOLBAR_PANELS = PANELS_DEFAULTS + [
+    'vcs_info_panel.panels.GitInfoPanel',
+    'template_profiler_panel.panels.template.TemplateProfilerPanel',
+]
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/

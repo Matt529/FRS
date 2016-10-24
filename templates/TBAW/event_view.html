@@ -1,6 +1,7 @@
 {% extends 'FRS/base_template.html' %}
 {% load match_level_humanizer %}
 {% load get_team_ranking_model %}
+{% load get_from_dict %}
 {% load math %}
 {% block title %}{{ event.year }} {{ event.name }}{% endblock %}
 {% block body %}
@@ -55,7 +56,7 @@
         </tr>
         </thead>
         <tbody>
-        {% for match in event.match_set.all %}
+        {% for match in matches %}
             <tr>
                 <td>
                     {{ match.comp_level|match_humanize }}
@@ -65,25 +66,29 @@
                     Match {{ match.match_number }}
                 </td>
 
+                {% with match_alliances|get_from_dict:match as alliances %}
                 <td class="red-alliance">
-                    {% with match.red_alliance.teams.all as red %}
+                    {% with alliances.0 as red %}
                         <a href="{% url 'alliance_view' red.0.team_number red.1.team_number red.2.team_number %}">
-                            {{ red.0 }}<br>
-                            {{ red.1 }}<br>
-                            {{ red.2 }}
+                            {{ red.0.label }}<br>
+                            {{ red.1.label }}<br>
+                            {{ red.2.label }}
                         </a>
                     {% endwith %}
                 </td>
                 <td class="blue-alliance">
-                    {% with match.blue_alliance.teams.all as blue %}
+                    {% with alliances.1 as blue %}
                         <a href="{% url 'alliance_view' blue.0.team_number blue.1.team_number blue.2.team_number %}">
-                            {{ blue.0 }}<br>
-                            {{ blue.1 }}<br>
-                            {{ blue.2 }}
+                            {{ blue.0.label }}<br>
+                            {{ blue.1.label }}<br>
+                            {{ blue.2.label }}
                         </a>
                     {% endwith %}</td>
-                <td class="red-alliance">{{ match.scoring_model.red_total_score }}</td>
-                <td class="blue-alliance">{{ match.scoring_model.blue_total_score }}</td>
+                {% endwith %}
+                {% with match_scorings|get_from_dict:match.scoring_model_id as scoring_model %}
+                <td class="red-alliance">{{ scoring_model.red_total_score }}</td>
+                <td class="blue-alliance">{{ scoring_model.blue_total_score }}</td>
+                {% endwith %}
             </tr>
         {% endfor %}
         </tbody>

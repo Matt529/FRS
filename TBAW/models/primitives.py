@@ -16,7 +16,7 @@ class Team(models.Model):
     country_name = models.CharField(max_length=50, null=True)
     location = models.CharField(max_length=150, null=True)  # full city + state + country
 
-    team_number = models.PositiveSmallIntegerField()
+    team_number = models.PositiveSmallIntegerField(db_index=True)
     key = models.CharField(max_length=8)  # e.g. frc2791
     nickname = models.CharField(max_length=100, null=True)  # shorter name
     rookie_year = models.PositiveSmallIntegerField(null=True)
@@ -50,32 +50,39 @@ class Team(models.Model):
         return "{0} ({1})".format(self.nickname, self.team_number)
 
     def get_matches(self, year=None) -> QuerySet:
+
         if year is None:
             return Match.objects.filter(alliances__teams__team_number=self.team_number)
         else:
             return Match.objects.filter(event__year=year).filter(alliances__teams__team_number=self.team_number)
 
     def get_wins(self, year=None) -> QuerySet:
+        matches = Match.objects.prefetch_related('winner__teams')
         if year is None:
-            return Match.objects.filter(winner__teams__team_number=self.team_number)
+            return matches.filter(winner__teams__team_number=self.team_number)
         else:
-            return Match.objects.filter(event__year=year).filter(winner__teams__team_number=self.team_number)
+            matches.select_related('event')
+            return matches.filter(event__year=year).filter(winner__teams__team_number=self.team_number)
 
     def get_losses(self, year=None) -> QuerySet:
+        matches = Match.objects.prefetch_related('alliances__teams').select_related('winner')
         if year is None:
-            return Match.objects.filter(alliances__teams__team_number=self.team_number).exclude(
+            return matches.filter(alliances__teams__team_number=self.team_number).exclude(
                 winner__teams__team_number=self.team_number).exclude(winner__isnull=True)
         else:
-            return Match.objects.filter(event__year=year).filter(
+            matches.select_related('event')
+            return matches.filter(event__year=year).filter(
                 alliances__teams__team_number=self.team_number).exclude(
                 winner__teams__team_number=self.team_number).exclude(winner__isnull=True)
 
     def get_ties(self, year=None) -> QuerySet:
+        matches = Match.objects.prefetch_related('alliances__teams').select_related('winner')
         if year is None:
-            return Match.objects.filter(alliances__teams__team_number=self.team_number, winner__isnull=True)
+            return matches.filter(alliances__teams__team_number=self.team_number, winner__isnull=True)
         else:
-            return Match.objects.filter(event__year=year) \
-                .filter(alliances__teams__team_number=self.team_number, winner_isnull=True)
+            matches.select_related('event')
+            return matches.filter(event__year=year) \
+                .filter(alliances__teams__team_number=self.team_number, winner__isnull=True)
 
     def get_record(self) -> str:
         return "{0}-{1}-{2}".format(self.match_wins_count, self.match_losses_count, self.match_ties_count)
@@ -108,9 +115,9 @@ class Team(models.Model):
         for award_t in award_types:
             award = types_to_names[award_t]
             if award not in awards:
-                awards[award] = Event.objects.filter(award__award_type=award_t, award__recipients=self).values_list(
-                    flat=True)
+                awards[award] = Event.objects.filter(award__award_type=award_t, award__recipients=self).all()
 
+        awards = {k: v for k, v in awards.items() if len(v) > 0}
         return OrderedDict(sorted(awards.items(), key=lambda entry: -len(entry[1])))
 
     def get_max_opr(self) -> float:
@@ -148,7 +155,7 @@ class Alliance(models.Model):
 
 
 class Event(models.Model):
-    key = models.CharField(max_length=10)  # e.g. 2016cmp
+    key = models.CharField(max_length=10, db_index=True)  # e.g. 2016cmp
     name = models.CharField(max_length=100)  # e.g. Finger Lakes Regional
     short_name = models.CharField(null=True, max_length=50)  # e.g. Finger Lakes
     event_code = models.CharField(max_length=7)  # e.g. cmp

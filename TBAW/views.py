@@ -1,9 +1,10 @@
 from datetime import date
 
+from django.db.models import F, Q
 from annoying.decorators import render_to
 
 from FRS.views import handle_404
-from TBAW.models import Event, RankingModel, Team
+from TBAW.models import Event, RankingModel, Team, ScoringModel, Alliance
 from util.check import alliance_exists, team_exists
 from util.getters import get_team, get_event, get_alliance
 
@@ -12,8 +13,8 @@ from util.getters import get_team, get_event, get_alliance
 def team_view(request, team_number):
     if Team.objects.filter(team_number=team_number).exists():
         team = get_team(team_number)
-        events_this_year = Event.objects.filter(year=date.today().year, teams__team_number=team.team_number).order_by(
-            'end_date')
+        events_this_year = Event.objects.prefetch_related('teams')\
+            .filter(year=date.today().year, teams__team_number=team.team_number).order_by('end_date').values('key', 'year', 'name')
 
         return {
             'team': team,
@@ -29,11 +30,39 @@ def team_view(request, team_number):
 def event_view(request, event_key):
     if Event.objects.filter(key=event_key).exists():
         event = get_event(event_key)
-        ranking_models = RankingModel.objects.filter(event=event)
+        matches = event.match_set.all()
+
+        def create_team_map(t: Team):
+            return {
+                'team_number': t.team_number,
+                'label': str(t)
+            }
+
+        # Assembling Alliances Lookup Table
+        alliance_ids = [m.red_alliance_id for m in matches] + [m.blue_alliance_id for m in matches]
+        alliances_by_id = {a.id: a for a in Alliance.objects.prefetch_related('teams').filter(id__in=alliance_ids)}
+        alliances_by_match = {m: (alliances_by_id[m.red_alliance_id], alliances_by_id[m.blue_alliance_id])
+                              for m in matches}
+        matches_to_alliances = {
+            m: (tuple(create_team_map(t) for t in alliances_by_match[m][0].teams.all()),
+                tuple(create_team_map(t) for t in alliances_by_match[m][1].teams.all()))
+                for m in matches}
+
+        # Assembling Scoring Model Lookup Table
+        scoring_model_ids = [m.scoring_model_id for m in matches]
+        models = {m.id: m for m in ScoringModel.objects.filter(Q(id__in=scoring_model_ids))}
+        matches_to_scoring_models = {m: models[m.scoring_model_id] for m in matches}
+
+        # Assemble RankingModel Lookup Table
+        ranking_models = RankingModel.objects.filter(event__key=event_key).annotate(team_number=F('team__team_number')).all()
+        ranking_models = {x.team_number: x for x in ranking_models}
 
         return {
             'event': event,
             'ranking_models': ranking_models,
+            'matches': matches,
+            'match_alliances': matches_to_alliances,
+            'match_scorings' : matches_to_scoring_models
         }
     else:
         return handle_404(request)
