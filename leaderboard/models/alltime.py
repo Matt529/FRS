@@ -95,7 +95,8 @@ class TeamLeaderboard:
             A QuerySet of which teams have the most match wins. Has the extra field 'match_wins'.
 
         """
-        return Team.objects.annotate(match_wins=Count('alliance__winner')).order_by('-match_wins')[:n]
+        return Team.objects.select_related('alliance')\
+                   .annotate(match_wins=Count('alliance__winner')).order_by('-match_wins')[:n]
 
     @staticmethod
     def most_event_wins(n=None) -> QuerySet:
@@ -108,8 +109,8 @@ class TeamLeaderboard:
             A QuerySet of which teams have the most event wins. Has the extra field 'event_wins'.
 
         """
-        return Team.objects.annotate(event_wins=Count('alliance__winning_alliance',
-                                                      distinct=True)).order_by('-event_wins')[:n]
+        return Team.objects.select_related('alliance')\
+                   .annotate(event_wins=Count('alliance__winning_alliance', distinct=True)).order_by('-event_wins')[:n]
 
     @staticmethod
     def highest_win_rate(n=None) -> QuerySet:
@@ -126,7 +127,7 @@ class TeamLeaderboard:
         Returns:
             A QuerySet of which teams have the highest winrate. Has the extra field 'win_rate'.
         """
-        return Team.objects.annotate(
+        return Team.objects.select_related('alliance').annotate(
             num_played=ExpressionWrapper(Count('alliance__match', distinct=True), output_field=FloatField()),
             num_wins=ExpressionWrapper(Count('alliance__winner', distinct=True), output_field=FloatField())
         ).exclude(num_played__lte=10).annotate(
@@ -186,7 +187,7 @@ class TeamLeaderboard:
 
         """
         blue_banner_reverse = dict((v, k) for k, v in Award.blue_banner_choices)
-        return Team.objects.filter(award__award_type__in=blue_banner_reverse.values()).annotate(
+        return Team.objects.select_related('award').filter(award__award_type__in=blue_banner_reverse.values()).annotate(
             blue_banners_won=Sum(
                 Case(
                     When(award__award_type__in=blue_banner_reverse.values(), then=1),
