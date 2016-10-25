@@ -321,7 +321,8 @@ class Award(models.Model):
 
     blue_banner_choices = (
         (0, "Chairman's"),
-        (1, "Winner")
+        (1, "Winner"),
+        (9, "Engineering Inspiration"),
     )
 
     non_district_point_choices = (
