@@ -1,6 +1,7 @@
 from django.test import TestCase
 from util.templatestring import TemplateString
 
+from util.atomics import AtomicVar
 
 class TemplateStringsTestCase(TestCase):
 
@@ -76,3 +77,63 @@ class TemplateStringsTestCase(TestCase):
 
         self.assertEqual(hg_result, "Hello World! Gimme that sweet sweet soda pop!")
         self.assertEqual(sb_result, "Sometimes, I look at this codebase and... well, it makes me %.2f%% sad. Bless this code. It's an absolute dream." % (100/e))
+
+import math
+
+
+class AtomicVarTestCase(TestCase):
+    def setUp(self):
+        self.atomic_x = AtomicVar(10)
+        self.atomic_y = AtomicVar(1/math.e)
+        self.atomic_str = AtomicVar('Hello World!')
+        self.atomic_atomic = AtomicVar(AtomicVar(0))
+
+    def test_instantiation(self):
+
+        a1 = self.atomic_x.value
+        a2 = self.atomic_y.value
+        a3 = self.atomic_str.value
+        a4 = self.atomic_atomic.value
+
+        self.assertEqual(a1, 10)
+        self.assertEqual(a2, 1/math.e)
+        self.assertEqual(a3, 'Hello World!')
+        self.assertEqual(a4, AtomicVar(0))
+
+    def test_atomic_on_atomic_operations(self):
+        r1 = self.atomic_x + self.atomic_y
+        r2 = self.atomic_y - self.atomic_y
+        r3 = self.atomic_x / self.atomic_y
+        r4 = self.atomic_y // self.atomic_x
+        r5 = self.atomic_x * self.atomic_x
+        r6 = self.atomic_y ** AtomicVar(-1)
+
+        self.assertEqual(r1, AtomicVar(10 + 1/math.e))
+        self.assertEqual(r2, AtomicVar(0))
+        self.assertEqual(r3, AtomicVar(10*math.e))
+        self.assertEqual(r4, AtomicVar((1/math.e) // 10))
+        self.assertEqual(r5, AtomicVar(10*10))
+        self.assertEqual(r6, AtomicVar((1/math.e) ** -1))
+        self.assertLess(r5, 10**5)
+
+        r5 += r5
+        self.assertEqual(r5, AtomicVar(200))
+
+    def test_atomic_on_non_atomic_operations(self):
+        r1 = self.atomic_str + ' How are you?'
+        r2 = self.atomic_x - 5
+        r3 = self.atomic_x / 6
+        r4 = self.atomic_x // 1000
+        r5 = self.atomic_y * math.e
+        r6 = self.atomic_y ** -1
+
+        self.assertEqual(r1, "Hello World! How are you?")
+        self.assertEqual(r2, 5)
+        self.assertEqual(r3, 10/6)
+        self.assertEqual(r4, 0)
+        self.assertEqual(r5, 1)
+        self.assertEqual(r6, math.e)
+        self.assertLess(r4, 1)
+
+        r3 += 335*math.e ** 2
+        self.assertEqual(r3, (10/6) + (335*math.e ** 2))
