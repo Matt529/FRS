@@ -1,104 +1,124 @@
+from typing import Iterable, List, Optional
 from time import clock
+
+import collections
 
 from django.core.management.base import BaseCommand
 from django.db import transaction
 from django.db.models import F, Q, ExpressionWrapper, FloatField, Count
 
 from TBAW.models import Match, Alliance, Event, AllianceAppearance, RankingModel, Team, ScoringModel
-from TBAW.requester import get_list_of_matches_json, get_event_json
-from util.check import match_exists, alliance_exists, alliance_appearance_exists
-from util.getters import get_team, get_event, get_alliance, get_instance_scoring_model
+from TBAW.requester import get_list_of_matches_json_async, get_event_json_async
+from TBAW.resource_getter import AsyncRequester
+from util.check import alliance_exists
+from util.getters import get_alliance, get_instance_scoring_model, get_teams
 
 matches_created = 0
 matches_skipped = 0
 event_matches = 0
 
+YEAR_TO_POINT_STR = {
+    2016: 'Points',
+    2015: '_points'
+}
 
-def add_all_matches(year: int) -> None:
-    events = Event.objects.filter(year=year).order_by('end_date').values('key').all()
+file_requester = AsyncRequester(use_threads=False)
+TeamScoreOverview2016 = collections.namedtuple('TeamScoreOverview2016', ['alliance', 'total', 'foul', 'breach', 'auto'])
+
+
+def add_all_matches(*years: Iterable[int]) -> None:
+    years = [*years]
+    events = Event.objects.prefetch_related('alliances').filter(year__in=years).order_by('end_date').all()
     for event in events:
-        add_matches_from_event(event.key)
+        add_matches_from_event(event)
 
 
-def add_matches_from_event(event_key: str) -> None:
+def add_matches_from_event(event: Event) -> None:
+    get_list_of_matches_json_async(file_requester, event.key, _add_matches_from_event_async, event)
+
+
+def _add_matches_from_event_async(event: Event, matches_json: List[dict]) -> None:
     global matches_created, matches_skipped, event_matches
-    matches = get_list_of_matches_json(event_key)
+    matches = matches_json
     current_seed = 1
-    print("Adding matches from event {0}...".format(event_key))
+
+    event_json_future = get_event_json_async(file_requester, event.key)
+
+    print("Adding matches from event {0}...".format(event.key))
+    all_matches_for_event = {k for k in Match.objects.filter(event_id=event.id).values_list('key', flat=True).all()}
+    alliance_to_appearance = {ap.alliance_id: ap for ap in AllianceAppearance.objects.filter(event_id=event.id).all()}
+    team_to_rankingmodel = {rm.team_id: rm for rm in RankingModel.objects.filter(event_id=event.id).all()}
+
+    def get_or_create_appearance(alliance: Alliance, seed: int):
+        if alliance.id not in alliance_to_appearance:
+            appearance = AllianceAppearance.objects.create(alliance_id=alliance.id, event_id=event.id,
+                                                                       seed=seed)
+            alliance.allianceappearance_set.add(appearance)
+        else:
+            appearance = AllianceAppearance.objects.get(alliance_id=alliance.id, event_id=event.id)
+            appearance.seed = seed
+            appearance.save()
+        return appearance
+
+    def get_or_create_alliance(team_one: Team, team_two: Team, team_three: Team):
+        if not alliance_exists(team_one, team_two, team_three):
+            alliance = Alliance.objects.create()
+
+            with transaction.atomic():
+                for x in [team_one, team_two, team_three]:
+                    red_alliance.teams.add(x)
+        else:
+            alliance = get_alliance(team_one, team_two, team_three)
+
+        return alliance
+
+    def determine_seed_offset(evt_json: dict, team: Team):
+        seed_offset = 0
+        for data_seg in evt_json['alliances']:
+            if team.key in data_seg['picks']:
+                seed_offset += 1
+        return seed_offset
+
     for match in matches:
-        if match_exists(event_key, match['key']):
+        match_year = int(match['key'][:4])
+
+        if match['key'] in all_matches_for_event:
             matches_skipped += 1
             print("({1}) Already added {0}".format(match['key'], matches_skipped))
         else:
-            # print('Adding {}'.format(match['key']), end='', flush=True)
-            red_teams = [get_team(int(x[3:])) for x in match['alliances']['red']['teams']]
-            blue_teams = [get_team(int(x[3:])) for x in match['alliances']['blue']['teams']]
-            red_seed = None
-            blue_seed = None
+            score_breakdwown_available = not (match['score_breakdown'] is None and match_year >= 2015)
+            alliances_scores_available = not (match['alliances']['blue']['score'] == match['alliances']['red']['score'] == -1)
 
-            if (match['score_breakdown'] is None and int(match['key'][:4]) >= 2015) or (
-                        match['alliances']['blue']['score'] == match['alliances']['red']['score'] == -1):
-                print("Skipping match {0} from event {1} (scores not found)".format(match['key'], event_key))
+            if not score_breakdwown_available or not alliances_scores_available:
+                print("Skipping match {0} from event {1} (scores not found)".format(match['key'], event.key))
                 matches_skipped += 1
                 continue
 
-            event_json = get_event_json(event_key)
-            event = get_event(event_key)
+            red_ids = {int(team_id[3:]) for team_id in match['alliances']['red']['teams']}
+            blue_ids = {int(team_id[3:]) for team_id in match['alliances']['blue']['teams']}
+            all_teams = get_teams(*(red_ids | blue_ids))
 
-            if not alliance_exists(red_teams[0], red_teams[1], red_teams[2]):
-                red_alliance = Alliance.objects.create()
-                for x in red_teams:
-                    red_alliance.teams.add(x)
+            red_teams = [team for team in all_teams if team.id in red_ids]
+            blue_teams = [team for team in all_teams if team.id in blue_ids]
+            red_seed = None
+            blue_seed = None
 
-                red_alliance.save()
-            else:
-                red_alliance = get_alliance(red_teams[0], red_teams[1], red_teams[2])
+            red_alliance = get_or_create_alliance(*red_teams)
+            blue_alliance = get_or_create_alliance(*blue_teams)
 
-            if not alliance_exists(blue_teams[0], blue_teams[1], blue_teams[2]):
-                blue_alliance = Alliance.objects.create()
-                for x in blue_teams:
-                    blue_alliance.teams.add(x)
+            red_total_points = match['alliances']['red']['score']
+            blue_total_points = match['alliances']['blue']['score']
 
-                blue_alliance.save()
-            else:
-                blue_alliance = get_alliance(blue_teams[0], blue_teams[1], blue_teams[2])
-
-            event.alliances.add(red_alliance)
-            event.alliances.add(blue_alliance)
-
-            if match['comp_level'] in ['ef', 'qf', 'sf', 'f']:
-                for data_seg in event_json['alliances']:
-                    if red_teams[0].key in data_seg['picks']:
-                        red_seed = current_seed
-                        current_seed += 1
-
-                for data_seg in event_json['alliances']:
-                    if blue_teams[0].key in data_seg['picks']:
-                        blue_seed = current_seed
-                        current_seed += 1
-
-            if event.year in [2015, 2016]:
-                if event.year == 2016:
-                    pt_str = 'Points'
-                elif event.year == 2015:
-                    pt_str = '_points'
+            if event.year in YEAR_TO_POINT_STR:
+                pt_str = YEAR_TO_POINT_STR[event.year]
 
                 red_score_breakdown = match['score_breakdown']['red']
                 blue_score_breakdown = match['score_breakdown']['blue']
 
-                try:
-                    red_total_points = red_score_breakdown['total{0}'.format(pt_str)]
-                    blue_total_points = blue_score_breakdown['total{0}'.format(pt_str)]
-                    red_foul_points = red_score_breakdown['foul{0}'.format(pt_str)]
-                    blue_foul_points = blue_score_breakdown['foul{0}'.format(pt_str)]
-                except KeyError:
-                    red_total_points = match['alliances']['red']['score']
-                    blue_total_points = match['alliances']['blue']['score']
-                    red_foul_points = 0
-                    blue_foul_points = 0
-            else:
-                red_total_points = match['alliances']['red']['score']
-                blue_total_points = match['alliances']['blue']['score']
+                red_total_points = red_score_breakdown.get('total{0}'.format(pt_str), red_total_points)
+                blue_total_points = blue_score_breakdown.get('total{0}'.format(pt_str), blue_total_points)
+                red_foul_points = red_score_breakdown.get('foul{0}'.format(pt_str), 0)
+                blue_foul_points = blue_score_breakdown.get('foul{0}'.format(pt_str), 0)
 
             if red_total_points < blue_total_points:
                 winner = blue_alliance
@@ -106,27 +126,17 @@ def add_matches_from_event(event_key: str) -> None:
                 winner = red_alliance
             elif match['comp_level'] in ['ef', 'qf', 'sf', 'f']:
                 if event.year == 2016:
-                    red_breach_capture_points = red_score_breakdown['breach{0}'.format(pt_str)] + red_score_breakdown[
-                        'capture{0}'.format(pt_str)]
-                    blue_breach_capture_points = blue_score_breakdown['breach{0}'.format(pt_str)] + \
-                                                 blue_score_breakdown['capture{0}'.format(pt_str)]
+                    red_breach_capture_points = red_score_breakdown['breach{0}'.format(pt_str)] + red_score_breakdown['capture{0}'.format(pt_str)]
+                    blue_breach_capture_points = blue_score_breakdown['breach{0}'.format(pt_str)] + blue_score_breakdown['capture{0}'.format(pt_str)]
                     red_auto_points = red_score_breakdown['auto{0}'.format(pt_str)]
                     blue_auto_points = blue_score_breakdown['auto{0}'.format(pt_str)]
 
-                    if red_total_points + red_foul_points > blue_total_points + blue_foul_points:
-                        winner = red_alliance
-                    elif red_total_points + red_foul_points < blue_total_points + blue_foul_points:
-                        winner = blue_alliance
-                    elif red_breach_capture_points > blue_breach_capture_points:
-                        winner = red_alliance
-                    elif blue_breach_capture_points > red_breach_capture_points:
-                        winner = blue_alliance
-                    elif red_auto_points > blue_auto_points:
-                        winner = red_alliance
-                    elif blue_auto_points > red_auto_points:
-                        winner = blue_alliance
-                    else:
-                        winner = None
+                    red_overview = TeamScoreOverview2016(red_alliance, red_total_points, red_foul_points,
+                                                         red_breach_capture_points, red_auto_points)
+                    blue_overview = TeamScoreOverview2016(blue_alliance, blue_total_points, blue_foul_points,
+                                                          blue_breach_capture_points, blue_auto_points)
+
+                    winner = determine_elims_winner2016(red_overview, blue_overview)
                 elif event.year == 2015:
                     winner = None
                 elif event.year in [2010, 2011, 2012, 2013, 2014]:
@@ -141,82 +151,99 @@ def add_matches_from_event(event_key: str) -> None:
             else:
                 loser = None
 
-            red_alliance.save()
-            blue_alliance.save()
+            with transaction.atomic():
+                red_alliance.save()
+                blue_alliance.save()
+                event.alliances.add(red_alliance)
+                event.alliances.add(blue_alliance)
 
-            if not match['score_breakdown']:
-                sm = parse_old_matches(int(match['key'][:4]), red_score=red_total_points, blue_score=blue_total_points)
-            else:
-                sm = parse_score_breakdown(int(match['key'][:4]), match['score_breakdown'])
+            parse_key = match_year
+            parse_old_kwargs = {'red_score': red_total_points, 'blue_score': blue_total_points}
+            parse_new_args = (parse_key, match['score_breakdown'])
 
-            match_obj = Match.objects.create(key=match['key'], comp_level=match['comp_level'],
-                                             set_number=match['set_number'], match_number=match['match_number'],
-                                             event=event, winner=winner, scoring_model=sm, blue_alliance=blue_alliance,
-                                             red_alliance=red_alliance)
+            old_parse = parse_old_matches
+            new_parse = parse_score_breakdown
+
+            sm = new_parse(*parse_new_args) if match['score_breakdown'] else old_parse(parse_key, **parse_old_kwargs)
+
+            match_obj = Match.objects.create (
+                key=match['key'], comp_level=match['comp_level'], set_number=match['set_number'],
+                match_number=match['match_number'], event=event, winner=winner, scoring_model=sm,
+                blue_alliance=blue_alliance, red_alliance=red_alliance
+            )
+
             match_obj.alliances.set([red_alliance, blue_alliance])
-            # print('.', end='', flush=True)
 
-            if not alliance_appearance_exists(red_alliance, event):
-                red_appearance = AllianceAppearance.objects.create(alliance=red_alliance, event=event,
-                                                                   seed=red_seed)
-                red_alliance.allianceappearance_set.add(red_appearance)
-            else:
-                red_appearance = AllianceAppearance.objects.get(alliance=red_alliance, event=event)
-                red_appearance.seed = red_seed
-                red_appearance.save()
+            event_json = event_json_future()
+            if match['comp_level'] in ['ef', 'qf', 'sf', 'f']:
+                current_seed += determine_seed_offset(event_json, red_teams[0])
+                red_seed = current_seed - 1
+                current_seed += determine_seed_offset(event_json, blue_teams[0])
+                blue_seed = current_seed - 1
 
-            if not alliance_appearance_exists(blue_alliance, event):
-                blue_appearance = AllianceAppearance.objects.create(alliance=blue_alliance, event=event,
-                                                                    seed=blue_seed)
-                blue_alliance.allianceappearance_set.add(blue_appearance)
-            else:
-                blue_appearance = AllianceAppearance.objects.get(alliance=blue_alliance, event=event)
-                blue_appearance.seed = blue_seed
-                blue_appearance.save()
+            with transaction.atomic():
+                red_appearance = get_or_create_appearance(red_alliance, red_seed)
+                blue_appearance = get_or_create_appearance(blue_alliance, blue_seed)
+
+            alliance_to_appearance[red_alliance.id] = red_appearance
+            alliance_to_appearance[blue_alliance.id] = blue_appearance
 
             if winner is None:
-                for bt, rt in zip(blue_alliance.teams.all(), red_alliance.teams.all()):
-                    bt_rm = RankingModel.objects.get(team=bt, event=event)
-                    bt_rm.total_ties += 1
-                    bt.match_ties_count += 1
+                with transaction.atomic():
+                    for bt, rt in zip(blue_alliance.teams.all(), red_alliance.teams.all()):
+                        bt_rm = RankingModel.objects.get(team=bt, event=event)
+                        bt_rm.total_ties += 1; bt.match_ties_count += 1
 
-                    rt_rm = RankingModel.objects.get(team=rt, event=event)
-                    rt_rm.total_ties += 1
-                    rt.match_ties_count += 1
+                        rt_rm = RankingModel.objects.get(team=rt, event=event)
+                        rt_rm.total_ties += 1; rt.match_ties_count += 1
 
-                    if match['comp_level'] == 'qm':
-                        bt_rm.qual_ties += 1
-                        rt_rm.qual_ties += 1
+                        if match['comp_level'] == 'qm':
+                            bt_rm.qual_ties += 1; rt_rm.qual_ties += 1
 
-                    bt_rm.save()
-                    rt_rm.save()
-                    bt.save()
-                    rt.save()
+                        bt_rm.save(); rt_rm.save()
+                        bt.save();  rt.save()
             else:
-                for winning_team, losing_team in zip(winner.teams.all(), loser.teams.all()):
-                    winner_rm = RankingModel.objects.get(team=winning_team, event=event)
-                    winner_rm.total_wins += 1
-                    winning_team.match_wins_count += 1
+                with transaction.atomic():
+                    for winning_team, losing_team in zip(winner.teams.all(), loser.teams.all()):
+                        winner_rm = team_to_rankingmodel[winning_team.id]
+                        winner_rm.total_wins += 1; winning_team.match_wins_count += 1
 
-                    loser_rm = RankingModel.objects.get(team=losing_team, event=event)
-                    loser_rm.total_losses += 1
-                    losing_team.match_losses_count += 1
+                        loser_rm = team_to_rankingmodel[losing_team.id]
+                        loser_rm.total_losses += 1; losing_team.match_losses_count += 1
 
-                    if match['comp_level'] == 'qm':
-                        winner_rm.qual_wins += 1
-                        loser_rm.qual_losses += 1
+                        if match['comp_level'] == 'qm':
+                            winner_rm.qual_wins += 1; loser_rm.qual_losses += 1
 
-                    winner_rm.save()
-                    loser_rm.save()
-                    winning_team.save()
-                    losing_team.save()
+                        winner_rm.save(); loser_rm.save()
+                        winning_team.save(); losing_team.save()
 
-            # print('.', flush=True)
             matches_created += 1
             event_matches += 1
 
     print("\tSuccessfully added {0} matches from event".format(event_matches))
     event_matches = 0
+
+
+def determine_elims_winner2016(red: TeamScoreOverview2016, blue: TeamScoreOverview2016) -> Optional[Alliance]:
+    red_alliance = red.alliance
+    blue_alliance = blue.alliance
+
+    if red.total + red.foul > blue.total + blue.foul:
+        winner = red_alliance
+    elif red.total + red.foul < blue.total + blue.foul:
+        winner = blue_alliance
+    elif red.breach > blue.breach:
+        winner = red_alliance
+    elif red.breach < blue.breach:
+        winner = blue_alliance
+    elif red.auto > blue.auto:
+        winner = red_alliance
+    elif red.auto < blue.auto:
+        winner = blue_alliance
+    else:
+        winner = None
+
+    return winner
 
 
 def parse_score_breakdown(year: int, score_breakdown: dict) -> ScoringModel:

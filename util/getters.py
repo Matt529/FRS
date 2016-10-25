@@ -1,3 +1,4 @@
+from typing import Iterable
 from django.core.urlresolvers import reverse
 from django.db.models import Model, Count
 
@@ -32,6 +33,10 @@ for year in settings.SUPPORTED_YEARS:
         YEAR_TO_RANKING_MODEL[year] = ranking_model_t
     if scoring_model_t is not None:
         YEAR_TO_SCORING_MODEL[year] = scoring_model_t
+
+
+def get_teams(*team_numbers: Iterable[int]):
+    return Team.objects.filter(id__in=list(team_numbers)).all()
 
 
 def get_team(team_number: int) -> Team:
@@ -105,7 +110,7 @@ def get_alliance(team1: Team, team2: Team, team3: Team) -> Alliance:
         Alliance containing the three teams provided.
 
     """
-    return Alliance.objects.annotate(t=Count('teams')).filter(t=3, teams=team1).filter(teams=team2).get(teams=team3)
+    return Alliance.objects.prefetch_related('teams').annotate(t=Count('teams')).filter(t=3, teams=team1).filter(teams=team2).get(teams=team3)
 
 
 def get_instance_scoring_model(year: int) -> ScoringModel:

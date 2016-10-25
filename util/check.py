@@ -29,11 +29,11 @@ def event_exists(event_key: str) -> bool:
     return Event.objects.filter(key=event_key).exists()
 
 
-def match_exists(event_key: str, match_key: str) -> bool:
+def match_exists(event: Event, match_key: str) -> bool:
     """
 
     Args:
-        event_key: the year of the event and the string associated with the event (e.g. 2016nyro, 2014cmp, 2015iri)
+        event: Event associated with match (e.g. 2016nyro, 2014cmp, 2015iri)
         match_key: the year of the match, the event, the competition level of the match, the match number, and the set
         number, if applicable (e.g. 2016nyro_f1m1, 2015iri_sf2m2, 2015nytr_qm40).
 
@@ -41,8 +41,7 @@ def match_exists(event_key: str, match_key: str) -> bool:
         true if the match exists in the database, false otherwise
 
     """
-    event = Event.objects.get(key=event_key)
-    return Match.objects.filter(key=match_key, event=event).exists()
+    return Match.objects.filter(key=match_key, event_id=event.id).exists()
 
 
 def alliance_exists(team1: Team, team2: Team, team3: Team) -> bool:
