@@ -48,7 +48,6 @@ class AtomicVar(Atomic, Generic[T]):
 
     def set(self, new_value: T) -> None:
         with self._lock:
-            print('Set to:', new_value)
             self._value = new_value
 
     def _operate(self, op, *op_args, **op_kwargs) -> T:
