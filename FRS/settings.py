@@ -11,9 +11,11 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
 import os
+import logging
 
 from django.utils.crypto import get_random_string
 from debug_toolbar.settings import PANELS_DEFAULTS
+from django.conf import settings
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -63,6 +65,9 @@ INSTALLED_APPS = [
     'django_extensions',
     'vcs_info_panel',
     'template_profiler_panel',
+    'nplusone.ext.django',
+    'dashing',
+    'django_js_reverse',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -76,6 +81,7 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'nplusone.ext.django.middleware.NPlusOneMiddleware',
 ]
 
 ROOT_URLCONF = 'FRS.urls'
@@ -178,6 +184,30 @@ SPAGHETTI_SAUCE = {
     'show_fields': False,
     'exclude': {'auth': ['user']}
 }
+
+#NPlusOne Logging
+LOGGING = {
+    'version': 1,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler'
+        },
+    },
+    'loggers': {
+        'nplusone': {
+            'handlers': ['console'],
+            'level': 'WARN',
+        },
+    },
+}
+LOGGING.update(settings.LOGGING)
+
+NPLUSONE_LOGGER = logging.getLogger('nplusone')
+NPLUSONE_LOG_LEVEL = logging.WARN
+
+# Slow Tests Setup
+TEST_RUNNER = 'django_slowtests.testrunner.DiscoverSlowestTestsRunner'
+NUM_SLOW_TESTS = 10
 
 # For API request logging
 LOG_PATH = os.path.join(BASE_DIR, 'logs')

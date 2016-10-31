@@ -1,6 +1,7 @@
 {% spaceless %}
     <!DOCTYPE html>
     <html lang="en">
+    {% load js_reverse %}
     {% load staticfiles %}
     {% load static from staticfiles %}
     {% load leaderboard_dropdown %}
@@ -21,18 +22,6 @@
 
             {% block css %}
                 <link rel="stylesheet" href="{% static 'compiled/global/css/main.css' %}">
-            {% endblock %}
-            {% block scripts %}
-                <script src="https://code.jquery.com/jquery-3.1.0.min.js"
-                        integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="
-                        crossorigin="anonymous"></script>
-                <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"
-                        integrity="sha256-dsOXGNHAo/syFnazt+KTBsCQeRmlcW1XKL0bCK4Baec="
-                        crossorigin="anonymous"></script>
-                <script src="https://use.fontawesome.com/35487374a1.js"></script>
-                <script src="{% static 'bower_components/uikit/js/uikit.min.js' %}"></script>
-                <script src="{% static 'bower_components/typeahead.js/dist/typeahead.bundle.min.js' %}"></script>
-                <script src="{% static 'bower_components/tablesorter/jquery.tablesorter.min.js' %}"></script>
             {% endblock %}
         </head>
     {% endblock %}
@@ -62,7 +51,7 @@
         {% block body %}
         {% endblock %}
     </div>
-    <script>
+    <script type="text/javascript" charset="utf-8">
         $(document).ready(function () {
             function hasClass(element, cls) {
                 return (' ' + element.className + ' ').indexOf(' ' + cls + ' ') > -1;
@@ -91,7 +80,21 @@
             })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
             ga('create', 'UA-85792877-1', 'auto');ga('send', 'pageview');
         {% endif %}
+
+        {% js_reverse_inline %}
     </script>
+    {% block scripts %}
+        <script src="https://code.jquery.com/jquery-3.1.0.min.js"
+                integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="
+                crossorigin="anonymous"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"
+                integrity="sha256-dsOXGNHAo/syFnazt+KTBsCQeRmlcW1XKL0bCK4Baec="
+                crossorigin="anonymous"></script>
+        <script src="https://use.fontawesome.com/35487374a1.js"></script>
+        <script src="{% static 'bower_components/uikit/js/uikit.min.js' %}"></script>
+        <script src="{% static 'bower_components/typeahead.js/dist/typeahead.bundle.min.js' %}"></script>
+        <script src="{% static 'bower_components/tablesorter/jquery.tablesorter.min.js' %}"></script>
+    {% endblock %}
     </body>
     </html>
 {% endspaceless %}

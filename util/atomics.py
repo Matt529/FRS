@@ -1,3 +1,14 @@
+"""
+    Module offering support for Atomic data and utilities. Atomic types intend to have all operations done atomically.
+    For example, integer addition is an atomic operation. Nothing else can happen to the involved variables or literals
+    until the operation is finished. With AtomicVar for instance, the get/set methods and all supported operators
+    are atomic and block off access to that value until the current operation is complete. If the operation was not
+    atomic then a set operation is really mutli-instruction and any threads operating in parallel on the same instance
+    may modify the object's state before a set operation is complete, meaning the modification is lost.
+
+    The Atomic objects attempt to ensure this in a fairly simple way using python Locks
+"""
+
 from typing import Generic, TypeVar, Any, Callable, Union
 from threading import RLock, Lock, Event
 
@@ -28,7 +39,6 @@ class Atomic(abc.ABC, Generic[T]):
     @abc.abstractmethod
     def set(self, value: T) -> None:
         raise NotImplementedError('Cannot write this value.')
-
 
 
 @functools.total_ordering
