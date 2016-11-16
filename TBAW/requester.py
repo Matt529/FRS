@@ -1,10 +1,10 @@
 from operator import itemgetter
-from concurrent.futures import Future
-from typing import List
+from concurrent.futures import Future, wait
+from typing import List, Callable
 
 import requests
 
-from TBAW.resource_getter import AsyncRequester
+from TBAW.resource_getter import AsyncRequester, ResourceResult
 from TBAW.models import Team
 from util.getters import get_team
 from util.templatestring import TemplateString
@@ -55,14 +55,41 @@ def get_event_json(event_key: str) -> dict:
     return dict(event_json, **event_teams)
 
 
+def get_event_json_async(requester: AsyncRequester, event_key: str) -> Callable[[], dict]:
+    url = __event_template(event=event_key)
+    event_json_identifier = requester.push_last(url, headers=__api_key)
+
+    url += '/teams'
+    event_team_list_identifier = requester.push_last(url, headers=__api_key)
+
+    future_map = requester.retrieve_all()
+
+    event_json_future = future_map[event_json_identifier]
+    event_team_list_future = future_map[event_team_list_identifier]
+
+    def wait_for_event_json() -> dict:
+        if wait_for_event_json.result is not None:
+            result = wait_for_event_json.result
+        else:
+            wait([event_json_future, event_team_list_future])
+
+            event_json = event_json_future.result().response.json()
+            event_team_list_json = event_team_list_future.result().response.json()
+            event_teams = {'teams': event_team_list_json}
+            result = wait_for_event_json.result = dict(event_json, **event_teams)
+        return result
+
+    wait_for_event_json.result = None
+
+    return wait_for_event_json
+
+
 def get_list_of_events_json(year=2016) -> dict:
     url = __event_by_year_template(year=year)
     return requests.get(url, headers=__api_key).json()
 
 
-def get_list_of_matches_json(event_key: str) -> List[dict]:
-    url = __event_matches_template(event=event_key)
-    json = requests.get(url, headers=__api_key).json()
+def _list_of_matches_json_converter(json) -> List[dict]:
     qm = []
     ef = []
     qf = []
@@ -86,6 +113,25 @@ def get_list_of_matches_json(event_key: str) -> List[dict]:
     matches = sorted(qm, key=key) + sorted(ef, key=key) + sorted(qf, key=key) + sorted(sf, key=key) + sorted(f, key=key)
 
     return matches
+
+
+def get_list_of_matches_json(event_key: str) -> List[dict]:
+    url = __event_matches_template(event=event_key)
+    json = requests.get(url, headers=__api_key).json()
+    return _list_of_matches_json_converter(json)
+
+
+def get_list_of_matches_json_async(requester: AsyncRequester, event_key: str, callback, *callback_args) -> Future:
+    url = __event_awards_template(event=event_key)
+    future = requester.get(url, headers=__api_key)
+
+    def handle_done(future: Future):
+        result = future.result()    # type: ResourceResult
+        json = result.response.json()
+        callback(*callback_args, _list_of_matches_json_converter(json))
+
+    future.add_done_callback(handle_done)
+    return future
 
 
 def get_event_rankings_json(event_key: str) -> List[List[str]]:

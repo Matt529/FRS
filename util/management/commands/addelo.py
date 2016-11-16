@@ -3,6 +3,7 @@ from time import clock
 from bulk_update.helper import bulk_update
 from django.core.management.base import BaseCommand
 from django.db.models import F
+from django.db import transaction
 from trueskill import Rating, rate, rate_1vs1
 
 from FRS.settings import SOFT_RESET_SCALE, DEFAULT_SIGMA, DEFAULT_MU
@@ -24,7 +25,8 @@ def handle_match_elo(match: Match) -> None:
         alliance_winner = match.winner
         team_winners = alliance_winner.teams.all()
 
-    alliance_loser = [x for x in match.alliances.all() if x != match.winner][0]
+    alliance_loser_list = match.alliances.exclude(id=match.winner_id).all()
+    alliance_loser = [x for x in alliance_loser_list][0]
     team_losers = alliance_loser.teams.all()
 
     alliance_winner_ts = Rating(alliance_winner.elo_mu, alliance_winner.elo_sigma)
@@ -46,44 +48,48 @@ def handle_match_elo(match: Match) -> None:
     else:
         team_results = rate([[x[1] for x in team_winner_ts_pairs], [x[1] for x in team_loser_ts_pairs]])
 
-    for winner_result, winner_team, loser_result, loser_team in zip(team_results[0], team_winners, team_results[1],
-                                                                    team_losers):
-        winner_team.elo_mu = winner_result.mu
-        winner_team.elo_sigma = winner_result.sigma
-        loser_team.elo_mu = loser_result.mu
-        loser_team.elo_sigma = loser_result.sigma
+    with transaction.atomic():
+        for winner_result, winner_team, loser_result, loser_team in zip(team_results[0], team_winners, team_results[1],
+                                                                        team_losers):
+            winner_team.elo_mu = winner_result.mu
+            winner_team.elo_sigma = winner_result.sigma
+            loser_team.elo_mu = loser_result.mu
+            loser_team.elo_sigma = loser_result.sigma
 
-        winner_team.save(update_fields=['elo_mu', 'elo_sigma'])
-        loser_team.save(update_fields=['elo_mu', 'elo_sigma'])
+            winner_team.save(update_fields=['elo_mu', 'elo_sigma'])
+            loser_team.save(update_fields=['elo_mu', 'elo_sigma'])
 
     matches_added += 1
     # print("({1}) Handled {0}".format(match, matches_added))
 
 
-def add_all_elo(year: int) -> None:
-    for e in Event.objects.filter(year=year).exclude(event_code='cmp').exclude(event_code='iri').order_by('end_date'):
+def add_all_elo(*years) -> None:
+    years = list(years)
+    print(years)
+    events = Event.objects.filter(year__in=years).order_by('end_date')
+    for e in events:
         add_event_elo(e)
-
-    add_event_elo(Event.objects.get(year=year, event_code='cmp'))
-    add_event_elo(Event.objects.get(year=year, event_code='iri'))
 
 
 def add_event_elo(event: Event) -> None:
     print("Adding Elo for event {0}... ".format(event.key), end="", flush=True)
 
-    for appearance in event.allianceappearance_set.all():
+    allianceappearances = event.allianceappearance_set.select_related('alliance').all()
+    for appearance in allianceappearances:
         appearance.elo_mu_pre = appearance.alliance.elo_mu
         appearance.elo_sigma_pre = appearance.alliance.elo_sigma
 
-    bulk_update(event.allianceappearance_set.all(), update_fields=['elo_mu_pre', 'elo_sigma_pre'])
+    bulk_update(allianceappearances, update_fields=['elo_mu_pre', 'elo_sigma_pre'])
 
-    for rm in event.rankingmodel_set.all():
-        t = rm.team
-        rm.elo_mu_pre = t.elo_mu
-        rm.elo_sigma_pre = t.elo_sigma
-        rm.save(update_fields=['elo_mu_pre', 'elo_sigma_pre'])
+    rms = event.rankingmodel_set.select_related('team').all()
+    with transaction.atomic():
+        for rm in rms:
+            t = rm.team
+            rm.elo_mu_pre = t.elo_mu
+            rm.elo_sigma_pre = t.elo_sigma
+            rm.save(update_fields=['elo_mu_pre', 'elo_sigma_pre'])
 
-    for match in event.match_set.all():
+    for match in event.match_set.select_related('winner').prefetch_related('alliances__teams').all():
         handle_match_elo(match)
 
     for appearance in event.allianceappearance_set.all():
@@ -92,12 +98,16 @@ def add_event_elo(event: Event) -> None:
 
     bulk_update(event.allianceappearance_set.all(), update_fields=['elo_mu_post', 'elo_sigma_post'])
 
-    for team in event.teams.all():
-        ranking = RankingModel.objects.get(team=team, event=event)
+    teams = event.teams.all()
+    rankings = {rm.team_id: rm for rm in RankingModel.objects.filter(team_id__in=[t.id for t in teams],
+                                                                     event_id=event.id)}
+
+    for team in teams:
+        ranking = rankings[team.id]
         ranking.elo_mu_post = team.elo_mu
         ranking.elo_sigma_post = team.elo_sigma
-        ranking.save(update_fields=['elo_mu_post', 'elo_sigma_post'])
 
+    bulk_update(list(rankings.values()), update_fields=['elo_mu_post', 'elo_sigma_post'])
     print("Done!")
 
 
@@ -124,27 +134,28 @@ class Command(BaseCommand):
         if log:
             with open('elo.tsv', 'w', encoding='utf-8') as file:
                 elo_leaders = TeamLeaderboard.highest_elo_scaled()
-                for rank, team in enumerate(elo_leaders, start=1):
-                    file.write("{3}\t{0}\t{1}\t{2}\n"
-                               .format(str(team).replace("\t", ""), team.elo_scaled, team.elo_sigma, rank)
-                               .replace('"', '\'\''))
-                    # Replace double quotes so we can post it to Gist without Github freaking out
-                    # Replace tab characters because Team 422 has a tab in their name (WHY?!)
-                    # More teams have commas than tabs in their names so just uses .tsv file
+                row_fmt = "%s\t%s\t%s\t%s"
+                file.writelines([
+                    (row_fmt % (rank, str(team).replace("\t", ""), team.elo_scaled, team.elo_sigma)).replace('"', "''")
+                    for rank, team in enumerate(elo_leaders, start=1)
+                ])
+                # Replace double quotes so we can post it to Gist without Github freaking out
+                # Replace tab characters because Team 422 has a tab in their name (WHY?!)
+                # More teams have commas than tabs in their names so just uses .tsv file
         elif options['event'] == '':
             time_start = clock()
             if year == 0:
                 years = [2015, 2016]
-                for i in years:
-                    add_all_elo(i)
-                    if i != years[-1]:
-                        soft_reset()
+                add_all_elo(*years)
+
+                for _ in years[:-1]:
+                    soft_reset()
             else:
                 add_all_elo(year)
             time_end = clock()
             print("-------------")
             print("Matches added:\t\t{0}".format(matches_added))
-            print("Ran in {0} seconds.".format((time_end - time_start).__round__(3)))
+            print("Ran in {0} seconds.".format(round(time_end - time_start, 3)))
             print("-------------")
         else:
             # add_event_elo(Event.objects.get(key=options['event']))

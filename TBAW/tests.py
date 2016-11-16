@@ -384,7 +384,7 @@ class TeamTestCase(TestCase):
         self.assertEqual(shaker.locality, "Latham")
         self.assertEqual(shaker.region, "New York")
         self.assertEqual(shaker.country_name, "USA")
-        self.assertEqual(shaker.location, "Latham, New York, USA")
+        self.assertEqual(shaker.location, "Latham, New York 12110, USA")
         self.assertEqual(shaker.key, "frc2791")
         self.assertEqual(shaker.rookie_year, 2009)
 
@@ -395,7 +395,7 @@ class TeamTestCase(TestCase):
         self.assertEqual(oceanside.locality, "Oceanside")
         self.assertEqual(oceanside.region, "New York")
         self.assertEqual(oceanside.country_name, "USA")
-        self.assertEqual(oceanside.location, "Oceanside, New York, USA")
+        self.assertEqual(oceanside.location, "Oceanside, New York 11572, USA")
         self.assertEqual(oceanside.key, "frc1554")
         self.assertEqual(oceanside.rookie_year, 2005)
 

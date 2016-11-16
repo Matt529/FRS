@@ -530,7 +530,10 @@ class AsyncRequester(Requester):
             with self._work_lock:
                 resource = self._resource_map[identifier]
                 future = self._futures[identifier] = self._pool.submit(_async_make_request, resource, forced)
-            future.add_done_callback(self.__future_done(identifier))
+
+            requester_callback = self.__future_done(identifier)
+            future.add_done_callback(requester_callback)
+            self.__monkey_patch_future(future, requester_callback)
 
             return future
 
@@ -555,14 +558,6 @@ class AsyncRequester(Requester):
         with self._work_lock:
             while not self.is_empty_queue():
                 identifier = self._resource_queue.popleft()
-                #
-                # if identifier in self._futures:
-                #     future = self._futures[identifier]
-                # else:
-                #     resource = self._resource_map[identifier]
-                #     future = self._futures[identifier] = self._pool.submit(_async_make_request, resource, forced)
-                #     future.add_done_callback(self.__future_done(identifier))
-
                 results[identifier] = self.retrieve(identifier)
 
         return results
@@ -588,6 +583,22 @@ class AsyncRequester(Requester):
                 raise KeyError("No resource with identifier: %s" % identifier)
 
         return identifier
+
+    def __monkey_patch_future(self, future: Future, requester_cb) -> Future:
+        from types import MethodType
+        from concurrent.futures._base import CANCELLED, CANCELLED_AND_NOTIFIED, FINISHED
+
+        def _special_add_done_callback(self, fn):
+            with self._condition:
+                if self._state not in [CANCELLED, CANCELLED_AND_NOTIFIED, FINISHED]:
+                    if len(self._done_callbacks) == 0:
+                        self._done_callbacks = [fn, requester_cb]
+                    else:
+                        self._done_callbacks = self._done_callbacks[:-1] + [fn, requester_cb]
+                    return
+            fn(self)
+
+        future.add_done_callback = MethodType(_special_add_done_callback, future)
 
     def __future_done(self, identifier: str) -> Callable[[Future], None]:
         def handler(future: Future) -> None:

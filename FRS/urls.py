@@ -3,6 +3,7 @@ from django.conf import settings
 from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from tastypie.api import Api
+from dashing.utils import router as dashing_routes
 
 from FRS import views
 from api.models import TeamResource, EventResource
@@ -20,6 +21,7 @@ urlpatterns = [
     url(r'^s2/', views.search_api, name='search_api'),
     url(r'^api/', include(api_v1.urls)),
     url(r'^l/', include('leaderboard2.urls')),
+    url(r'^dashboard/', include(dashing_routes.urls)),
 ]
 
 urlpatterns += staticfiles_urlpatterns()
