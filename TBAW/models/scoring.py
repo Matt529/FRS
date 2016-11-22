@@ -17,29 +17,6 @@ class ScoringModel(PolymorphicModel):
     def setup(self, json):
         return
 
-    def matrix(self):
-        from TBAW.models import Match, Team
-        import numpy as np
-
-        matches = Match.objects.filter(event__key='2016nyro')
-        teams = Team.objects.filter(event__key='2016nyro')
-        team_tuples = []
-        i = 0
-        for t in teams:
-            team_tuples.append((i, t))
-            i += 1
-
-        b = [m.scoring_model.red_total_score for m in matches]
-        a = [[0 for i in range(matches.count())] for j in range(matches.count())]
-
-        for count, match_row in enumerate(matches):
-            for team in team_tuples:
-                if team[1] in match_row.red_alliance.teams.all():
-                    a[count][team[0]] = 1
-
-        x = np.linalg.solve(a, b)
-
-
     def __str__(self):
         return "{0} (B: {1}, R: {2})".format(self.match_set.first(), self.blue_total_score, self.red_total_score)
 

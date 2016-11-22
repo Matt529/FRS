@@ -5,6 +5,7 @@ from bulk_update.manager import BulkUpdateManager
 from django.conf import settings
 from django.db import models
 from django.db.models.query import QuerySet
+from numpy import mat
 
 
 class Team(models.Model):
@@ -219,9 +220,45 @@ class Event(models.Model):
         """
         return Match.objects.filter(comp_level__exact='f', match_number__exact=3, event__key__exact=self.key).exists()
 
+    def get_oprs(self) -> List:
+        matches = Match.objects.filter(event=self, comp_level='qm')
+        teams = Team.objects.filter(event=self)
+        team_tuples = []
+        i = 0
+        for t in teams:
+            team_tuples.append((i, t))
+            i += 1
+
+        s = []
+        for m in matches:
+            s.append(m.scoring_model.red_total_score)
+            s.append(m.scoring_model.blue_total_score)
+
+        m = []
+        for match in matches:
+            to_append_red = []
+            to_append_blue = []
+            for team in teams:
+                to_append_red.append(1 if team in match.red_alliance.teams.all() else 0)
+                to_append_blue.append(1 if team in match.blue_alliance.teams.all() else 0)
+
+            m.append(to_append_red)
+            m.append(to_append_blue)
+
+        m_ = mat(m)
+        s_ = mat(s)
+        oprs = m_.T * s_.T
+
+        res = []
+        for team, opr in zip(team_tuples, oprs):
+            res.append((team[1], opr.item(0)))
+
+        return sorted(res, key=lambda n: -n[1])
+
 
 class Match(models.Model):
-    key = models.CharField(max_length=20, unique=True)  # yyyy{EVENT_CODE}_{COMP_LEVEL}m{MATCH_NUMBER}, e.g. 2016nyro_f1m2
+    key = models.CharField(max_length=20,
+                           unique=True)  # yyyy{EVENT_CODE}_{COMP_LEVEL}m{MATCH_NUMBER}, e.g. 2016nyro_f1m2
     comp_level = models.CharField(max_length=6)  # e.g. qm, ef, qf, sf, f
     set_number = models.CharField(null=True, max_length=20)  # in 2016nyro_qf3m2, the set number is 3
 
