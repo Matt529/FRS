@@ -235,12 +235,22 @@ class Event(models.Model):
             s.append(m.scoring_model.blue_total_score)
 
         m = []
+        if self.year == 2016:
+            from TBAW.models import RankingModel2016
+            from django.db.models import F
+            rms = RankingModel2016.objects.filter(event=self).annotate(c=F('goals_points') + F('auton_points')).order_by('-c')
         for match in matches:
             to_append_red = []
             to_append_blue = []
             for team in teams:
-                to_append_red.append(1 if team in match.red_alliance.teams.all() else 0)
-                to_append_blue.append(1 if team in match.blue_alliance.teams.all() else 0)
+                if self.year == 2016:
+                    rm = rms.get(team=team)
+                    factor = rm.c / rms.first().c
+                else:
+                    factor = 1.0
+
+                to_append_red.append(factor if team in match.red_alliance.teams.all() else 0)
+                to_append_blue.append(factor if team in match.blue_alliance.teams.all() else 0)
 
             m.append(to_append_red)
             m.append(to_append_blue)
@@ -254,6 +264,14 @@ class Event(models.Model):
             res.append((team[1], opr.item(0)))
 
         return sorted(res, key=lambda n: -n[1])
+
+    def compare_oprs(self):
+        from TBAW.models import RankingModel2016
+        rms = [rm.team for rm in RankingModel2016.objects.filter(event=self).order_by('-tba_opr')]
+        oth = [res[0] for res in self.get_oprs()]
+
+        for i, (tba, frs) in enumerate(zip(rms, oth)):
+            print('{0}.) {1},{0}.) {2}'.format(i + 1, tba, frs))
 
 
 class Match(models.Model):
