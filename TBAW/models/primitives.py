@@ -1,12 +1,14 @@
 from collections import OrderedDict
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 from bulk_update.manager import BulkUpdateManager
 from django.conf import settings
 from django.db import models
 from django.db.models.query import QuerySet
-from numpy import mat
+import numpy as np
 
+from TBAW.models import RankingModel2016
+from util.mathutils import solve_linear_least_squares, create_matrix, create_2d_vector
 
 class Team(models.Model):
     website = models.URLField(null=True)
@@ -218,52 +220,64 @@ class Event(models.Model):
             true if the event's finals set went to three games, false otherwise
 
         """
-        return Match.objects.filter(comp_level__exact='f', match_number__exact=3, event__key__exact=self.key).exists()
+        return Match.objects.select_related('event')\
+            .filter(comp_level__exact='f', match_number__exact=3, event__key__exact=self.key).exists()
 
-    def get_oprs(self) -> List:
-        matches = Match.objects.filter(event=self, comp_level='qm')
+    def get_oprs(self) -> Tuple[Tuple[Team, float]]:
+        """
+        Gets the OPRs for all teams participating in this event, these are returned as (team, opr) tuples.
+
+        Done using the method of linear least squares.
+        :return: Tuple of (Team, OPR) pairs
+        """
+
+        matches = Match.objects.prefetch_related('red_alliance__teams', 'blue_alliance__teams')\
+            .select_related('scoring_model').filter(event=self, comp_level='qm')
         teams = Team.objects.filter(event=self)
-        team_tuples = []
-        i = 0
-        for t in teams:
-            team_tuples.append((i, t))
-            i += 1
 
-        s = []
+        # Populate Score Vector
+        s_vector = []
         for m in matches:
-            s.append(m.scoring_model.red_total_score)
-            s.append(m.scoring_model.blue_total_score)
+            s_vector.append(m.scoring_model.red_total_score)
+            s_vector.append(m.scoring_model.blue_total_score)
 
-        m = []
+        # Populate Match Matrix, each row consisting of 3 teams, all from either Blue or Red alliance
+        m_row_array = []
         if self.year == 2016:
-            from TBAW.models import RankingModel2016
-            from django.db.models import F
-            rms = RankingModel2016.objects.filter(event=self).annotate(c=F('goals_points') + F('auton_points')).order_by('-c')
+
+            rms = RankingModel2016.objects.select_related('team')\
+                                          .filter(event=self)\
+                                          .annotate(total_contribution=models.F('goals_points') + models.F('auton_points'))\
+                                          .order_by('-total_contribution')
+
         for match in matches:
-            to_append_red = []
-            to_append_blue = []
-            for team in teams:
-                if self.year == 2016:
-                    rm = rms.get(team=team)
-                    factor = rm.c / rms.first().c
-                else:
-                    factor = 1.0
+            red_teams = match.red_alliance.teams.all()
+            blue_teams = match.blue_alliance.teams.all()
 
-                to_append_red.append(factor if team in match.red_alliance.teams.all() else 0)
-                to_append_blue.append(factor if team in match.blue_alliance.teams.all() else 0)
+            if self.year == 2016:
+                max_contribution = rms.first().total_contribution
+                ratios = [rms.get(team=team).c / max_contribution for team in teams]
+                contribution_ratios = zip(ratios, teams)
+            else:
+                contribution_ratios = zip([1.0] * len(teams), teams)
 
-            m.append(to_append_red)
-            m.append(to_append_blue)
+            red_row = [cont_ratio for cont_ratio, team in contribution_ratios if team in red_teams]
+            blue_row = [cont_ratio for cont_ratio, team in contribution_ratios if team in blue_teams]
 
-        m_ = mat(m)
-        s_ = mat(s)
-        oprs = m_.T * s_.T
+            m_row_array.append(red_row)
+            m_row_array.append(blue_row)
 
-        res = []
-        for team, opr in zip(team_tuples, oprs):
-            res.append((team[1], opr.item(0)))
-
-        return sorted(res, key=lambda n: -n[1])
+        # (Eq. 1): [A][OPR] = [SCORE]
+        # (Eq. 2): [A]^T[A][OPR] = [A]^T[SCORE], from (Eq. 1)
+        #          [P][OPR] = [S], [P] = [A]^T[A] and [S] = [A]^T[SCORE]
+        # (Eq. 3): [L][L]^T[OPR] = [S], where [L] is the lower triangular matrix from Cholesky Decomposition of [P]
+        # (Eq. 4): [L][y] = [S], [y] = [L]^T[OPR]
+        #          Using Forward Substitution to solve for vector [y]
+        #
+        # [y] is then known, [y] = [L]^T[OPR], [L]^T is an upper triangular matrix,
+        # backwards substitute to solve for OPR.
+        oprs = solve_linear_least_squares(create_matrix(m_row_array), create_2d_vector(s_vector))
+        return tuple((team, opr.item(0)) for team, opr in zip(teams, oprs))
 
     def compare_oprs(self):
         from TBAW.models import RankingModel2016

@@ -602,6 +602,5 @@ class AsyncRequester(Requester):
 
     def __future_done(self, identifier: str) -> Callable[[Future], None]:
         def handler(future: Future) -> None:
-            if future.done():
-                self._remove(identifier)
+            self._remove(identifier)
         return handler
