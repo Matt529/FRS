@@ -232,7 +232,7 @@ class Event(models.Model):
 
         matches = Match.objects.prefetch_related('red_alliance__teams', 'blue_alliance__teams')\
             .select_related('scoring_model').filter(event=self, comp_level='qm')
-        teams = Team.objects.filter(event=self)
+        teams = set(Team.objects.filter(event=self).all())
 
         # Populate Score Vector
         s_vector = []
@@ -250,8 +250,8 @@ class Event(models.Model):
                                           .order_by('-total_contribution')
 
         for match in matches:
-            red_teams = match.red_alliance.teams.all()
-            blue_teams = match.blue_alliance.teams.all()
+            red_teams = set(match.red_alliance.teams.all())
+            blue_teams = set(match.blue_alliance.teams.all())
 
             if self.year == 2016:
                 max_contribution = rms.first().total_contribution
