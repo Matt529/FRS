@@ -7,7 +7,6 @@ from django.db import models
 from django.db.models.query import QuerySet
 import numpy as np
 
-from TBAW.models import RankingModel2016
 from util.mathutils import solve_linear_least_squares, create_matrix, create_2d_vector
 
 class Team(models.Model):
@@ -244,7 +243,7 @@ class Event(models.Model):
         # Populate Match Matrix, each row consisting of 3 teams, all from either Blue or Red alliance
         m_row_array = []
         if self.year == 2016:
-
+            from TBAW.models import RankingModel2016
             rms = RankingModel2016.objects.select_related('team')\
                                           .filter(event=self)\
                                           .annotate(total_contribution=models.F('goals_points') + models.F('auton_points'))\
@@ -261,8 +260,8 @@ class Event(models.Model):
             else:
                 contribution_ratios = zip([1.0] * len(teams), teams)
 
-            red_row = [cont_ratio for cont_ratio, team in contribution_ratios if team in red_teams]
-            blue_row = [cont_ratio for cont_ratio, team in contribution_ratios if team in blue_teams]
+            red_row = [cont_ratio if team in red_teams else 0 for cont_ratio, team in contribution_ratios]
+            blue_row = [cont_ratio if team in blue_teams else 0 for cont_ratio, team in contribution_ratios]
 
             m_row_array.append(red_row)
             m_row_array.append(blue_row)

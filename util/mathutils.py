@@ -22,7 +22,7 @@ def is_matrix_form(a: np.matrix) -> bool:
     return not is_vector_form(a)
 
 
-def create_matrix(entries: Sequence[Sequence[...]]) -> np.matrix:
+def create_matrix(entries: Sequence[Sequence]) -> np.matrix:
     if isinstance(entries, np.matrix):
         return entries
 
