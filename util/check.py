@@ -2,6 +2,13 @@ from django.db.models import Count
 
 from TBAW.models import Team, Event, Match, Alliance, AllianceAppearance
 
+from typing import Callable
+from types import BuiltinFunctionType
+
+
+def is_builtin(fn: Callable) -> bool:
+    return type(fn) is BuiltinFunctionType
+
 
 def team_exists(team_number: int) -> bool:
     """

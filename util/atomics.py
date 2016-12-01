@@ -30,7 +30,7 @@ class Atomic(abc.ABC, Generic[T]):
     Python, since Compare-and-Swap semantics are not really a thing here.
     """
     def __init__(self, reentrant: bool = False):
-        self._lock = Lock() if not reentrant else RLock()
+        self._lock = RLock() if reentrant else Lock()
 
     @abc.abstractmethod
     def get(self) -> T:

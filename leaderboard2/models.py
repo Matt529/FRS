@@ -1,6 +1,5 @@
 from _operator import mul, truediv, add, sub
 from abc import ABCMeta, abstractmethod
-from types import BuiltinFunctionType
 
 from django.db import models
 from django.db.models import F
@@ -8,6 +7,7 @@ from django.db.models.functions import Greatest, Least
 from polymorphic.models import PolymorphicModel
 
 from TBAW.models import Team, ScoringModel2016, ScoringModel2015, RankingModel, Alliance
+from util.check import is_builtin
 
 
 class Leaderboard(PolymorphicModel):
@@ -28,6 +28,7 @@ class Leaderboard(PolymorphicModel):
         (GREATEST, 'django.db.models.functions.Greatest'),
         (LEAST, 'django.db.models.functions.Least')
     ]
+
     operations = {
         ADDITION: add,
         SUBTRACTION: sub,
@@ -38,9 +39,9 @@ class Leaderboard(PolymorphicModel):
     }
 
     ALL_TIME = "Alltime"
-    LEADERBOARD_YEARS = ['{}'.format(y) for y in range(2015, 2017)][::-1]
-    categories = [ALL_TIME] + LEADERBOARD_YEARS
-    category_choices = [(x, x) for x in categories]
+    LEADERBOARD_YEARS = [str(y) for y in range(2016, 2014, -1)]
+    categories = [ALL_TIME, *LEADERBOARD_YEARS]
+    category_choices = list(zip(categories, categories))
 
     selector = models.CharField(default='-ret_field', null=True, max_length=50)
     operator = models.CharField(default='+', choices=operations_choices, max_length=10)
@@ -70,7 +71,7 @@ class Leaderboard(PolymorphicModel):
             ret_field_wrapper = 'ret_field'
             extra_field_wrapper = extra_field
 
-            if type(operator) is BuiltinFunctionType:
+            if is_builtin(operator):
                 ret_field_wrapper = F('ret_field')
                 extra_field_wrapper = F(extra_field)
 

@@ -5,9 +5,9 @@ from bulk_update.manager import BulkUpdateManager
 from django.conf import settings
 from django.db import models
 from django.db.models.query import QuerySet
-import numpy as np
 
 from util.mathutils import solve_linear_least_squares, create_matrix, create_2d_vector
+
 
 class Team(models.Model):
     website = models.URLField(null=True)
