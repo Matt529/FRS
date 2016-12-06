@@ -2,11 +2,11 @@ from time import clock
 
 from bulk_update.helper import bulk_update
 from django.core.management.base import BaseCommand
-from django.db.models import F
 from django.db import transaction
-from trueskill import Rating, rate, rate_1vs1
+from django.db.models import F
+from trueskill import Rating, rate
 
-from FRS.settings import SOFT_RESET_SCALE, DEFAULT_SIGMA, DEFAULT_MU
+from FRS.settings import SOFT_RESET_SCALE, DEFAULT_SIGMA, DEFAULT_MU, SUPPORTED_YEARS
 from TBAW.models import Event, RankingModel, Team, Alliance, Match
 from leaderboard.models import TeamLeaderboard
 
@@ -29,16 +29,16 @@ def handle_match_elo(match: Match) -> None:
     alliance_loser = [x for x in alliance_loser_list][0]
     team_losers = alliance_loser.teams.all()
 
-    alliance_winner_ts = Rating(alliance_winner.elo_mu, alliance_winner.elo_sigma)
-    alliance_loser_ts = Rating(alliance_loser.elo_mu, alliance_loser.elo_sigma)
-    alliance_results = rate_1vs1(alliance_winner_ts, alliance_loser_ts, drawn=drawn)
-
-    alliance_winner.elo_mu = alliance_results[0].mu
-    alliance_winner.elo_sigma = alliance_results[0].sigma
-    alliance_loser.elo_mu = alliance_results[1].mu
-    alliance_loser.elo_sigma = alliance_results[1].sigma
-    alliance_winner.save(update_fields=['elo_mu', 'elo_sigma'])
-    alliance_loser.save(update_fields=['elo_mu', 'elo_sigma'])
+    # alliance_winner_ts = Rating(alliance_winner.elo_mu, alliance_winner.elo_sigma)
+    # alliance_loser_ts = Rating(alliance_loser.elo_mu, alliance_loser.elo_sigma)
+    # alliance_results = rate_1vs1(alliance_winner_ts, alliance_loser_ts, drawn=drawn)
+    #
+    # alliance_winner.elo_mu = alliance_results[0].mu
+    # alliance_winner.elo_sigma = alliance_results[0].sigma
+    # alliance_loser.elo_mu = alliance_results[1].mu
+    # alliance_loser.elo_sigma = alliance_results[1].sigma
+    # alliance_winner.save(update_fields=['elo_mu', 'elo_sigma'])
+    # alliance_loser.save(update_fields=['elo_mu', 'elo_sigma'])
 
     team_winner_ts_pairs = [(t, Rating(t.elo_mu, t.elo_sigma)) for t in team_winners]
     team_loser_ts_pairs = [(t, Rating(t.elo_mu, t.elo_sigma)) for t in team_losers]
@@ -63,10 +63,8 @@ def handle_match_elo(match: Match) -> None:
     # print("({1}) Handled {0}".format(match, matches_added))
 
 
-def add_all_elo(*years) -> None:
-    years = list(years)
-    print(years)
-    events = Event.objects.filter(year__in=years).order_by('end_date')
+def add_all_elo(year: int) -> None:
+    events = Event.objects.filter(year=year).order_by('end_date')
     for e in events:
         add_event_elo(e)
 
@@ -136,20 +134,24 @@ class Command(BaseCommand):
                 elo_leaders = TeamLeaderboard.highest_elo_scaled()
                 row_fmt = "%s\t%s\t%s\t%s"
                 file.writelines([
-                    (row_fmt % (rank, str(team).replace("\t", ""), team.elo_scaled, team.elo_sigma)).replace('"', "''")
-                    for rank, team in enumerate(elo_leaders, start=1)
-                ])
+                                    (row_fmt % (
+                                        rank, str(team).replace("\t", ""), team.elo_scaled, team.elo_sigma)).replace(
+                                        '"',
+                                        "''")
+                                    for rank, team in enumerate(elo_leaders, start=1)
+                                    ])
                 # Replace double quotes so we can post it to Gist without Github freaking out
                 # Replace tab characters because Team 422 has a tab in their name (WHY?!)
                 # More teams have commas than tabs in their names so just uses .tsv file
         elif options['event'] == '':
             time_start = clock()
             if year == 0:
-                years = [2015, 2016]
-                add_all_elo(*years)
-
-                for _ in years[:-1]:
+                for yr in SUPPORTED_YEARS[:-1]:
+                    add_all_elo(yr)
                     soft_reset()
+
+                add_all_elo(SUPPORTED_YEARS[-1])
+
             else:
                 add_all_elo(year)
             time_end = clock()
