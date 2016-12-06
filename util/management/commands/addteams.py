@@ -34,11 +34,11 @@ def add_team(team_number: int, team_data=None) -> None:
     key = team_data['key']
     nickname = team_data['nickname']
     motto = team_data['motto']
+    years_participated = get_team_years_participated(team_number)
 
     # Sometimes teams have participated but have null records, for reasons unknown. Check if they were ever active.
     # examples: 146, 413
     if name is None:
-        years_participated = get_team_years_participated(team_number)
         if len(years_participated) == 0:
             teams_skipped += 1
             log_bad_data('{}'.format(team_number), 'Zero years participated')
@@ -56,14 +56,15 @@ def add_team(team_number: int, team_data=None) -> None:
         Team.objects.filter(team_number=team_number).update(website=website, name=name, locality=locality,
                                                             region=region, country_name=country_name, location=location,
                                                             key=key, nickname=nickname, rookie_year=rookie_year,
-                                                            motto=motto)
+                                                            motto=motto, active_years=years_participated)
         teams_updated += 1
         # print("Updated team {0}".format(team_number))
     # But if it doesn't exist, then create a new db entry
     else:
         team = Team.objects.create(id=team_number, website=website, name=name, locality=locality, region=region,
                                    country_name=country_name, location=location, key=key, nickname=nickname,
-                                   rookie_year=rookie_year, motto=motto, team_number=team_number)
+                                   rookie_year=rookie_year, motto=motto, team_number=team_number,
+                                   active_years=years_participated)
         team.save()
         teams_created += 1
         # print("Created team {0}".format(team_number))

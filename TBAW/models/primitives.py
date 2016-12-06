@@ -6,10 +6,14 @@ from django.conf import settings
 from django.db import models
 from django.db.models.query import QuerySet
 
+from FRS.settings import SUPPORTED_YEARS
 from util.mathutils import solve_linear_least_squares, create_matrix, create_2d_vector
+from jsonfield import JSONField
 
 
 class Team(models.Model):
+    active_years = JSONField(default=[])
+
     website = models.URLField(null=True)
     name = models.TextField(null=True)  # longer name
 
@@ -219,7 +223,7 @@ class Event(models.Model):
             true if the event's finals set went to three games, false otherwise
 
         """
-        return Match.objects.select_related('event')\
+        return Match.objects.select_related('event') \
             .filter(comp_level__exact='f', match_number__exact=3, event__key__exact=self.key).exists()
 
     def get_oprs(self) -> Tuple[Tuple[Team, float]]:
@@ -230,7 +234,7 @@ class Event(models.Model):
         :return: Tuple of (Team, OPR) pairs
         """
 
-        matches = Match.objects.prefetch_related('red_alliance__teams', 'blue_alliance__teams')\
+        matches = Match.objects.prefetch_related('red_alliance__teams', 'blue_alliance__teams') \
             .select_related('scoring_model').filter(event=self, comp_level='qm')
         teams = set(Team.objects.filter(event=self).all())
 
@@ -244,10 +248,10 @@ class Event(models.Model):
         m_row_array = []
         if self.year == 2016:
             from TBAW.models import RankingModel2016
-            rms = RankingModel2016.objects.select_related('team')\
-                                          .filter(event=self)\
-                                          .annotate(total_contribution=models.F('goals_points') + models.F('auton_points'))\
-                                          .order_by('-total_contribution')
+            rms = RankingModel2016.objects.select_related('team') \
+                .filter(event=self) \
+                .annotate(total_contribution=models.F('goals_points') + models.F('auton_points')) \
+                .order_by('-total_contribution')
 
         for match in matches:
             red_teams = set(match.red_alliance.teams.all())
