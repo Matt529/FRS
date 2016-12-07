@@ -10,12 +10,12 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
-import os
 import logging
+import os
 
-from django.utils.crypto import get_random_string
 from debug_toolbar.settings import PANELS_DEFAULTS
 from django.conf import settings
+from django.utils.crypto import get_random_string
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -90,8 +90,8 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [os.path.join(BASE_DIR, 'templates/')],
         # 'APP_DIRS': True,
-        'OPTIONS': {    # If the Cached Loader ends up being an issue, just remove
-                        # the 'loaders' key-value pair
+        'OPTIONS': {  # If the Cached Loader ends up being an issue, just remove
+            # the 'loaders' key-value pair
             'loaders': [
                 ('django.template.loaders.cached.Loader', [
                     'django.template.loaders.filesystem.Loader',
@@ -103,6 +103,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'FRS.context_processors.supported_years'
             ],
         },
     },
@@ -185,7 +186,7 @@ SPAGHETTI_SAUCE = {
     'exclude': {'auth': ['user']}
 }
 
-#NPlusOne Logging
+# NPlusOne Logging
 LOGGING = {
     'version': 1,
     'handlers': {
