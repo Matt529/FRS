@@ -1,15 +1,12 @@
 from operator import itemgetter
-from concurrent.futures import Future, wait
+from concurrent.futures import Future
 from typing import List, Callable
 
 import requests
-from requests_futures.sessions import FuturesSession
 
 from TBAW.models import Team
 from util.getters import get_team
 from util.templatestring import TemplateString
-
-__async_requester = FuturesSession(max_workers=2, session=requests.Session())
 
 __api_key = {'X-TBA-App-Id': 'frs:frs:1'}
 __tba_url = 'https://www.thebluealliance.com/api/v2/'
@@ -56,28 +53,6 @@ def get_event_json(event_key: str) -> dict:
     # Merge two dictionaries
     return dict(event_json, **event_teams)
 
-
-def get_event_json_async(event_key: str) -> Callable[[], dict]:
-    url = event_url_template(event=event_key)
-    print(url)
-    event_json_future = __async_requester.get(url, headers=__api_key)
-
-    url += '/teams'
-    event_team_list_future = __async_requester.get(url, header=__api_key)
-
-    result = None
-    def wait_for_event_json() -> dict:
-        global result
-        if result is None:
-            event_json = event_json_future.result().response.json()
-            event_team_list_json = event_team_list_future.result().response.json()
-            event_teams = {'teams': event_team_list_json}
-            result = dict(event_json, **event_teams)
-        return result
-
-    return event_json_future, event_team_list_future
-
-
 def get_list_of_events_json(year=2016) -> dict:
     url = event_by_year_url_template(year=year)
     return requests.get(url, headers=__api_key).json()
@@ -116,19 +91,6 @@ def get_list_of_matches_json(event_key: str) -> List[dict]:
     return list_of_matches_json_converter(json)
 
 
-def get_list_of_matches_json_async(event_key: str, callback, *callback_args) -> Future:
-    url = event_matches_url_template(event=event_key)
-    future = __async_requester.get(url, headers=__api_key)
-
-    def handle_done(future: Future):
-        response = future.result()    # type: requests.Response
-        json = response.json()
-        callback(*callback_args, list_of_matches_json_converter(json))
-
-    future.add_done_callback(handle_done)
-    return future
-
-
 def get_event_rankings_json(event_key: str) -> List[List[str]]:
     url = event_ranking_url_template(event=event_key)
     return requests.get(url, headers=__api_key).json()
@@ -152,11 +114,6 @@ def get_teams_at_event(event_key: str) -> List[Team]:
 def get_awards_from_event_json(event_key: str) -> List[dict]:
     url = event_awards_url_template(event=event_key)
     return requests.get(url, headers=__api_key).json()
-
-
-def get_awards_from_event_json_async(event_key: str) -> Future:
-    url = event_awards_url_template(event=event_key)
-    return __async_requester.get(url, headers=__api_key)
 
 
 def get_team_robots_history_json(team_number: int) -> dict:
