@@ -3,11 +3,12 @@ from abc import ABCMeta, abstractmethod
 from bulk_update.manager import BulkUpdateManager
 from django.db import models
 from polymorphic.models import PolymorphicModel
+from django_mysql.models import Model as MySqlModel
 
 from TBAW.models import Team, Event
 
 
-class RankingModel(PolymorphicModel):
+class RankingModel(PolymorphicModel, MySqlModel):
     __metaclass__ = ABCMeta
 
     rank = models.PositiveSmallIntegerField(null=True)

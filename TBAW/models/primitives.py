@@ -6,13 +6,14 @@ from django.conf import settings
 from django.db import models
 from django.db.models.query import QuerySet
 
+from django_mysql.models import Model as MySqlModel, SetCharField
+
 from FRS.settings import SUPPORTED_YEARS
 from util.mathutils import solve_linear_least_squares, create_matrix, create_2d_vector
-from jsonfield import JSONField
 
 
-class Team(models.Model):
-    active_years = JSONField(default=[])
+class Team(MySqlModel):
+    active_years = SetCharField(base_field=models.IntegerField(), max_length=255, default=set())
 
     website = models.URLField(null=True)
     name = models.TextField(null=True)  # longer name
@@ -133,7 +134,7 @@ class Team(models.Model):
         return dict((name, getattr(self, name)) for name in self.__dict__ if not name.startswith('_'))
 
 
-class Alliance(models.Model):
+class Alliance(MySqlModel):
     teams = models.ManyToManyField(Team)
 
     elo_mu = models.FloatField(default=settings.DEFAULT_MU)
@@ -160,7 +161,7 @@ class Alliance(models.Model):
         return "{0}-{1}-{2}".format(self.get_wins().count(), self.get_losses().count(), self.get_ties().count())
 
 
-class Event(models.Model):
+class Event(MySqlModel):
     key = models.CharField(max_length=10, unique=True)  # e.g. 2016cmp
     name = models.CharField(max_length=100)  # e.g. Finger Lakes Regional
     short_name = models.CharField(null=True, max_length=50)  # e.g. Finger Lakes
@@ -291,7 +292,7 @@ class Event(models.Model):
             print('{0}.) {1},{0}.) {2}'.format(i + 1, tba, frs))
 
 
-class Match(models.Model):
+class Match(MySqlModel):
     key = models.CharField(max_length=20,
                            unique=True)  # yyyy{EVENT_CODE}_{COMP_LEVEL}m{MATCH_NUMBER}, e.g. 2016nyro_f1m2
     comp_level = models.CharField(max_length=6)  # e.g. qm, ef, qf, sf, f
@@ -315,7 +316,7 @@ class Match(models.Model):
         return "{0}".format(self.key)
 
 
-class Award(models.Model):
+class Award(MySqlModel):
     name = models.CharField(max_length=150)
 
     # https://github.com/the-blue-alliance/the-blue-alliance/blob/master/consts/award_type.py#L15
@@ -433,14 +434,14 @@ class Award(models.Model):
         return None
 
 
-class Robot(models.Model):
+class Robot(MySqlModel):
     key = models.CharField(max_length=13, null=True)  # e.g. frc2791_2016
     team = models.ForeignKey(Team, null=True)
     year = models.PositiveSmallIntegerField(null=True)
     name = models.CharField(max_length=100, null=True)
 
 
-class AllianceAppearance(models.Model):
+class AllianceAppearance(MySqlModel):
     alliance = models.ForeignKey(Alliance, null=True)
     event = models.ForeignKey(Event, null=True)
 

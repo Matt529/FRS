@@ -3,7 +3,7 @@ from time import clock
 from bulk_update.helper import bulk_update
 from django.core.management.base import BaseCommand
 from django.db import transaction
-from django.db.models import F
+from django.db.models import F, Q
 from trueskill import Rating, rate_1vs1, rate
 
 from FRS.settings import SOFT_RESET_SCALE, DEFAULT_SIGMA, DEFAULT_MU, SUPPORTED_YEARS
@@ -108,12 +108,13 @@ def add_event_elo(event: Event) -> None:
     print("Done!")
 
 
-def soft_reset(value=SOFT_RESET_SCALE) -> None:
-    Team.objects.exclude(elo_sigma=DEFAULT_SIGMA).update(
+def soft_reset(year: int, value=SOFT_RESET_SCALE) -> None:
+    Team.objects.exclude(Q(elo_sigma=DEFAULT_SIGMA) | Q(active_years__contains=year)).update(
         elo_mu=F('elo_mu') - (F('elo_mu') - DEFAULT_MU) * value,
         elo_sigma=F('elo_sigma') - (F('elo_sigma') - DEFAULT_SIGMA) * value
     )
-    Alliance.objects.exclude(elo_sigma=DEFAULT_SIGMA).update(
+
+    Alliance.objects.prefetch_related('match_set__event').exclude(elo_sigma=DEFAULT_SIGMA).filter(match__event__year=year).update(
         elo_mu=F('elo_mu') - (F('elo_mu') - DEFAULT_MU) * value,
         elo_sigma=F('elo_sigma') - (F('elo_sigma') - DEFAULT_SIGMA) * value
     )
@@ -147,7 +148,7 @@ class Command(BaseCommand):
             if year == 0:
                 for yr in SUPPORTED_YEARS[:-1]:
                     add_all_elo(yr)
-                    soft_reset()
+                    soft_reset(yr)
 
                 add_all_elo(SUPPORTED_YEARS[-1])
 

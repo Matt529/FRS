@@ -1,6 +1,5 @@
 from operator import itemgetter
-from concurrent.futures import Future
-from typing import List, Callable
+from typing import List
 
 import requests
 

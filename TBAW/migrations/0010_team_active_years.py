@@ -3,7 +3,7 @@
 from __future__ import unicode_literals
 
 from django.db import migrations
-import jsonfield.fields
+from django.db.models import TextField
 
 
 class Migration(migrations.Migration):
@@ -16,6 +16,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='team',
             name='active_years',
-            field=jsonfield.fields.JSONField(default=[]),
+            field=TextField(default=''),
         ),
     ]

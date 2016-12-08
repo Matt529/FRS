@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     'nplusone.ext.django',
     'dashing',
     'django_js_reverse',
+    'django_mysql',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -125,6 +126,14 @@ DATABASES = {
         'HOST': 'localhost',
         'PORT': '',
         'CONN_MAX_AGE': 60,
+        'OPTIONS': {
+            'init_command': 'SET innodb_strict_mode=1',
+            'charset': 'utf8mb4',
+        },
+        'TEST': {
+            'CHARSET': 'utf8mb4',
+            'COLLATION': 'utf8mb4_unicode_ci',
+        },
     }
 }
 

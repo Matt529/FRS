@@ -2,9 +2,9 @@ from abc import ABCMeta, abstractmethod
 
 from django.db import models
 from polymorphic.models import PolymorphicModel
+from django_mysql.models import Model as MySqlModel
 
-
-class ScoringModel(PolymorphicModel):
+class ScoringModel(PolymorphicModel, MySqlModel):
     __metaclass__ = ABCMeta
 
     red_total_score = models.SmallIntegerField(null=True)
