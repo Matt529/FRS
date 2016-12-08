@@ -4,7 +4,7 @@ from bulk_update.helper import bulk_update
 from django.core.management.base import BaseCommand
 from django.db import transaction
 from django.db.models import F
-from trueskill import Rating, rate
+from trueskill import Rating, rate_1vs1, rate
 
 from FRS.settings import SOFT_RESET_SCALE, DEFAULT_SIGMA, DEFAULT_MU, SUPPORTED_YEARS
 from TBAW.models import Event, RankingModel, Team, Alliance, Match
@@ -29,16 +29,16 @@ def handle_match_elo(match: Match) -> None:
     alliance_loser = [x for x in alliance_loser_list][0]
     team_losers = alliance_loser.teams.all()
 
-    # alliance_winner_ts = Rating(alliance_winner.elo_mu, alliance_winner.elo_sigma)
-    # alliance_loser_ts = Rating(alliance_loser.elo_mu, alliance_loser.elo_sigma)
-    # alliance_results = rate_1vs1(alliance_winner_ts, alliance_loser_ts, drawn=drawn)
-    #
-    # alliance_winner.elo_mu = alliance_results[0].mu
-    # alliance_winner.elo_sigma = alliance_results[0].sigma
-    # alliance_loser.elo_mu = alliance_results[1].mu
-    # alliance_loser.elo_sigma = alliance_results[1].sigma
-    # alliance_winner.save(update_fields=['elo_mu', 'elo_sigma'])
-    # alliance_loser.save(update_fields=['elo_mu', 'elo_sigma'])
+    alliance_winner_ts = Rating(alliance_winner.elo_mu, alliance_winner.elo_sigma)
+    alliance_loser_ts = Rating(alliance_loser.elo_mu, alliance_loser.elo_sigma)
+    alliance_results = rate_1vs1(alliance_winner_ts, alliance_loser_ts, drawn=drawn)
+
+    alliance_winner.elo_mu = alliance_results[0].mu
+    alliance_winner.elo_sigma = alliance_results[0].sigma
+    alliance_loser.elo_mu = alliance_results[1].mu
+    alliance_loser.elo_sigma = alliance_results[1].sigma
+    alliance_winner.save(update_fields=['elo_mu', 'elo_sigma'])
+    alliance_loser.save(update_fields=['elo_mu', 'elo_sigma'])
 
     team_winner_ts_pairs = [(t, Rating(t.elo_mu, t.elo_sigma)) for t in team_winners]
     team_loser_ts_pairs = [(t, Rating(t.elo_mu, t.elo_sigma)) for t in team_losers]
@@ -60,7 +60,6 @@ def handle_match_elo(match: Match) -> None:
             loser_team.save(update_fields=['elo_mu', 'elo_sigma'])
 
     matches_added += 1
-    # print("({1}) Handled {0}".format(match, matches_added))
 
 
 def add_all_elo(year: int) -> None:

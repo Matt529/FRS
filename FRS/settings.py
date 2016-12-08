@@ -124,6 +124,7 @@ DATABASES = {
         'PASSWORD': 'password',
         'HOST': 'localhost',
         'PORT': '',
+        'CONN_MAX_AGE': 60,
     }
 }
 
@@ -215,3 +216,9 @@ LOG_PATH = os.path.join(BASE_DIR, 'logs')
 FILE_NUM = 1
 
 INTERNAL_IPS = ('127.0.0.1',)
+
+# TBA Details
+
+TBA_API_HEADERS = {
+    'X-TBA-App-Id' : 'frs:frs:1'
+}

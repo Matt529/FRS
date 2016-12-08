@@ -1,66 +1,57 @@
+from typing import Dict, Iterable
 from time import clock
 
+from concurrent.futures import ProcessPoolExecutor, wait
+
 from django.core.management.base import BaseCommand
+from django.conf import settings
+
+from requests_futures.sessions import FuturesSession
+import requests
 
 from FRS.settings import SUPPORTED_YEARS
 from TBAW.models import Event, RankingModel
-from TBAW.requester import get_event_statistics_json, get_event_rankings_json, get_teams_at_event
+from TBAW.requester import event_stats_url_template, event_ranking_url_template, get_event_statistics_json, get_event_rankings_json
+from util.atomics import AtomicVar
 from util.data_logger import log_bad_data
-from util.getters import get_event, get_instance_ranking_model, get_team
+from util.getters import get_instance_ranking_model, get_team
 
-events_added = 0
-teams_added = 0
-teams_skipped = 0
-
-
-def add_all(year: int) -> None:
-    events = Event.objects.filter(year=year)
-    for event in events:
-        add_event_new(event.key)
+events_added = AtomicVar(0)
+events_skipped = AtomicVar(0)
+teams_added = AtomicVar(0)
+teams_skipped = AtomicVar(0)
 
 
-def add_event(key: str) -> None:
-    global teams_added, events_added, teams_skipped
-    print("({1}) Adding stats for event {0}...".format(key, events_added + 1), flush=True)
-    stats = get_event_statistics_json(key)
-    rankings = get_event_rankings_json(key)
-    event = get_event(key)
-    model = get_instance_ranking_model(int(key[:4]))
-    teams = get_teams_at_event(key)
+def add_all_new(rms: Dict[int, RankingModel], *years: Iterable[int]):
+    years = [*years]
 
-    for team in teams:
-        if RankingModel.objects.filter(event=event, team=team).exists():
-            # print("Skipping team {0} (already exists)".format(team))
-            teams_skipped += 1
-            continue
+    print("Executing for years: %s" % years)
 
-        # print("({1}) Stats for {0}...".format(team, teams_added + 1).encode('utf-8'))
-        new_model = model.objects.create()
-        new_model.team = team
-        new_model.save()
+    requester = FuturesSession(executor=ProcessPoolExecutor(30), session=requests.Session())
+    api_key = settings.TBA_API_HEADERS
 
-        try:
-            opr = stats['oprs']['{0}'.format(team.team_number)]
-            dpr = stats['dprs']['{0}'.format(team.team_number)]
-            ccwms = stats['ccwms']['{0}'.format(team.team_number)]
+    stats_get = lambda e: requester.get(event_stats_url_template(event=e), headers=api_key)
+    rankings_get = lambda e: requester.get(event_ranking_url_template(event=e), headers=api_key)
 
-            new_model.tba_opr = opr
-            new_model.tba_dpr = dpr
-            new_model.tba_ccwms = ccwms
-        except KeyError:
-            # print("Skipping team {0} (can't find OPR/DPR/CCWMS)".format(team))
-            teams_skipped += 1
+    events = Event.objects.filter(year__in=years).all()
 
-        new_model.setup(rankings)
-        new_model.save()
-        event.rankingmodel_set.add(new_model)
+    print("Starting {} HTTP requests split between {} processes.".format(2*len(events), requester.executor._max_workers))
+    stats_futures = [stats_get(e) for e in events]
+    rankings_futures = [rankings_get(e) for e in events]
 
-        teams_added += 1
+    print("Waiting for HTTP requests to return...")
+    wait(stats_futures + rankings_futures)
+    print("Done!\n")
+    requester.executor.shutdown()
 
-    events_added += 1
+    get_json = lambda f: f.result().json()
+    arg_list = zip(events, [rms]*len(events), map(get_json, stats_futures), map(get_json, rankings_futures))
+
+    for args in arg_list:
+        add_event_new(*args)
 
 
-def add_event_new(key: str) -> None:
+def add_event_new(event: Event, rms: Dict[int, RankingModel], stats, rankings) -> None:
     """
     Needs testing -- RankingModel objects need new setup functions. Once tested and the old add_event function is
     removed, this should run in O(n) rather than O(n^2).
@@ -68,20 +59,19 @@ def add_event_new(key: str) -> None:
     Args:
         key: an event key
     """
-    global teams_skipped, teams_added, events_added
-    stats = get_event_statistics_json(key)
-    rankings = get_event_rankings_json(key)
-    event = get_event(key)
+    global teams_skipped, teams_added, events_added, events_skipped
+    key = event.key
     model = get_instance_ranking_model(int(key[:4]))
     flag_2013 = False
 
-    if RankingModel.objects.filter(event=event).exists():
+    if event.id in rms:
         print("Skipping RMs for {}".format(key))
+        events_skipped += 1
         return
 
     if not rankings or len(rankings) == 1:  # for cmp events since they don't have any rankings
         for team in event.teams.all():
-            if model.objects.filter(team=team, event=event).exists():
+            if model.objects.filter(team_id=team.id, event_id=event.id).exists():
                 teams_skipped += 1
                 continue
 
@@ -97,10 +87,11 @@ def add_event_new(key: str) -> None:
         events_added += 1
         return
 
+    rms = {rm.team.id: rm for rm in RankingModel.objects.select_related('team').filter(event_id=event.id).all()}
     for ranking_data in rankings[1:]:
         team_num = ranking_data[1]
         team = get_team(team_number=int(team_num))
-        if RankingModel.objects.filter(event=event, team=team).exists():
+        if team.id in rms:
             teams_skipped += 1
             continue
 
@@ -161,17 +152,18 @@ class Command(BaseCommand):
         key = options['key']
         year = options['year']
         time_start = clock()
+        rms = {rm.event_id: rm for rm in RankingModel.objects.all()}
         if key is not '':
-            add_event_new(key)
+            add_event_new(key, rms, get_event_rankings_json(key), get_event_statistics_json(key))
         else:
             if year == 0:
-                for yr in SUPPORTED_YEARS:
-                    add_all(yr)
+                add_all_new(rms, *SUPPORTED_YEARS)
             else:
-                add_all(year)
+                add_all_new(rms, year)
         time_end = clock()
         print("-------------")
         print("Events added:\t\t{0}".format(events_added))
+        print("Events skipped:\t\t{0}".format(events_skipped))
         print("Teams added:\t\t{0}".format(teams_added))
         print("Teams skipped:\t\t{0}".format(teams_skipped))
         print("Ran in {0} seconds.".format((time_end - time_start).__round__(3)))

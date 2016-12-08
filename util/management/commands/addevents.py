@@ -1,11 +1,18 @@
+from typing import Iterable
 from datetime import date, timedelta
 from time import clock
 
 from django.core.management.base import BaseCommand
+from django.conf import settings
+
+from concurrent.futures import wait, ProcessPoolExecutor
+from requests_futures.sessions import FuturesSession
+import requests
 
 from FRS.settings import SUPPORTED_YEARS
 from TBAW.models import Event, Alliance, AllianceAppearance
 from TBAW.requester import get_event_json, get_list_of_events_json
+from TBAW.requester import event_by_year_url_template, event_url_template, event_teams_url_template
 from util.check import event_exists, alliance_exists, alliance_appearance_exists
 from util.data_logger import log_bad_data
 from util.getters import get_team, get_alliance
@@ -15,6 +22,46 @@ events_created = 0
 events_skipped = 0
 
 championship_keys = ['arc', 'cars', 'carv', 'gal', 'tes', 'new', 'cur', 'hop']
+
+def add_all(*years: Iterable[int]):
+    years = [*years]
+
+    requester = FuturesSession(executor=ProcessPoolExecutor(30), session=requests.Session())
+    api_key = settings.TBA_API_HEADERS
+
+    event_list_get = lambda y: requester.get(event_by_year_url_template(year=y), headers=api_key)
+    event_get = lambda key: requester.get(event_url_template(event=key), headers=api_key)
+    event_teams_get = lambda key: requester.get(event_teams_url_template(event=key), headers=api_key)
+
+    print("Getting event lists for years: %s" % years)
+    event_list_futures = [event_list_get(y) for y in years]
+    print("Waiting on %d requests..." % len(years))
+    wait(event_list_futures)
+    print("Done!\n")
+
+    event_lists = [f.result().json() for f in event_list_futures]
+    event_data_jsons = [item for year_data in event_lists for item in year_data]
+
+    print("Grabbing event keys...")
+    event_keys = [event_data['key'] for event_data in event_data_jsons]
+    print("Starting %d requests for event data and teams-by-event data, split between %d processes..." % (2*len(event_keys), requester.executor._max_workers))
+    event_json_futures = [event_get(key) for key in event_keys]
+    event_team_json_futures = [event_teams_get(key) for key in event_keys]
+
+    print("Waiting...")
+    wait(event_json_futures + event_team_json_futures)
+    requester.executor.shutdown()
+    print("Done!\n")
+
+    event_jsons = [f.result().json() for f in event_json_futures]
+    event_team_json = [f.result().json() for f in event_team_json_futures]
+
+    print("Adding teams data to event data under 'teams' field...")
+    event_jsons = [dict(e, teams=t) for e, t in zip(event_jsons, event_team_json)]
+    arg_list = zip(event_keys, event_jsons)
+
+    for args in arg_list:
+        add_event(*args)
 
 
 def add_list(year: int) -> None:
@@ -28,8 +75,6 @@ def add_event(event_key: str, event_data=None) -> None:
     if event_data is None:
         event_data = get_event_json(event_key)
 
-    print("Adding event {0}".format(event_key))
-
     year = int(event_data['end_date'][:4])
     month = int(event_data['end_date'][5:7])
     day = int(event_data['end_date'][8:10])
@@ -40,6 +85,7 @@ def add_event(event_key: str, event_data=None) -> None:
         date_obj -= timedelta(days=1)
 
     if event_exists(event_key):
+        print("Updating event {}".format(event_key))
         event = Event.objects.get(key=event_key)
 
         for alliance in event_data['alliances']:
@@ -76,6 +122,7 @@ def add_event(event_key: str, event_data=None) -> None:
     # We only want to analyze data from official events or IRI/Cheezy Champs
     elif (event_data['official'] is True and event_data['event_type_string'] != 'Offseason') or \
             event_data['event_code'] == 'iri':
+        print("Adding event {}".format(event_key))
         event = Event.objects.create(key=event_key, name=event_data['name'], short_name=event_data['short_name'],
                                      event_code=event_data['event_code'], event_type=event_data['event_type'],
                                      event_district=event_data['event_district'], year=event_data['year'],
@@ -124,7 +171,7 @@ def add_event(event_key: str, event_data=None) -> None:
     else:
         events_skipped += 1
         log_bad_data(event_key, 'Not an official event')
-        print("Skipped event {0}".format(event_key))
+        print("Skipped event {0}, you aren't a REAL event.".format(event_key))
 
 
 class Command(BaseCommand):
@@ -142,10 +189,11 @@ class Command(BaseCommand):
             add_event(key)
         else:
             if year == 0:
-                for yr in SUPPORTED_YEARS:
-                    add_list(yr)
+                add_all(*SUPPORTED_YEARS)
+                # for yr in SUPPORTED_YEARS:
+                #     add_list(yr)
             else:
-                add_list(year)
+                add_all(year)
         time_end = clock()
         print("-------------")
         print("Events created:\t\t{0}".format(events_created))

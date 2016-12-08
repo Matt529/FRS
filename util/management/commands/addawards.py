@@ -1,19 +1,21 @@
 import functools
-import itertools
 
-from concurrent.futures import Future, wait
-from typing import List, Dict
+from typing import List
 from time import clock
 
 from django.core.management.base import BaseCommand
+from django.conf import settings
 from django.db.models import Q
 from django.db import transaction
 
+from concurrent.futures import wait, ProcessPoolExecutor
+from requests_futures.sessions import FuturesSession
+import requests
+
 from FRS.settings import SUPPORTED_YEARS
 from TBAW.models import Event, Award
-from TBAW.requester import get_awards_from_event_json, get_awards_from_event_json_async
-from util.getters import get_event, get_team
-from TBAW.resource_getter import AsyncRequester, ResourceResult
+from TBAW.requester import event_awards_url_template
+from util.getters import get_team
 
 awards_created = 0
 
@@ -84,20 +86,21 @@ class Command(BaseCommand):
         print("-------------")
 
     def add_all_events(self, year: int, *args: List[int]):
-
         years = [year, *args]
 
-        requester = AsyncRequester(use_threads=False)
-        event_futures = []  # type: List[Future]
+        print("Executing for years: %s" % years)
 
-        def create_handler(event):
-            def handle(future):
-                add_single_event(event, future.result().response.json())
-            return handle
+        requester = FuturesSession(executor=ProcessPoolExecutor(30), session=requests.Session())
+        api_key = settings.TBA_API_HEADERS
 
-        for event in Event.objects.filter(year__in=years):
-            event_futures.append(get_awards_from_event_json_async(requester, event.key))
-            event_futures[-1].add_done_callback(create_handler(event))
-            print("Requesting json data for event: {}".format(event.key))
+        events = Event.objects.filter(year__in=years).all()
+        print("Starting %d HTTP requests to get awards data, split between %d processes..." % (len(events), requester.executor._max_workers))
+        awards_futures = [requester.get(event_awards_url_template(event=e.key), headers=api_key) for e in events]
+        print("Waiting...")
+        wait(awards_futures)
+        print("Done!\n")
 
-        wait(event_futures)
+        awards = map(lambda f: f.result().json(), awards_futures)
+
+        for args in zip(events, awards):
+            add_single_event(*args)

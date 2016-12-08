@@ -158,11 +158,11 @@ class AtomicVar(Atomic, Generic[T]):
             other = other.get()
         return self.get() < other
 
-    def __str__(self):
+    def __repr__(self):
         return "AtomicVar[%s]" % self.get()
 
-    def __repr__(self):
-        return str(self)
+    def __str__(self):
+        return str(self.get())
 
     value = property(get, set)
 
