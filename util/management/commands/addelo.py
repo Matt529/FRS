@@ -110,11 +110,11 @@ def add_event_elo(event: Event) -> None:
 
 
 def soft_reset(value=SOFT_RESET_SCALE) -> None:
-    Team.objects.exclude(elo_sigma=DEFAULT_SIGMA).update(
+    Team.objects.exclude(event__year=SUPPORTED_YEARS[-1]).distinct().exclude(elo_sigma=DEFAULT_SIGMA).update(
         elo_mu=F('elo_mu') - (F('elo_mu') - DEFAULT_MU) * value,
         elo_sigma=F('elo_sigma') - (F('elo_sigma') - DEFAULT_SIGMA) * value
     )
-    Alliance.objects.exclude(elo_sigma=DEFAULT_SIGMA).update(
+    Alliance.objects.exclude(event__year=SUPPORTED_YEARS[-1]).distinct().exclude(elo_sigma=DEFAULT_SIGMA).update(
         elo_mu=F('elo_mu') - (F('elo_mu') - DEFAULT_MU) * value,
         elo_sigma=F('elo_sigma') - (F('elo_sigma') - DEFAULT_SIGMA) * value
     )

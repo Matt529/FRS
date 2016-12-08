@@ -5,10 +5,9 @@ from bulk_update.manager import BulkUpdateManager
 from django.conf import settings
 from django.db import models
 from django.db.models.query import QuerySet
-
-from FRS.settings import SUPPORTED_YEARS
-from util.mathutils import solve_linear_least_squares, create_matrix, create_2d_vector
 from jsonfield import JSONField
+
+from util.mathutils import solve_linear_least_squares, create_matrix, create_2d_vector
 
 
 class Team(models.Model):
@@ -56,7 +55,6 @@ class Team(models.Model):
         return "{0} ({1})".format(self.nickname, self.team_number)
 
     def get_matches(self, year=None) -> QuerySet:
-
         if year is None:
             return Match.objects.filter(alliances__teams__team_number=self.team_number)
         else:
