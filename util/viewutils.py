@@ -1,10 +1,18 @@
 from functools import wraps
-from typing import List, Mapping, Union
+from typing import List, Mapping, Union, Any
 
 from django.http import QueryDict, HttpResponseNotAllowed
 from django.utils.decorators import available_attrs
 
 from util.templatestring import TemplateString
+
+def make_querydict_from_request(func):
+    @wraps(func, assigned=available_attrs(func))
+    def inner(request, *args, **kwargs):
+        if request.method not in ['GET', 'POST']:
+            read_request_body_to(request, request.method)
+        return func(request, *args, **kwargs)
+    return inner
 
 
 def require_http_methods_plus(method_types: List[str], required_args: Union[Mapping[str, List[str]], List[str]]=None,
@@ -35,15 +43,15 @@ def require_http_methods_plus(method_types: List[str], required_args: Union[Mapp
     if method_props is None:
         method_props = {}
 
-    invalid_type = TemplateString("${method} is not one of the allowed request methods ({types})!")
-    missing_props = TemplateString("Request of type ${method} must have following properties: {props}")
-    missing_args = TemplateString("Request missing arguments. Has ${args}, missing {missing}")
+    invalid_type = TemplateString("{method} is not one of the allowed request methods ({types})!")
+    missing_props = TemplateString("Request of type {method} must have following properties: {props}")
+    missing_args = TemplateString("Request missing arguments. Has {args}, missing {missing}")
 
     def decorator(func):
         @wraps(func, assigned=available_attrs(func))
         def inner(request, *args, **kwargs):
 
-            # Verify method is at least a valid metho type
+            # Verify method is at least a valid method type
             if request.method not in method_types:
                 print("METHOD NOT ALLOWED", invalid_type(method=request.method, types=method_types))
                 return HttpResponseNotAllowed(method_types)

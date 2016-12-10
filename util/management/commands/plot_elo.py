@@ -2,24 +2,35 @@ from django.core.management.base import BaseCommand
 from matplotlib import pyplot as plt, mlab
 from matplotlib import gridspec
 
+from FRS.settings import SUPPORTED_YEARS
 from TBAW.models import Team
 import numpy as np
 import numpy.random as nprand
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
-        parser.add_argument('--file', dest='f', default='', type=str)
+        parser.add_argument('--file', dest='f', default='', type=str,
+                            help="Read elo data from file, requires a column for ids and a column for elo scores.")
+        parser.add_argument('--start', dest='start-year', default=SUPPORTED_YEARS[0], type=int, metavar="from_year",
+                            help="Start year of range from which to select teams. They must at least participate in this year.")
+        parser.add_argument('--end', dest='end-year', default=SUPPORTED_YEARS[-1], type=int, metavar="to_year",
+                            help="End year of range from which to select teams. They must have participated in one match before or during this year.")
 
     def handle(self, *args, **options):
         if options['f'] is '':
-            elo_array = [t.elo_mu for t in Team.objects.exclude(elo_mu=1500.0).order_by('id')]
-            id_array = [t.id for t in Team.objects.exclude(elo_mu=1500.0).order_by('id')]
+            start_year = options['start-year']
+            end_year = options['end-year']
+
+            print("For years in range [%d, %d]" % (start_year, end_year))
+            _query = Team.objects.filter(event__year__range=(start_year, end_year)).exclude(elo_mu=1500.0).distinct().order_by('id')
+            elo_array, id_array = [list(x) for x in zip(*[(t.elo_mu, t.id) for t in _query.all()])]
+
         else:
-            pass  # implement read from CSV
+            raise NotImplementedError("Cannot yet read any file types.")
 
         gs = gridspec.GridSpec(2, 3, width_ratios=[1, 1, 2])
 
-        # Spane topmost row
+        # Span topmost row
         plt.subplot(gs[0, :])
         num_bins = 100
         elo_mean = np.mean(elo_array)

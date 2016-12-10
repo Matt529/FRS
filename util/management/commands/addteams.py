@@ -103,7 +103,7 @@ def add_team(team_number: int, team_data=None, years_participated=None) -> None:
     nickname = team_data['nickname']
     motto = team_data['motto']
     years_participated = years_participated or get_team_years_participated(team_number)
-
+    years_participated = set(years_participated)
     # Sometimes teams have participated but have null records, for reasons unknown. Check if they were ever active.
     # examples: 146, 413
     if name is None:

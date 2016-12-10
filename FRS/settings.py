@@ -17,6 +17,8 @@ from debug_toolbar.settings import PANELS_DEFAULTS
 from django.conf import settings
 from django.utils.crypto import get_random_string
 
+from decouple import config
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -52,6 +54,7 @@ INSTALLED_APPS = [
     'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
+    'watson',
     'FRS',
     'TBAW',
     'util',
@@ -83,6 +86,7 @@ MIDDLEWARE_CLASSES = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'nplusone.ext.django.middleware.NPlusOneMiddleware',
+    'util.middlewares.ProcessExceptionMiddleware',
 ]
 
 ROOT_URLCONF = 'FRS.urls'
@@ -185,9 +189,14 @@ SUPPORTED_YEARS = list(range(2010, 2017))
 LEADERBOARD_COUNT = 200
 
 # For Elo/Trueskill system
+import trueskill
 DEFAULT_MU = 1500
 DEFAULT_SIGMA = DEFAULT_MU / 3
-SOFT_RESET_SCALE = 0.90
+DEFAULT_BETA = DEFAULT_SIGMA / 2
+DEFAULT_TAU = DEFAULT_SIGMA / 10
+DEFAULT_DRAW_PROBABILITY = 0.10
+ELO_DECAY_ALPHA = 0.45
+trueskill.setup(mu=DEFAULT_MU, sigma=DEFAULT_SIGMA, beta=DEFAULT_BETA, tau=DEFAULT_TAU, draw_probability=DEFAULT_DRAW_PROBABILITY, backend="mpmath")
 
 # For model visualization at /plate/
 SPAGHETTI_SAUCE = {

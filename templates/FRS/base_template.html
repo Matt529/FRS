@@ -75,7 +75,7 @@
         </div>
     </div>
 
-    {% block scripts %}
+    {% block root-js-imports %}
         <script src="https://code.jquery.com/jquery-3.1.0.min.js"
                 integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="
                 crossorigin="anonymous"></script>
@@ -83,11 +83,18 @@
                 integrity="sha256-dsOXGNHAo/syFnazt+KTBsCQeRmlcW1XKL0bCK4Baec="
                 crossorigin="anonymous"></script>
         <script src="https://use.fontawesome.com/35487374a1.js"></script>
-        <script src="{% static 'bower_components/uikit/js/uikit.min.js' %}"></script>
-        <script src="{% static 'bower_components/typeahead.js/dist/typeahead.bundle.min.js' %}"></script>
         <script src="{% static 'bower_components/tablesorter/jquery.tablesorter.min.js' %}"></script>
+
+        {% if request.META.HTTP_HOST != "127.0.0.1:8000" %}
+            {# Google Analytics #}
+            <script src="{% static 'compiled/global/js/google-analytics.js' %}"></script>
+        {% endif %}
+
     {% endblock %}
 
+    {% block js-imports %}{% endblock %}
+
+    {% block root-inline-js %}
     <script type="text/javascript" charset="utf-8">
         $(document).ready(function () {
             function hasClass(element, cls) {
@@ -101,24 +108,11 @@
                 }
             }
         });
+    {% endblock%}
 
-        {# Google Analytics #}
-        {% if request.META.HTTP_HOST != "127.0.0.1:8000" %}
-            (function (i, s, o, g, r, a, m) {
-                i['GoogleAnalyticsObject'] = r;
-                i[r] = i[r] || function () {
-                        (i[r].q = i[r].q || []).push(arguments)
-                    }, i[r].l = 1 * new Date();
-                a = s.createElement(o),
-                    m = s.getElementsByTagName(o)[0];
-                a.async = 1;
-                a.src = g;
-                m.parentNode.insertBefore(a, m)
-            })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
-            ga('create', 'UA-85792877-1', 'auto');ga('send', 'pageview');
-        {% endif %}
+    {% js_reverse_inline %}
+    {% block inline-js %}{% endblock %}
 
-        {% js_reverse_inline %}
     </script>
     </body>
     </html>

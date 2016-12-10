@@ -8,7 +8,6 @@ class TeamResource(ModelResource):
     class Meta:
         queryset = Team.objects.all()
         resource_name = 'team'
-        excludes = ['id', 'longest_event_winstreak', 'active_event_winstreak']
         allowed_methods = ['get']
 
     def prepend_urls(self):
@@ -22,5 +21,5 @@ class EventResource(ModelResource):
     class Meta:
         queryset = Event.objects.all()
         resource_name = 'event'
-        excludes = ['id']
+        allowed_methods = ['get']
 

@@ -6,7 +6,7 @@ from tastypie.api import Api
 from dashing.utils import router as dashing_routes
 
 from FRS import views
-from api.models import TeamResource, EventResource
+from api.resources import TeamResource, EventResource
 
 api_v1 = Api(api_name='v1')
 api_v1.register(TeamResource())
@@ -20,6 +20,7 @@ urlpatterns = [
     url(r'^s/', views.search, name="search"),
     url(r'^s2/', views.search_api, name='search_api'),
     url(r'^api/', include(api_v1.urls)),
+    url(r'^api/', include('api.urls')),
     url(r'^l/', include('leaderboard2.urls')),
     url(r'^dashboard/', include(dashing_routes.urls)),
 ]

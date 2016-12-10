@@ -1,6 +1,8 @@
-@import '../../bower_components/uikit/scss/uikit-mixins.scss';
-@import '../../bower_components/uikit/scss/uikit.scss';
-@import '../../bower_components/uikit/scss/components/autocomplete.scss';
+@import '../../bower_components/uikit/scss/uikit-mixins';
+@import '../../bower_components/uikit/scss/uikit';
+@import '../../bower_components/uikit/scss/components/autocomplete';
+
+@import './includes/prefix-mixins';
 
 $frs-brand-color: #fff;
 $frs-table-color: #e5e5e5;
@@ -41,14 +43,11 @@ body {
 }
 
 .form-valign {
+  @include prefixed(transform, translateY(-50%));
+
   max-width: $max-width;
   position: absolute;
   top: 50%;
-  -moz-transform: translateY(-50%);
-  -ms-transform: translateY(-50%);
-  -o-transform: translateY(-50%);
-  -webkit-transform: translateY(-50%);
-  transform: translateY(-50%);
   width: 100%;
 
   input {
@@ -77,7 +76,7 @@ body {
   }
 }
 
-.uk-navbar-nav > li.uk-open[aria-expanded="true"] > a {
+.uk-navbar-nav > .uk-open[aria-expanded="true"] > a {
   color: $secondary-color;
 }
 
@@ -88,7 +87,6 @@ body {
 }
 
 .uk-table {
-  td
   th {
     border-bottom: 1px solid $frs-table-color;
   }
