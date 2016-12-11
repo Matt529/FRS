@@ -96,13 +96,6 @@ TEMPLATES = [
         'DIRS': [os.path.join(BASE_DIR, 'templates/')],
         'APP_DIRS': True,
         'OPTIONS': {  # If the Cached Loader ends up being an issue, just remove
-            # the 'loaders' key-value pair
-            # 'loaders': [
-            #     ('django.template.loaders.cached.Loader', [
-            #         'django.template.loaders.filesystem.Loader',
-            #         'django.template.loaders.app_directories.Loader',
-            #     ]),
-            # ],
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
@@ -114,6 +107,16 @@ TEMPLATES = [
     },
 ]
 
+# Run caching Template Loader in prod
+if not DEBUG:
+    TEMPLATES[0]['OPTIONS']['loaders'] = \
+        [
+            ('django.template.loaders.cached.Loader', [
+                'django.template.loaders.filesystem.Loader',
+                'django.template.loaders.app_directories.Loader',
+            ]),
+        ]
+    
 WSGI_APPLICATION = 'FRS.wsgi.application'
 
 # Database
