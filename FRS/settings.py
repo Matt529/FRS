@@ -54,7 +54,7 @@ INSTALLED_APPS = [
     'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
-    'watson',
+    'haystack',
     'FRS',
     'TBAW',
     'util',
@@ -75,6 +75,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE_CLASSES = [
+    'util.middlewares.ProcessExceptionMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -86,7 +87,6 @@ MIDDLEWARE_CLASSES = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'nplusone.ext.django.middleware.NPlusOneMiddleware',
-    'util.middlewares.ProcessExceptionMiddleware',
 ]
 
 ROOT_URLCONF = 'FRS.urls'
@@ -94,15 +94,15 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [os.path.join(BASE_DIR, 'templates/')],
-        # 'APP_DIRS': True,
+        'APP_DIRS': True,
         'OPTIONS': {  # If the Cached Loader ends up being an issue, just remove
             # the 'loaders' key-value pair
-            'loaders': [
-                ('django.template.loaders.cached.Loader', [
-                    'django.template.loaders.filesystem.Loader',
-                    'django.template.loaders.app_directories.Loader',
-                ]),
-            ],
+            # 'loaders': [
+            #     ('django.template.loaders.cached.Loader', [
+            #         'django.template.loaders.filesystem.Loader',
+            #         'django.template.loaders.app_directories.Loader',
+            #     ]),
+            # ],
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
@@ -239,4 +239,16 @@ INTERNAL_IPS = ('127.0.0.1',)
 
 TBA_API_HEADERS = {
     'X-TBA-App-Id' : 'frs:frs:1'
+}
+
+# Haystack
+
+HAYSTACK_FUZZY_MIN_SIM = 0.2
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.solr_backend.SolrEngine',
+        'URL': 'http://127.0.0.1:8983/solr'
+        # ...or for multicore...
+        # 'URL': 'http://127.0.0.1:8983/solr/mysite',
+    },
 }

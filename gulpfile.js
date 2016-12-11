@@ -25,6 +25,7 @@ const COMPILED_FRS_ROOT = path.join(COMPILED_ROOT, 'global');
 const TS_SRC = path.join(STATIC_FRS_ROOT, 'ts', '**', '*.ts');       // Glob for selecting .ts files (for compilation)
 const TS_SRC_DTS = path.join(STATIC_FRS_ROOT, 'ts', '**', '*.d.ts'); // Glob for selecting .d.ts files specifically
 const JS_SRC = path.join(STATIC_FRS_ROOT, 'js', '**', '*.js');
+const DTS_OUT = path.join(STATIC_FRS_ROOT, 'ts');
 const JS_OUT = path.join(COMPILED_FRS_ROOT, 'js');                   // Destination directory
 
 const TS_CLEAN_DTS = path.join(COMPILED_ROOT, '**', '*.ts');            // Glob for cleaning compiled .d.ts files
@@ -34,9 +35,18 @@ const JS_CLEAN_DIRS = path.join(COMPILED_ROOT, '**', '*.js');         // Glob fo
 const SASS_SRC = path.join(STATIC_FRS_ROOT, '**', '*.scss');            // Glob for selecting .scss files (for compilation
 const SASS_OUT = path.join(COMPILED_FRS_ROOT, 'css');                   // Destination Directory
 
-const SCSS_LINT_IGNORES = [
+function ignorePath(path) {
+    return "!" + path;
+}
+
+const SCSS_LINT_SELECTS = [
     SASS_SRC,
-    "!" + path.join(STATIC_FRS_ROOT, '**', '_prefix-mixins.scss')
+    ignorePath(path.join(path.dirname(SASS_SRC), '_prefix-mixins.scss'))
+];
+
+const TS_LINT_SELECTS = [
+    TS_SRC,
+    ignorePath(TS_SRC_DTS)
 ];
 
 const SASS_CLEAN_CSS = path.join(COMPILED_FRS_ROOT, 'css', '**', '*.css');  // Glob for cleaning compiled css files
@@ -71,7 +81,7 @@ function cleanJavascript() {
  * the ts parent directory.
  */
 function buildSass() {
-    var copiedIncludes = gulpFilter(SCSS_LINT_IGNORES, {restore: true});
+    var copiedIncludes = gulpFilter(SCSS_LINT_SELECTS, {restore: true});
 
     return gulp.src(SASS_SRC)
         .pipe(copiedIncludes)
@@ -102,24 +112,28 @@ function buildDefinitions() {
  * Lints and builds all *.ts and *.d.ts files and stores them under compiled/global/js.
  */
 function buildTypescript() {
-    var tsResult = gulp.src([TS_SRC, TS_SRC_DTS])
+    const libFilter = gulpFilter(TS_LINT_SELECTS, {restore: true});
+    var tsResult = gulp.src([TS_SRC])
+        .pipe(libFilter)
         .pipe(tslint({
+            configuration: path.join('.', 'tslint.json'),
             formatter: "verbose"
         }))
         .pipe(tslint.report({
             summarizeFailureOutput: true,
-            emitError: false
+            emitError: true
         }))
+        .pipe(libFilter.restore)
         .pipe(sourcemaps.init())
         .pipe(typescript({
-            declaration: true,
+            declaration: false,
             noExternalResolve: true,
             target: 'ES5'
         }));
 
     // Need to merge the dts and js streams since typescript does not yield a single stream.
     return merge([
-        tsResult.dts.pipe(flatten({subPath: [3]})).pipe(gulp.dest(JS_OUT)).on('error', gutil.log),
+        tsResult.dts.pipe(flatten({subPath: [3]})).pipe(gulp.dest(DTS_OUT)).on('error', gutil.log),
         tsResult.js.pipe(flatten({subPath: [3]})).pipe(sourcemaps.write()).pipe(gulp.dest(JS_OUT)).on('error', gutil.log)
     ]);
 }
@@ -134,7 +148,7 @@ function copyJavascript() {
 // Cleaning and Building can be run in parallel, but rebuilding requires cleaning be done before building
 var cleanJsAndTs = gulp.parallel(cleanTypescriptDefs, cleanJavascript);
 var cleanFn = gulp.parallel(cleanSass, cleanJsAndTs);
-var buildFn = gulp.parallel(buildSass, buildTypescript, buildDefinitions, copyJavascript);
+var buildFn = gulp.parallel(buildSass, buildTypescript, copyJavascript);
 var rebuildFn = gulp.series(cleanFn, buildFn);
 
 

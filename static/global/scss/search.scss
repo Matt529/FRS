@@ -1,0 +1,19 @@
+$frs-header-underline: #ccc;
+$frs-header-border: 1px solid $frs-header-underline;
+
+#typeahead-wrapper {
+
+  .twitter-typeahead,
+  .frs-search-menu {
+    width: 100%;
+  }
+
+  .frs-search-header {
+    border-bottom: $frs-header-border;
+    border-top: $frs-header-border;
+
+    margin: 10px 0 5px;
+    padding: 3px 0;
+  }
+
+}

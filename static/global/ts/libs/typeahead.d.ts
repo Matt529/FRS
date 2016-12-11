@@ -1053,7 +1053,7 @@ declare namespace Bloodhound {
          * The method used to rate-limit network requests.
          * Can be either debounce or throttle. Defaults to debounce.
          */
-        rateLimitby?: string;
+        rateLimitBy?: string;
 
         /**
          * The time interval in milliseconds that will be used by rateLimitBy.
@@ -1069,7 +1069,7 @@ declare namespace Bloodhound {
          * @param response Prefetch response.
          * @returns Transform response.
          */
-        transform?: (response: T[]) => T[];
+        transform?: (response: any) => T[];
     }
 
     /**

@@ -1,0 +1,4 @@
+{{ object.name }}
+{{ object.team_number }}
+{{ object.nickname }}
+{{ object.key }}

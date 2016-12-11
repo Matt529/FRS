@@ -9,21 +9,28 @@
         <input autofocus required type="search" name="search" id="search"
                placeholder="Search for anything (e.g. 2791, 2016cmp)"
                class="uk-form-large">
-        <div id="typeahead-wrapper">
+        <div id="typeahead-wrapper" class="uk-form-row">
             <label for="typeahead-search"></label>
             <input class="typeahead" name="typeahead-search" type="text" placeholder="Teams/Events" />
         </div>
     </form>
 {% endblock %}
 
+{% block css-imports %}
+    <link rel="stylesheet" href="{% static "compiled/global/css/search.css" %}" />
+{% endblock %}
+
 {% block js-imports %}
     <script src="{% static "bower_components/typeahead.js/dist/typeahead.bundle.min.js" %}"></script>
     <script src="{% static "bower_components/typeahead.js/dist/typeahead.jquery.min.js" %}"></script>
+    <script src="{% static "compiled/global/js/search.js" %}"></script>
     <script src="{% static "compiled/global/js/main.js" %}"></script>
 {% endblock %}
 
 {% block inline-js %}
-<script>
+    <script>
+        FRS.search.initialize();
+
         function s(e) {
             var query = $('#search').val();
 
