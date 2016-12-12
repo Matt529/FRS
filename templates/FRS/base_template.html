@@ -94,8 +94,9 @@
                 integrity="sha256-dsOXGNHAo/syFnazt+KTBsCQeRmlcW1XKL0bCK4Baec="
                 crossorigin="anonymous"></script>
         <script src="{% static 'bower_components/tablesorter/jquery.tablesorter.min.js' %}"></script>
+        <script src="{% static 'bower_components/corejs-typeahead/dist/typeahead.jquery.min.js' %}"></script>
 
-        <script src="{% static 'compiled/global/js/existential.js' %}"></script>
+        <script src="{% static 'compiled/global/js/bundle.js' %}"></script>
 
         {% if request.META.HTTP_HOST != "127.0.0.1:8000" %}
             {# Google Analytics #}
@@ -112,7 +113,6 @@
             function hasClass(element, cls) {
                 return (' ' + element.className + ' ').indexOf(' ' + cls + ' ') > -1;
             }
-
             var tables = document.getElementsByTagName('table');
             for (var i = 0, len = tables.length; i < len; i++) {
                 if (!hasClass(tables[i], 'no-sort')) {

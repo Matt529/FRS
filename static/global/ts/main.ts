@@ -1,9 +1,6 @@
 
-/// <reference path='./libs/jquery.d.ts'/>
-/// <reference path='./libs/typeahead.d.ts'/>
-/// <reference path='./search.ts' />
+import * as SearchModule from './search';
 
-const FRS = {
-    Search: SearchModule
+module.exports = {
+    search: SearchModule
 };
-

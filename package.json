@@ -17,16 +17,22 @@
   },
   "homepage": "https://github.com/FRC-RS/FRS#readme",
   "devDependencies": {
+    "@types/immutable": "^3.8.6",
+    "@types/jquery": "^2.0.34",
+    "@types/lodash": "^4.14.43",
+    "@types/node": "0.0.3",
+    "@types/pluralize": "0.0.27",
+    "@types/string": "0.0.28",
+    "@types/typeahead": "^0.11.27",
+    "@types/vex-js": "^2.3.27",
     "gulp": "github:gulpjs/gulp#4.0",
     "gulp-clean": "^0.3.2",
-    "gulp-concat": "^2.6.0",
     "gulp-filter": "^4.0.0",
     "gulp-flatten": "^0.3.1",
     "gulp-sass": "^2.3.1",
     "gulp-scss-lint": "^0.4.0",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-tslint": "^5.0.0",
-    "gulp-typescript": "^2.13.4",
     "gulp-util": "^3.0.7",
     "gulp-webpack": "^1.5.0",
     "merge2": "^1.0.2",
@@ -35,6 +41,14 @@
     "webpack": "^1.14.0"
   },
   "dependencies": {
-    "d3": "^3.5.17"
+    "corejs-typeahead": "^1.0.1",
+    "d3": "^3.5.17",
+    "immutable": "^3.8.1",
+    "jquery": "^3.1.1",
+    "lodash": "^4.17.2",
+    "pluralize": "^3.0.0",
+    "string": "^3.3.3",
+    "typescript": "^2.1.4",
+    "vex-js": "^3.0.0"
   }
 }
