@@ -246,11 +246,14 @@ TBA_API_HEADERS = {
 
 # Haystack
 
+HAYSTACK_DEFAULT_OPERATOR = 'OR'
 HAYSTACK_FUZZY_MIN_SIM = 0.2
 HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'haystack.backends.solr_backend.SolrEngine',
-        'URL': 'http://127.0.0.1:8983/solr'
+        'URL': 'http://127.0.0.1:8983/solr',
+        'TIMEOUT': 60*5,
+        'BATCH_SIZE': 2000,
         # ...or for multicore...
         # 'URL': 'http://127.0.0.1:8983/solr/mysite',
     },

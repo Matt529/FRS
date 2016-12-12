@@ -900,7 +900,7 @@ declare namespace Bloodhound {
         /**
          * Transforms a query into an array of string tokens.
          *
-         * @param quiery Query.
+         * @param query Query.
          * @returns An array of string tokens.
          */
         queryTokenizer: (query: string) => string[];
@@ -910,6 +910,10 @@ declare namespace Bloodhound {
          * initialized by the constructor function. Defaults to true.
          */
         initialize?: boolean;
+
+        matchAnyQueryToken?: boolean;
+
+        indexRemote?: boolean;
 
         /**
          * Given a datum, returns a unique id for it.
@@ -1053,7 +1057,7 @@ declare namespace Bloodhound {
          * The method used to rate-limit network requests.
          * Can be either debounce or throttle. Defaults to debounce.
          */
-        rateLimitBy?: string;
+        rateLimitBy?: 'debounce' | 'throttle';
 
         /**
          * The time interval in milliseconds that will be used by rateLimitBy.

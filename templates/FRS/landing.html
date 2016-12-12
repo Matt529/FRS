@@ -21,15 +21,18 @@
 {% endblock %}
 
 {% block js-imports %}
-    <script src="{% static "bower_components/typeahead.js/dist/typeahead.bundle.min.js" %}"></script>
-    <script src="{% static "bower_components/typeahead.js/dist/typeahead.jquery.min.js" %}"></script>
+    <script src="{% static "bower_components/corejs-typeahead/dist/typeahead.bundle.min.js" %}"></script>
+    <script src="{% static "bower_components/corejs-typeahead/dist/typeahead.jquery.min.js" %}"></script>
+    <script src="{% static "bower_components/pluralize/pluralize.js" %}"></script>
     <script src="{% static "compiled/global/js/search.js" %}"></script>
     <script src="{% static "compiled/global/js/main.js" %}"></script>
 {% endblock %}
 
 {% block inline-js %}
     <script>
-        FRS.search.initialize();
+        FRS.Search.initializeTeamEventSearch({
+            resultLimit: 30
+        });
 
         function s(e) {
             var query = $('#search').val();

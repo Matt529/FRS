@@ -1,0 +1,32 @@
+@import 'util';
+
+@mixin font-face($name, $path, $weight: null, $style: null, $exts: eot woff2 woff ttf svg) {
+  $src: null;
+
+  // Map to modifications for specific extensions
+  $extmods: (
+    eot: '?',
+    svg: '$' + str-replace($name, '' '', '_')
+  );
+
+  // Special names for certain formats
+  $formats: (
+    otf: 'opentype',
+    ttf: 'truetype'
+  );
+
+  // For each extension, modify as necessary and create one large src attribute.
+  @each $ext in $exts {
+    $extmod: if(map-has-key($extmods, $ext), $ext + map-get($extmods, $ext), $ext);
+    $format: if(map-has-key($formats, $ext), map-get($formats, $ext), $ext);
+    $src: append($src, url(quote($path + '.' + $extmod)) format(quote($format)), comma);
+  }
+
+  @font-face {
+    font-family: quote($name);
+    font-style: $style;
+    font-weight: $weight;
+    src: $src;
+  }
+}
+

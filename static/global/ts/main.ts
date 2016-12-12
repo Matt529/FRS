@@ -4,6 +4,6 @@
 /// <reference path='./search.ts' />
 
 const FRS = {
-    search: SearchModule
+    Search: SearchModule
 };
 

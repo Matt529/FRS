@@ -1,0 +1,23 @@
+
+/**
+  Replaces every instance of 'search' in the given string with the given replacement string.
+
+  @example
+  str-replace("foo-bar-baz-foo-neato", "foo"); => "-bar-baz--neato"
+  @example
+  str-replace("Hello world! The world is cool because of the way it is.", "world", "planet"); => "Hello planet! The planet is cool because of the way it is."
+
+  @param $string [Sass::Script::Value::String]
+  @param $search [Sass::Script::Value::String]
+  @param $replace [Sass::Script::Value::String] defaults to empty string
+ */
+@function str-replace($string, $search, $replace: '') {
+  $index: str-index($string, $search);
+
+  @if $index {
+    $next: str-slice($string, $index + str-length($search));
+    @return str-slice($string, 1, $index - 1) + $replace + str-replace($next, $search, $replace);
+  }
+
+  @return $string;
+}
