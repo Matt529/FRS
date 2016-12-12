@@ -9,7 +9,8 @@ var gulp = require('gulp'),
     scsslint = require('gulp-scss-lint'),
     tslint = require('gulp-tslint'),
     flatten = require('gulp-flatten'),
-    gulpFilter = require('gulp-filter');
+    gulpFilter = require('gulp-filter'),
+    gulpWebpack = require('gulp-webpack');
 
 var merge = require('merge2');  // Merging Gulp Streams
 var path = require('path');
@@ -138,6 +139,13 @@ function buildTypescript() {
     ]);
 }
 
+function buildBundle() {
+    return gulp.src([TS_SRC])
+        .pipe(gulpWebpack(require('./webpack.config.js'), require('webpack')))
+        .pipe(gulp.dest(JS_OUT))
+        .on('error', gutil.log);
+}
+
 function copyJavascript() {
     return gulp.src(JS_SRC)
         .pipe(flatten({subPath:[3]}))
@@ -148,7 +156,7 @@ function copyJavascript() {
 // Cleaning and Building can be run in parallel, but rebuilding requires cleaning be done before building
 var cleanJsAndTs = gulp.parallel(cleanTypescriptDefs, cleanJavascript);
 var cleanFn = gulp.parallel(cleanSass, cleanJsAndTs);
-var buildFn = gulp.parallel(buildSass, buildTypescript, copyJavascript);
+var buildFn = gulp.parallel(buildSass, buildTypescript, copyJavascript, buildBundle);
 var rebuildFn = gulp.series(cleanFn, buildFn);
 
 
