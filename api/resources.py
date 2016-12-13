@@ -17,7 +17,7 @@ class SearchableResource(object):
             return default
     
     def prepend_urls(self: Resource):
-        search_name = SearchableResource.__attempt_attr_get(lambda: self._meta.search_name, 'api-{}-search'.format(self._meta.resource_name))
+        search_name = SearchableResource.__attempt_attr_get(lambda: self._meta.search_name, '{}-search'.format(self._meta.resource_name))
     
         return [
             url(r"^(?P<resource_name>%s)/search%s" % (self._meta.resource_name, trailing_slash()), self.wrap_view('_resource_search'), name=search_name),
