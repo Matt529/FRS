@@ -136,7 +136,7 @@ function ResourceDataset<T extends ApiObj>(resourceName: string, opts: ResourceD
 
 function getTeamEventEngines(resultLimit: number, initializeNow: boolean = true): [Bloodhound<TeamObj>, Bloodhound<EventObj>] {
     return [
-        ResourceSearchEngine<TeamObj>('team', {
+        ResourceSearchEngine<TeamObj>('teampub', {
             datumTokenizer: (x: TeamObj) => {
                 return [...x.team_number.toString().split(''), ...wsTokenizer(x.nickname)];
             },
@@ -147,7 +147,7 @@ function getTeamEventEngines(resultLimit: number, initializeNow: boolean = true)
                 transform: (x: ApiResponse<TeamObj>) => x.objects.map((o) => new TeamObj(o))
             }
         }),
-        ResourceSearchEngine<EventObj>('event', {
+        ResourceSearchEngine<EventObj>('eventpub', {
             datumTokenizer: (x: EventObj): string[] => {
                 let key = x.key;
                 let year = key.substr(0, 4);

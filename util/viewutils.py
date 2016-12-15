@@ -4,7 +4,7 @@ from typing import List, Mapping, Union, Any
 from django.http import QueryDict, HttpResponseNotAllowed
 from django.utils.decorators import available_attrs
 
-from util.templatestring import TemplateString
+from util.strutils import TemplateString
 
 def make_querydict_from_request(func):
     @wraps(func, assigned=available_attrs(func))

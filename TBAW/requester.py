@@ -5,7 +5,7 @@ import requests
 
 from TBAW.models import Team
 from util.getters import get_team
-from util.templatestring import TemplateString
+from util.strutils import TemplateString
 
 __api_key = {'X-TBA-App-Id': 'frs:frs:1'}
 __tba_url = 'https://www.thebluealliance.com/api/v2/'

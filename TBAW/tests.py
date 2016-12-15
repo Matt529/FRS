@@ -6,7 +6,7 @@ import requests_mock
 import requests
 
 from concurrent.futures import Future, ThreadPoolExecutor
-from util.templatestring import TemplateLike
+from util.strutils import TemplateLike
 
 import TBAW.resource_getter as resource_getter
 

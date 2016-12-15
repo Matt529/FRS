@@ -1,13 +1,47 @@
+from typing import Type
 from django.conf.urls import url
 
 from tastypie.resources import ModelResource, Resource
 from tastypie.utils import trailing_slash
 from haystack.query import SearchQuerySet
 
+from FRS.config.tba import urls as tba_urls
 from TBAW.models import Team, Event
 from util.viewutils import ajax_success
+from util.strutils import fqn, varnames_from_fmt
+
+class ViewableResource(object):
+    def __new__(cls: Type[Resource], *args, **kwargs):
+        if not hasattr(cls.Meta, 'frs_url'):
+            raise AttributeError("%s is a subclass of %s and must have frs_url* in _meta object." % (fqn(cls), fqn(ViewableResource)))
+        
+        setattr(cls.Meta, 'frs_url_varnames', varnames_from_fmt(getattr(cls.Meta, 'frs_url')))
+        
+        return super().__new__(cls, *args)
+    
+    @classmethod
+    def __get_varnames(cls):
+        return cls.Meta.frs_url_varnames
+
+    def dehydrate(self: Resource, bundle):
+        keyargs = {}
+        varnames = self.__get_varnames()
+        
+        for varname in varnames:
+            if varname not in bundle.data:
+                raise KeyError("'%s' is a required varname for the frs_url (%s) of %s, but is not available in the data bundle! Is the field available?" % (varname, self._meta.frs_url, fqn(self)))
+            keyargs[varname] = bundle.data[varname]
+        
+        bundle.data['frs_url'] = self._meta.frs_url.format(**keyargs)
+        return bundle
 
 class SearchableResource(object):
+    
+    def __new__(cls: Type[Resource], *args, **kwargs):
+        if not hasattr(cls.Meta, 'search_name'):
+            print("WARNING:\t%s is a subclass of %s and does not have a search_name in _meta. One will be generated." % (fqn(cls), fqn(SearchableResource)))
+        
+        return super().__new__(cls, *args)
     
     @staticmethod
     def __attempt_attr_get(fn, default=None):
@@ -16,8 +50,12 @@ class SearchableResource(object):
         except AttributeError:
             return default
     
+    @staticmethod
+    def get_search_urlname(res: Resource):
+        return SearchableResource.__attempt_attr_get(lambda: res._meta.search_name, '{}-search'.format(res._meta.resource_name))
+    
     def prepend_urls(self: Resource):
-        search_name = SearchableResource.__attempt_attr_get(lambda: self._meta.search_name, '{}-search'.format(self._meta.resource_name))
+        search_name = SearchableResource.get_search_urlname(self)
     
         return [
             url(r"^(?P<resource_name>%s)/search%s" % (self._meta.resource_name, trailing_slash()), self.wrap_view('_resource_search'), name=search_name),
@@ -57,11 +95,13 @@ class SearchableResource(object):
     def transform_search_results(self, results: SearchQuerySet):
         return results
 
-class TeamResource(SearchableResource, ModelResource):
+class TeamResource(SearchableResource, ViewableResource, ModelResource):
     class Meta:
         model_type = Team
+        frs_url = tba_urls.TEAMS().template
+        
         queryset = Team.objects.all()
-        resource_name = 'team'
+        resource_name = 'teampub'
         allowed_methods = ['get']
 
     def add_urls(self):
@@ -72,12 +112,14 @@ class TeamResource(SearchableResource, ModelResource):
 
     def transform_search_results(self, results):
         return results.order_by('team_number')
+    
 
-
-class EventResource(SearchableResource, ModelResource):
+class EventResource(SearchableResource, ViewableResource, ModelResource):
     class Meta:
         model_type = Event
         queryset = Event.objects.all()
-        resource_name = 'event'
+        frs_url = tba_urls.EVENTS().template
+        
+        resource_name = 'eventpub'
         allowed_methods = ['get']
     

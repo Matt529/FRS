@@ -40,6 +40,10 @@ const SCSS_LINT_SELECTS = [
     ignorePath(path.join(path.dirname(SASS_SRC), '_prefix-mixins.scss'))
 ];
 
+const JS_WEBPACK_SELECTS = [
+    ignorePath(path.join(path.dirname(JS_SRC), '*-analytics.js'))
+];
+
 const SASS_CLEAN_CSS = path.join(COMPILED_FRS_ROOT, 'css', '**', '*.css');  // Glob for cleaning compiled css files
 const SASS_CLEAN_MAP = path.join(COMPILED_FRS_ROOT, 'css', '**', '*.map');  // Glob for cleaning compiled .map files (sourcemaps)
 
@@ -102,7 +106,9 @@ function lintTypescript() {
 }
 
 function buildBundle() {
-    return gulp.src([TS_SRC])
+    select = gulpFilter(JS_WEBPACK_SELECTS);
+    return gulp.src([TS_SRC, JS_SRC])
+        .pipe(select)
         .pipe(gulpWebpack(require('./webpack.config.js'), require('webpack')))
         .pipe(gulp.dest(JS_OUT))
         .on('error', gutil.log);
@@ -118,7 +124,8 @@ function copyJavascript() {
 // Cleaning and Building can be run in parallel, but rebuilding requires cleaning be done before building
 var cleanJsAndTs = gulp.parallel(cleanTypescriptDefs, cleanJavascript);
 var cleanFn = gulp.parallel(cleanSass, cleanJsAndTs);
-var bundleFn = gulp.series(lintTypescript, buildBundle);
+var lintFn = gulp.parallel(lintTypescript);
+var bundleFn = gulp.series(lintFn, buildBundle);
 var buildFn = gulp.parallel(buildSass, copyJavascript, bundleFn);
 var rebuildFn = gulp.series(cleanFn, buildFn);
 

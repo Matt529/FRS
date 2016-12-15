@@ -1,5 +1,5 @@
 from django.test import TestCase
-from util.templatestring import TemplateString
+from util.strutils import TemplateString
 
 from util.atomics import AtomicVar
 

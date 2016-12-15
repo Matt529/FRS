@@ -2,7 +2,7 @@ from typing import Iterable
 from django.core.urlresolvers import reverse
 from django.db.models import Model, Count
 
-from util.templatestring import TemplateString
+from util.strutils import TemplateString
 from TBAW import models
 from TBAW.models import Team, Event, Match, Alliance, ScoringModel2016, ScoringModel2015, \
     RankingModel2016, RankingModel2015, RankingModel2014, RankingModel2013, RankingModel2012, RankingModel2011, \

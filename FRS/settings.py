@@ -15,33 +15,19 @@ import os
 
 from debug_toolbar.settings import PANELS_DEFAULTS
 from django.conf import settings
-from django.utils.crypto import get_random_string
 
-from decouple import config
-
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+import FRS.config as config
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-
-# Import secret key or generate new secret key
-try:
-    from .secret_key import *
-except ImportError:
-    # Generate Secret Key the same way django-admin's startproject does
-    SETTINGS_DIR = os.path.abspath(os.path.dirname(__file__))
-    SECRET_KEY_CHARS = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
-    with open(os.path.join(SETTINGS_DIR, 'secret_key.py'), 'w') as f:
-        f.write("SECRET_KEY = \"%s\"" % (get_random_string(50, SECRET_KEY_CHARS)))
-    from .secret_key import *
-
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+BASE_DIR = config.base.BASE_DIR.value               # type: str
+DEBUG = config.base.DEBUG.value                     # type: bool
+ALLOWED_HOSTS = config.base.ALLOWED_HOSTS.value     # type: list
+SECRET_KEY = config.security.SECRET_KEY.value       # type: str
 
 # Application definition
 
@@ -193,12 +179,12 @@ LEADERBOARD_COUNT = 200
 
 # For Elo/Trueskill system
 import trueskill
-DEFAULT_MU = 1500
-DEFAULT_SIGMA = DEFAULT_MU / 3
-DEFAULT_BETA = DEFAULT_SIGMA / 2
-DEFAULT_TAU = DEFAULT_SIGMA / 10
-DEFAULT_DRAW_PROBABILITY = 0.10
-ELO_DECAY_ALPHA = 0.45
+DEFAULT_MU = config.elo.MU.value
+DEFAULT_SIGMA = config.elo.SIGMA.value
+DEFAULT_BETA = config.elo.BETA.value
+DEFAULT_TAU = config.elo.TAU.value
+DEFAULT_DRAW_PROBABILITY = config.elo.DRAW_PROBABILITY.value
+ELO_DECAY_ALPHA = config.elo.DECAY_ALPHA.value
 trueskill.setup(mu=DEFAULT_MU, sigma=DEFAULT_SIGMA, beta=DEFAULT_BETA, tau=DEFAULT_TAU, draw_probability=DEFAULT_DRAW_PROBABILITY, backend="mpmath")
 
 # For model visualization at /plate/
@@ -241,19 +227,19 @@ INTERNAL_IPS = ('127.0.0.1',)
 # TBA Details
 
 TBA_API_HEADERS = {
-    'X-TBA-App-Id' : 'frs:frs:1'
+    'X-TBA-App-Id' : config.tba.APP_ID.value
 }
 
 # Haystack
 
-HAYSTACK_DEFAULT_OPERATOR = 'OR'
-HAYSTACK_FUZZY_MIN_SIM = 0.2
+HAYSTACK_DEFAULT_OPERATOR = config.haystack.OPERATOR.value
+HAYSTACK_FUZZY_MIN_SIM = config.haystack.FUZZY_MIN_SIM.value
 HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'haystack.backends.solr_backend.SolrEngine',
         'URL': 'http://127.0.0.1:8983/solr',
-        'TIMEOUT': 60*5,
-        'BATCH_SIZE': 2000,
+        'TIMEOUT': config.haystack.CONN_TIMEOUT.value,
+        'BATCH_SIZE': config.haystack.BATCH_SIZE.value,
         # ...or for multicore...
         # 'URL': 'http://127.0.0.1:8983/solr/mysite',
     },
