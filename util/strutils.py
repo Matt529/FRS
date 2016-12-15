@@ -94,6 +94,7 @@ def fqn(cls: Union[Type[Any], Any]):
     
 def varnames_from_fmt(fmt: TemplateLike):
     import _string
+    
     if isinstance(fmt, TemplateString):
         fmt = fmt.get_format_string()
     

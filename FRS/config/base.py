@@ -14,3 +14,5 @@ ALLOWED_HOSTS = {
 BASE_DIR = ConfigValue(BASE_DIR, condition=is_type(str))                                    # type: ConfigValue[str]
 DEBUG = ConfigValue(DEBUG, condition=is_type(bool))                                         # type: ConfigValue[bool]
 ALLOWED_HOSTS = ConfigValue(ALLOWED_HOSTS, condition=join(is_set, contained_type(str)))     # type: ConfigValue[Set[str]]
+
+LOGGING_DIR = ConfigValue(os.path.join(BASE_DIR.value, 'logs'), condition=is_type(str))     # type: ConfigValue[str]

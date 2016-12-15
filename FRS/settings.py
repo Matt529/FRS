@@ -61,7 +61,6 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE_CLASSES = [
-    'util.middlewares.ProcessExceptionMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -195,21 +194,56 @@ SPAGHETTI_SAUCE = {
 }
 
 # NPlusOne Logging
+LOGGING_DIR = config.base.LOGGING_DIR.value
 LOGGING = {
     'version': 1,
     'handlers': {
         'console': {
+            'level': 'DEBUG',
             'class': 'logging.StreamHandler'
+        },
+        'last_run': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(LOGGING_DIR, 'lastRun.log'),
+            'mode': 'w',
+            'maxBytes': 10*1024,
+            'backupCount': 1,
+            'delay': True
+        },
+        'requests': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'filename': os.path.join(LOGGING_DIR, 'requests.log'),
+            'when': 'D',
+            'backupCount': 5,
+            'utc': True
         },
     },
     'loggers': {
-        'nplusone': {
-            'handlers': ['console'],
+        'nplusone': {                   # Log Potential N + 1 Errors
+            'handlers': ['console', 'last_run'],
             'level': 'WARN',
+        },
+        'django.request': {             # Log stack traces (Including 500 errors)
+            'handlers': ['console', 'requests', 'last_run'],
+            'propagate': True,
+            'level': 'DEBUG',
+        },
+        'django': {
+            'handlers': ['console', 'last_run'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+        },
+        'frs.api': {
+            'handlers': [],
+            'level': 'DEBUG'
+        },
+        'frs.commands': {
+            'handlers': [],
+            'level': 'DEBUG'
         },
     },
 }
-LOGGING.update(settings.LOGGING)
 
 NPLUSONE_LOGGER = logging.getLogger('nplusone')
 NPLUSONE_LOG_LEVEL = logging.WARN
@@ -240,7 +274,5 @@ HAYSTACK_CONNECTIONS = {
         'URL': 'http://127.0.0.1:8983/solr',
         'TIMEOUT': config.haystack.CONN_TIMEOUT.value,
         'BATCH_SIZE': config.haystack.BATCH_SIZE.value,
-        # ...or for multicore...
-        # 'URL': 'http://127.0.0.1:8983/solr/mysite',
     },
 }
