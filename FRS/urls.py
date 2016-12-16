@@ -2,13 +2,13 @@ from django.conf.urls import url, include
 from django.conf import settings
 from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-from tastypie.api import Api
 from dashing.utils import router as dashing_routes
 
 from FRS import views
+from api import FRSApi
 from api.resources import TeamResource, EventResource
 
-api_v1 = Api(api_name='v1')
+api_v1 = FRSApi(api_name='v1')
 api_v1.register(TeamResource())
 api_v1.register(EventResource())
 

@@ -5,10 +5,15 @@ from tastypie.resources import ModelResource, Resource
 from tastypie.utils import trailing_slash
 from haystack.query import SearchQuerySet
 
+import logging
+
 from FRS.config.tba import urls as tba_urls
+from FRS.config.api import names as resnames
 from TBAW.models import Team, Event
 from util.viewutils import ajax_success
 from util.strutils import fqn, varnames_from_fmt
+
+logger = logging.getLogger("django")
 
 class ViewableResource(object):
     def __new__(cls: Type[Resource], *args, **kwargs):
@@ -39,7 +44,7 @@ class SearchableResource(object):
     
     def __new__(cls: Type[Resource], *args, **kwargs):
         if not hasattr(cls.Meta, 'search_name'):
-            print("WARNING:\t%s is a subclass of %s and does not have a search_name in _meta. One will be generated." % (fqn(cls), fqn(SearchableResource)))
+            logger.warn("WARNING:\t%s is a subclass of %s and does not have a search_name in _meta. One will be generated." % (fqn(cls), fqn(SearchableResource)))
         
         return super().__new__(cls, *args)
     
@@ -101,7 +106,7 @@ class TeamResource(SearchableResource, ViewableResource, ModelResource):
         frs_url = tba_urls.TEAMS().template
         
         queryset = Team.objects.all()
-        resource_name = 'teampub'
+        resource_name = resnames.PUBLIC_TEAMS()
         allowed_methods = ['get']
 
     def add_urls(self):
@@ -120,6 +125,6 @@ class EventResource(SearchableResource, ViewableResource, ModelResource):
         queryset = Event.objects.all()
         frs_url = tba_urls.EVENTS().template
         
-        resource_name = 'eventpub'
+        resource_name = resnames.PUBLIC_EVENTS()
         allowed_methods = ['get']
     

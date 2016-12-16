@@ -16,7 +16,7 @@ import os
 from debug_toolbar.settings import PANELS_DEFAULTS
 from django.conf import settings
 
-import FRS.config as config
+from FRS.config import base, trueskill as elo, tba, haystack, security
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
@@ -24,10 +24,10 @@ import FRS.config as config
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECURITY WARNING: don't run with debug turned on in production!
 
-BASE_DIR = config.base.BASE_DIR.value               # type: str
-DEBUG = config.base.DEBUG.value                     # type: bool
-ALLOWED_HOSTS = config.base.ALLOWED_HOSTS.value     # type: list
-SECRET_KEY = config.security.SECRET_KEY.value       # type: str
+BASE_DIR = base.BASE_DIR.value               # type: str
+DEBUG = base.DEBUG.value                     # type: bool
+ALLOWED_HOSTS = base.ALLOWED_HOSTS.value     # type: list
+SECRET_KEY = security.SECRET_KEY.value       # type: str
 
 # Application definition
 
@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'haystack',
     'FRS',
     'TBAW',
+    'api',
     'util',
     'leaderboard',
     'leaderboard2',
@@ -178,12 +179,12 @@ LEADERBOARD_COUNT = 200
 
 # For Elo/Trueskill system
 import trueskill
-DEFAULT_MU = config.elo.MU.value
-DEFAULT_SIGMA = config.elo.SIGMA.value
-DEFAULT_BETA = config.elo.BETA.value
-DEFAULT_TAU = config.elo.TAU.value
-DEFAULT_DRAW_PROBABILITY = config.elo.DRAW_PROBABILITY.value
-ELO_DECAY_ALPHA = config.elo.DECAY_ALPHA.value
+DEFAULT_MU = elo.MU.value
+DEFAULT_SIGMA = elo.SIGMA.value
+DEFAULT_BETA = elo.BETA.value
+DEFAULT_TAU = elo.TAU.value
+DEFAULT_DRAW_PROBABILITY = elo.DRAW_PROBABILITY.value
+ELO_DECAY_ALPHA = elo.DECAY_ALPHA.value
 trueskill.setup(mu=DEFAULT_MU, sigma=DEFAULT_SIGMA, beta=DEFAULT_BETA, tau=DEFAULT_TAU, draw_probability=DEFAULT_DRAW_PROBABILITY, backend="mpmath")
 
 # For model visualization at /plate/
@@ -194,7 +195,7 @@ SPAGHETTI_SAUCE = {
 }
 
 # NPlusOne Logging
-LOGGING_DIR = config.base.LOGGING_DIR.value
+LOGGING_DIR = base.LOGGING_DIR.value
 LOGGING = {
     'version': 1,
     'handlers': {
@@ -207,7 +208,7 @@ LOGGING = {
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': os.path.join(LOGGING_DIR, 'lastRun.log'),
             'mode': 'w',
-            'maxBytes': 10*1024,
+            'maxBytes': 10*1024*1024,
             'backupCount': 1,
             'delay': True
         },
@@ -261,18 +262,18 @@ INTERNAL_IPS = ('127.0.0.1',)
 # TBA Details
 
 TBA_API_HEADERS = {
-    'X-TBA-App-Id' : config.tba.APP_ID.value
+    'X-TBA-App-Id' : tba.APP_ID.value
 }
 
 # Haystack
 
-HAYSTACK_DEFAULT_OPERATOR = config.haystack.OPERATOR.value
-HAYSTACK_FUZZY_MIN_SIM = config.haystack.FUZZY_MIN_SIM.value
+HAYSTACK_DEFAULT_OPERATOR = haystack.OPERATOR.value
+HAYSTACK_FUZZY_MIN_SIM = haystack.FUZZY_MIN_SIM.value
 HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'haystack.backends.solr_backend.SolrEngine',
         'URL': 'http://127.0.0.1:8983/solr',
-        'TIMEOUT': config.haystack.CONN_TIMEOUT.value,
-        'BATCH_SIZE': config.haystack.BATCH_SIZE.value,
+        'TIMEOUT': haystack.CONN_TIMEOUT.value,
+        'BATCH_SIZE': haystack.BATCH_SIZE.value,
     },
 }

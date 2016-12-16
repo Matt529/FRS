@@ -1,6 +1,6 @@
 from typing import Dict
 
-from config._cfg import ConfigValue, is_type
+from FRS.config._cfg import ConfigValue, is_type
 from util.strutils import TemplateLike, varnames_from_fmt, TemplateString
 
 class TbawUrlDefinition(object):

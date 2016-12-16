@@ -4,7 +4,7 @@ from funcy.types import is_set
 
 import os
 
-BASE_DIR = os.path.abspath(__file__ + '/../../../')
+BASE_DIR = os.path.abspath(os.path.dirname(__file__) + '/../../')
 DEBUG = True
 
 ALLOWED_HOSTS = {
