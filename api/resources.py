@@ -104,6 +104,7 @@ class TeamResource(SearchableResource, ViewableResource, ModelResource):
     class Meta:
         model_type = Team
         frs_url = tba_urls.TEAMS().template
+        generate_clientside_interface = True
         
         queryset = Team.objects.all()
         resource_name = resnames.PUBLIC_TEAMS()
@@ -124,6 +125,7 @@ class EventResource(SearchableResource, ViewableResource, ModelResource):
         model_type = Event
         queryset = Event.objects.all()
         frs_url = tba_urls.EVENTS().template
+        generate_clientside_interface = False
         
         resource_name = resnames.PUBLIC_EVENTS()
         allowed_methods = ['get']

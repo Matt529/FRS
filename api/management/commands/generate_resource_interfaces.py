@@ -3,7 +3,7 @@ from django.core.management.base import BaseCommand
 from FRS.config._cfg import ConfigValue
 from FRS.config.api import names as resnames
 
-from funcy.funcs import map, partial
+from funcy.funcs import map, partial, rpartial
 from funcy.types import isa
 from funcy.colls import select
 
@@ -11,11 +11,18 @@ from util.strutils import fqn
 
 import api
 
-to_cv_values = partial(map, lambda cv: cv.value)
-select_config = partial(select, isa(ConfigValue))
+META_IDENTIFIER_NAME = 'generate_clientside_interface'
 
 def resource_transformer(api_obj):
     return partial(map, api_obj.canonical_resource_for)
+
+to_cv_values = partial(map, lambda cv: cv.value)
+select_config = partial(select, isa(ConfigValue))
+is_class = isa(type)
+
+get_correct_meta = lambda o: o.Meta if is_class(o) else o._meta
+is_marked = lambda o: (lambda x: hasattr(x, META_IDENTIFIER_NAME) and getattr(x, META_IDENTIFIER_NAME))(get_correct_meta(o))
+select_with_identifier = partial(select, is_marked)
 
 class Command(BaseCommand):
     
@@ -26,9 +33,13 @@ class Command(BaseCommand):
         api_name = options.pop('api_name')
 
         frsapi = api.FRSApi.get_instance(api_name)
-        resources = resource_transformer(frsapi)(to_cv_values(select_config([*resnames.__dict__.values()])))
-        resource_fqns = map(fqn, resources)
+        possible_resources = resource_transformer(frsapi)(to_cv_values(select_config([*resnames.__dict__.values()])))
+        resources = select_with_identifier(possible_resources)
+
+        difference = select(lambda x: x not in resources, possible_resources)
+        if len(difference) > 0:
+            print("Skipping %s since the %s meta flag is either missing or false." % (map(fqn, difference), META_IDENTIFIER_NAME))
         
-        print("Performing Interface Generation for %s" % (', '.join(resource_fqns)))
+        print("Performing Interface Generation for %s" % (', '.join(map(fqn, resources))))
         
         

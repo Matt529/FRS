@@ -1,4 +1,4 @@
-from typing import List
+from typing import Set
 from weakref import WeakValueDictionary
 
 from tastypie.api import NamespacedApi
@@ -13,8 +13,8 @@ class FRSApi(NamespacedApi):
         self.__class__._refs[api_name] = self
         
     @classmethod
-    def get_instances(cls) -> List[NamespacedApi]:
-        return [*cls._refs.values()]
+    def get_instances(cls) -> Set[NamespacedApi]:
+        return {*cls._refs.values()}
     
     @classmethod
     def get_instance(cls, api_name: str) -> NamespacedApi:
