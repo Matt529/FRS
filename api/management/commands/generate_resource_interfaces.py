@@ -6,6 +6,7 @@ from FRS.config.api import names as resnames
 from funcy.funcs import map, partial, rpartial
 from funcy.types import isa
 from funcy.colls import select
+from funcy.strings import str_join
 
 from util.strutils import fqn
 
@@ -23,6 +24,8 @@ is_class = isa(type)
 get_correct_meta = lambda o: o.Meta if is_class(o) else o._meta
 is_marked = lambda o: (lambda x: hasattr(x, META_IDENTIFIER_NAME) and getattr(x, META_IDENTIFIER_NAME))(get_correct_meta(o))
 select_with_identifier = partial(select, is_marked)
+to_fqns = partial(map, fqn)
+commas = partial(str_join, ', ')
 
 class Command(BaseCommand):
     
@@ -33,13 +36,18 @@ class Command(BaseCommand):
         api_name = options.pop('api_name')
 
         frsapi = api.FRSApi.get_instance(api_name)
+        
+        # Get all Resources known at configuration
         possible_resources = resource_transformer(frsapi)(to_cv_values(select_config([*resnames.__dict__.values()])))
+        
+        # Get Resources marked as 'generatable' with the meta flag existing and set to True
         resources = select_with_identifier(possible_resources)
+
 
         difference = select(lambda x: x not in resources, possible_resources)
         if len(difference) > 0:
-            print("Skipping %s since the %s meta flag is either missing or false." % (map(fqn, difference), META_IDENTIFIER_NAME))
+            print("Skipping %s since their %s meta flag is either missing or false." % (commas(to_fqns(difference)), META_IDENTIFIER_NAME))
         
-        print("Performing Interface Generation for %s" % (', '.join(map(fqn, resources))))
+        print("Performing Interface Generation for %s" % (commas(to_fqns(resources))))
         
         
