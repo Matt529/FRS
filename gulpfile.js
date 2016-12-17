@@ -147,7 +147,7 @@ function copyJavascript() {
 var cleanJsAndTs = gulp.parallel(cleanTypescriptDefs, cleanJavascript);
 var cleanFn = gulp.parallel(cleanSass, cleanJsAndTs);
 var lintFn = gulp.parallel(lintTypescript);
-var bundleFn = gulp.series(lintFn, generateResourceInterfaces, buildBundle);
+var bundleFn = gulp.series(lintFn, buildBundle);
 var buildFn = gulp.parallel(buildSass, copyJavascript, bundleFn);
 var rebuildFn = gulp.series(cleanFn, buildFn);
 
