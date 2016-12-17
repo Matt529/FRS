@@ -1,111 +1,36 @@
 export interface PublicTeam {
-  /**
-   * Floating point numeric data. Ex: 26.73
-   */
-  elo_mu?: number;
-  /**
-   * Equivalent of TypeScript Array types. A collection of homogeneous or heterogeneous data.
-   */
-  active_years?: string[];
-  /**
-   * Unicode string data. Ex: "Hello World"
-   */
-  country_name: string;
-  /**
-   * Integer data. Ex: 2673
-   */
+  awards_count?: number;
   team_number?: number;
-  /**
-   * Unicode string data. Ex: "Hello World"
-   */
-  locality: string;
-  /**
-   * Integer data. Ex: 2673
-   */
-  longest_event_winstreak?: number;
-  /**
-   * Unicode string data. Ex: "Hello World"
-   */
-  key?: string;
-  /**
-   * Unicode string data. Ex: "Hello World"
-   */
+  rookie_year: number;
   location: string;
   /**
-   * Integer data. Ex: 2673
+   * A list of the years a team was active
    */
-  rookie_year: number;
-  /**
-   * Unicode string data. Ex: "Hello World"
-   */
-  nickname: string;
-  /**
-   * Unicode string data. Ex: "Hello World"
-   */
-  name: string;
-  /**
-   * Integer data. Ex: 2673
-   */
+  active_years?: number[];
+  longest_event_winstreak?: number;
   match_wins_count?: number;
-  /**
-   * Unicode string data. Ex: "Hello World"
-   */
-  motto: string;
-  /**
-   * Floating point numeric data. Ex: 26.73
-   */
-  event_winrate?: number;
-  /**
-   * Integer data. Ex: 2673
-   */
-  active_event_winstreak?: number;
-  /**
-   * Integer data. Ex: 2673
-   */
-  awards_count?: number;
-  /**
-   * Unicode string data. Ex: "Hello World"
-   */
-  region: string;
-  /**
-   * Unicode string data. Ex: "Hello World"
-   */
-  website: string;
-  /**
-   * Unicode string data. Ex: "Hello World"
-   */
-  resource_uri?: string;
-  /**
-   * Floating point numeric data. Ex: 26.73
-   */
-  elo_sigma?: number;
-  /**
-   * Integer data. Ex: 2673
-   */
-  event_attended_count?: number;
-  /**
-   * Integer data. Ex: 2673
-   */
-  blue_banners_count?: number;
-  /**
-   * Integer data. Ex: 2673
-   */
-  id: number;
-  /**
-   * Integer data. Ex: 2673
-   */
   match_losses_count?: number;
-  /**
-   * Integer data. Ex: 2673
-   */
-  match_ties_count?: number;
-  /**
-   * Integer data. Ex: 2673
-   */
   event_wins_count?: number;
   /**
-   * Floating point numeric data. Ex: 26.73
+   * Team website
    */
+  website: string;
+  blue_banners_count?: number;
+  name: string;
   match_winrate?: number;
+  elo_mu?: number;
+  match_ties_count?: number;
+  region: string;
+  key?: string;
+  country_name: string;
+  id: number;
+  event_winrate?: number;
+  active_event_winstreak?: number;
+  motto: string;
+  nickname: string;
+  resource_uri?: string;
+  locality: string;
+  elo_sigma?: number;
+  event_attended_count?: number;
   [k: string]: any;
 }

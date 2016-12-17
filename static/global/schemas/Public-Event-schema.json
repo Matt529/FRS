@@ -3,79 +3,79 @@
     "title": "PublicEvent",
     "type": "object",
     "properties": {
+        "year": {
+            "description": "",
+            "type": "integer"
+        },
         "event_code": {
-            "type": "string",
-            "description": "Unicode string data. Ex: \"Hello World\""
-        },
-        "event_type": {
-            "type": "integer",
-            "description": "Integer data. Ex: 2673"
-        },
-        "short_name": {
-            "type": "string",
-            "description": "Unicode string data. Ex: \"Hello World\""
-        },
-        "website": {
-            "type": "string",
-            "description": "Unicode string data. Ex: \"Hello World\""
-        },
-        "name": {
-            "type": "string",
-            "description": "Unicode string data. Ex: \"Hello World\""
-        },
-        "resource_uri": {
-            "type": "string",
-            "description": "Unicode string data. Ex: \"Hello World\""
-        },
-        "location": {
-            "type": "string",
-            "description": "Unicode string data. Ex: \"Hello World\""
-        },
-        "timezone": {
-            "type": "string",
-            "description": "Unicode string data. Ex: \"Hello World\""
-        },
-        "venue_address": {
-            "default": "",
-            "type": "string",
-            "description": "Unicode string data. Ex: \"Hello World\""
-        },
-        "end_date": {
-            "type": "date",
-            "description": "A date as a string. Ex: \"2010-11-10\""
+            "description": "",
+            "type": "string"
         },
         "event_district": {
-            "type": "integer",
-            "description": "Integer data. Ex: 2673"
+            "description": "",
+            "type": "integer"
         },
-        "id": {
-            "default": "",
-            "type": "integer",
-            "description": "Integer data. Ex: 2673"
+        "timezone": {
+            "description": "",
+            "type": "string"
+        },
+        "location": {
+            "description": "",
+            "type": "string"
         },
         "official": {
+            "description": "",
             "default": "",
-            "type": "boolean",
-            "description": "Boolean data. Ex: True"
-        },
-        "year": {
-            "type": "integer",
-            "description": "Integer data. Ex: 2673"
+            "type": "boolean"
         },
         "key": {
-            "type": "string",
-            "description": "Unicode string data. Ex: \"Hello World\""
+            "description": "",
+            "type": "string"
+        },
+        "short_name": {
+            "description": "",
+            "type": "string"
+        },
+        "id": {
+            "description": "",
+            "default": "",
+            "type": "integer"
+        },
+        "venue_address": {
+            "description": "",
+            "default": "",
+            "type": "string"
+        },
+        "resource_uri": {
+            "description": "",
+            "type": "string"
+        },
+        "event_type": {
+            "description": "",
+            "type": "integer"
+        },
+        "name": {
+            "description": "",
+            "type": "string"
+        },
+        "website": {
+            "description": "",
+            "type": "string"
+        },
+        "end_date": {
+            "description": "",
+            "type": "date"
         }
     },
     "required": [
         "id",
-        "event_type",
-        "short_name",
-        "website",
-        "location",
+        "event_district",
         "timezone",
+        "location",
+        "short_name",
         "venue_address",
-        "end_date",
-        "event_district"
+        "event_type",
+        "website",
+        "end_date"
     ]
 }

@@ -13,6 +13,12 @@ from util.mathutils import solve_linear_least_squares, create_matrix, create_2d_
 
 
 class Team(MySqlModel):
+    """
+    Attributes:
+    :attr active_years {@set[int]}: A list of the years a team was active
+    :attr website {@string}: Team website
+    """
+    
     active_years = SetCharField(base_field=models.IntegerField(), max_length=255, default=set())
 
     website = models.URLField(null=True)
@@ -29,7 +35,8 @@ class Team(MySqlModel):
     rookie_year = models.PositiveSmallIntegerField(null=True)
     motto = models.TextField(null=True)
 
-    # Modeled after TrueSkill, which is a Gaussian distribution with mu=DEFAULT_ME and sigma=DEFAULT_SIGMA.
+    # TrueSkill distribution, which is a model of player skill which assumes a Gaussian distribution with
+    # an initial estimate (mean mu, player is assumed to be of average skill) and confidence (standard deviation sigma).
     elo_mu = models.FloatField(default=settings.DEFAULT_MU)
     elo_sigma = models.FloatField(default=settings.DEFAULT_SIGMA)
 
