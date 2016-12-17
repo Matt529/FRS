@@ -2,9 +2,8 @@
  * Created by Matthew Crocco on 12/10/2016.
  */
 
-// -- Interface Definitions
 
-import UrlProvider from './urls_manager';
+import {ApiObj, PublicTeam, PublicEvent, ApiResponse} from './resource/resources';
 
 import * as _ from 'lodash';
 import * as pluralize from 'pluralize';
@@ -12,49 +11,6 @@ import * as Bloodhound from 'corejs-typeahead/dist/bloodhound.js';
 
 type RemoteOptions<T> = Bloodhound.RemoteOptions<T>;
 type Templates<T> = Twitter.Typeahead.Templates<T>;
-
-// TODO replace with a better API interface
-interface ApiObj {
-    id: number;
-    url_name: string;
-}
-
-class TeamObj implements ApiObj {
-    id: number;
-    team_number: number;
-    name: string;
-    key: string;
-    nickname: string;
-    url_name: string = 'team_view';
-    
-    constructor(object: TeamObj) {
-        this.id = object.id;
-        this.team_number = object.team_number;
-        this.name = object.name;
-        this.key = object.key;
-        this.nickname = object.nickname;
-    }
-    
-}
-
-class EventObj implements ApiObj {
-    id: number;
-    key: string;
-    name: string;
-    short_name: string;
-    url_name: string = 'event_view';
-    
-    constructor(object: EventObj) {
-        this.id = object.id;
-        this.name = object.name;
-        this.key = object.key;
-        this.short_name = object.short_name;
-    }
-}
-
-interface ApiResponse<T extends ApiObj> {
-    objects: T[];
-}
 
 interface InitOptions {
     resultLimit: number;
@@ -134,21 +90,21 @@ function ResourceDataset<T extends ApiObj>(resourceName: string, opts: ResourceD
     };
 }
 
-function getTeamEventEngines(resultLimit: number, initializeNow: boolean = true): [Bloodhound<TeamObj>, Bloodhound<EventObj>] {
+function getTeamEventEngines(resultLimit: number, initializeNow: boolean = true): [Bloodhound<PublicTeam>, Bloodhound<PublicEvent>] {
     return [
-        ResourceSearchEngine<TeamObj>('teampub', {
-            datumTokenizer: (x: TeamObj) => {
+        ResourceSearchEngine<PublicTeam>('teampub', {
+            datumTokenizer: (x: PublicTeam) => {
                 return [...x.team_number.toString().split(''), ...wsTokenizer(x.nickname)];
             },
             queryTokenizer: wsTokenizer,
             resultLimit,
             initializeNow,
             remote: {
-                transform: (x: ApiResponse<TeamObj>) => x.objects.map((o) => new TeamObj(o))
+                transform: (x: ApiResponse<PublicTeam>) => x.objects
             }
         }),
-        ResourceSearchEngine<EventObj>('eventpub', {
-            datumTokenizer: (x: EventObj): string[] => {
+        ResourceSearchEngine<PublicEvent>('eventpub', {
+            datumTokenizer: (x: PublicEvent): string[] => {
                 let key = x.key;
                 let year = key.substr(0, 4);
                 return [...year.split(''), year, x.short_name, key, ...wsTokenizer(x.name)];
@@ -157,7 +113,7 @@ function getTeamEventEngines(resultLimit: number, initializeNow: boolean = true)
             resultLimit,
             initializeNow,
             remote: {
-                transform: (x: ApiResponse<EventObj>) => x.objects.map((o) => new EventObj(o))
+                transform: (x: ApiResponse<PublicEvent>) => x.objects
             }
         })
     ];
@@ -198,30 +154,17 @@ function initializeTeamEventSearch(options: InitOptions) {
             ResourceDataset('team', {
                 engine: teamEngine,
                 displayLimit: 10,
-                display: (x: TeamObj) => {
+                display: (x: PublicTeam) => {
                     const num = x.team_number.toString().trim();
                     return `${_.padStart(num, 4, '\u00A0')} \u2015 ${x.nickname ? x.nickname : x.name ? x.name : x.key}`;
                 }
             }), ResourceDataset('event', {
                 engine: eventEngine,
                 displayLimit: 5,
-                display: (x: EventObj) => `${_.padEnd(x.key.substr(0, 4), 4, '\u00A0')} \u2015 ${_.pad(x.key.substr(4), 5, '\u00A0')} \u2015 ${x.name}`
+                display: (x: PublicEvent) => `${_.padEnd(x.key.substr(0, 4), 4, '\u00A0')} \u2015 ${_.pad(x.key.substr(4), 5, '\u00A0')} \u2015 ${x.name}`
             })
         ]
-    })).bind('typeahead:select', <any>((jqeObj: JQueryEventObject, suggestion: TeamObj | EventObj) => {
-        const urlMaybe = UrlProvider.getUrlByName(suggestion.url_name);
-        if(urlMaybe.exists()) {
-            jq.prop('disabled', true);
-            const url = urlMaybe.get();
-            if (suggestion instanceof TeamObj) {
-                url.goto(suggestion.team_number);
-            } else {
-                url.goto(suggestion.key);
-            }
-        } else {
-            console.error(`Url with name ${suggestion.url_name} does not exist!`);
-        }
-    }));
+    })).bind('typeahead:select', <any>((jqeObj: JQueryEventObject, suggestion: ApiObj) => window.location.replace(suggestion.frs_url)));
 }
 
 export {

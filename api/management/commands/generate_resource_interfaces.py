@@ -23,6 +23,7 @@ from funcy.strings import str_join
 from util.strutils import fqn
 
 import api
+from api.resources import ViewableResource
 
 META_IDENTIFIER_NAME = 'generate_clientside_interface'
 META_SCHEMA_NAME = 'clientside_schema_name'
@@ -248,6 +249,14 @@ class Command(BaseCommand):
             p['items'][type_key] = p[type_key]
             p[type_key] = 'array'
         
+        if isinstance(resource, ViewableResource):
+            fields['frs_url'] = {
+                type_key: TYPE_OVERRIDES['str'],
+                description_key: 'URL redirecting to a viewable page of this resource.',
+            }
+            
+            required.append('frs_url')
+        
         return OrderedDict([
             ('_comments', OUTPUT_COMMENT),
             ('title', title),
@@ -294,7 +303,8 @@ class Command(BaseCommand):
                             type_override = '%s[%s]' % (arr_type, type_override)
                             overrides = ['%s[%s]' % (arr_type, o) for o in overrides]
                         print("WARNING:\tDocstring with type override found for %s, but the type is not a valid type "
-                              "override (Was given '%s' but must be one of %s). Assuming type override of '%s'." % (varname, type_override, overrides, DEFAULT_TYPE_OVERRIDE))
+                              "override (Was given '%s' but must be one of %s). Assuming type override of '%s'." %
+                              (varname, type_override, overrides, DEFAULT_TYPE_OVERRIDE))
                 
                 vardocs[varname] = field_desc
         return vardocs

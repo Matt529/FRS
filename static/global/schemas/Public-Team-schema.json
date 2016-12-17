@@ -3,144 +3,41 @@
     "title": "PublicTeam",
     "type": "object",
     "properties": {
-        "awards_count": {
-            "description": "",
-            "default": 0,
-            "type": "integer"
-        },
         "team_number": {
-            "description": "",
-            "type": "integer"
-        },
-        "rookie_year": {
-            "description": "",
-            "type": "integer"
-        },
-        "location": {
-            "description": "",
-            "type": "string"
-        },
-        "active_years": {
-            "description": "A list of the years a team was active",
-            "items": {
-                "type": "integer"
-            },
-            "type": "array"
-        },
-        "longest_event_winstreak": {
-            "description": "",
-            "default": 0,
-            "type": "integer"
-        },
-        "match_wins_count": {
-            "description": "",
-            "default": 0,
-            "type": "integer"
-        },
-        "match_losses_count": {
-            "description": "",
-            "default": 0,
-            "type": "integer"
-        },
-        "event_wins_count": {
-            "description": "",
-            "default": 0,
-            "type": "integer"
-        },
-        "website": {
-            "description": "Team website",
-            "type": "string"
-        },
-        "blue_banners_count": {
-            "description": "",
-            "default": 0,
-            "type": "integer"
-        },
-        "name": {
-            "description": "",
-            "default": "",
-            "type": "string"
-        },
-        "match_winrate": {
-            "description": "",
-            "default": 0.0,
-            "type": "number"
-        },
-        "elo_mu": {
-            "description": "",
-            "default": 1500,
-            "type": "number"
-        },
-        "match_ties_count": {
-            "description": "",
-            "default": 0,
-            "type": "integer"
-        },
-        "region": {
-            "description": "",
-            "type": "string"
-        },
-        "key": {
-            "description": "",
-            "type": "string"
-        },
-        "country_name": {
-            "description": "",
-            "type": "string"
+            "type": "integer",
+            "description": "FRC assigned team number"
         },
         "id": {
-            "description": "",
-            "default": "",
-            "type": "integer"
-        },
-        "event_winrate": {
-            "description": "",
-            "default": 0.0,
-            "type": "number"
-        },
-        "active_event_winstreak": {
-            "description": "",
-            "default": 0,
-            "type": "integer"
-        },
-        "motto": {
-            "description": "",
-            "default": "",
-            "type": "string"
-        },
-        "nickname": {
-            "description": "",
-            "type": "string"
+            "type": "integer",
+            "description": "Unique team id, always equal to the team_number.",
+            "default": ""
         },
         "resource_uri": {
-            "description": "",
-            "type": "string"
+            "type": "string",
+            "description": ""
         },
-        "locality": {
-            "description": "",
-            "type": "string"
+        "key": {
+            "type": "string",
+            "description": "Most specific team name, simply frc#### where #### is the team number"
         },
-        "elo_sigma": {
-            "description": "",
-            "default": 500.0,
-            "type": "number"
+        "name": {
+            "type": "string",
+            "description": "Long FRC Team Name (note, this can be VERY long, short_name or nickname is recommended)",
+            "default": ""
         },
-        "event_attended_count": {
-            "description": "",
-            "default": 0,
-            "type": "integer"
+        "nickname": {
+            "type": "string",
+            "description": "Team Nickname, e.g. Shaker Robotics or Cheesy Poofs"
+        },
+        "frs_url": {
+            "type": "string",
+            "description": "URL redirecting to a viewable page of this resource."
         }
     },
     "required": [
         "id",
-        "rookie_year",
-        "location",
-        "website",
         "name",
-        "region",
-        "country_name",
-        "motto",
         "nickname",
-        "locality"
+        "frs_url"
     ]
 }

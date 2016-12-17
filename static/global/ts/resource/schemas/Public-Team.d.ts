@@ -1,36 +1,28 @@
 export interface PublicTeam {
-  awards_count?: number;
+  /**
+   * FRC assigned team number
+   */
   team_number?: number;
-  rookie_year: number;
-  location: string;
   /**
-   * A list of the years a team was active
+   * Unique team id, always equal to the team_number.
    */
-  active_years?: number[];
-  longest_event_winstreak?: number;
-  match_wins_count?: number;
-  match_losses_count?: number;
-  event_wins_count?: number;
-  /**
-   * Team website
-   */
-  website: string;
-  blue_banners_count?: number;
-  name: string;
-  match_winrate?: number;
-  elo_mu?: number;
-  match_ties_count?: number;
-  region: string;
-  key?: string;
-  country_name: string;
   id: number;
-  event_winrate?: number;
-  active_event_winstreak?: number;
-  motto: string;
-  nickname: string;
   resource_uri?: string;
-  locality: string;
-  elo_sigma?: number;
-  event_attended_count?: number;
+  /**
+   * Most specific team name, simply frc#### where #### is the team number
+   */
+  key?: string;
+  /**
+   * Long FRC Team Name (note, this can be VERY long, short_name or nickname is recommended)
+   */
+  name: string;
+  /**
+   * Team Nickname, e.g. Shaker Robotics or Cheesy Poofs
+   */
+  nickname: string;
+  /**
+   * URL redirecting to a viewable page of this resource.
+   */
+  frs_url: string;
   [k: string]: any;
 }

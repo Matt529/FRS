@@ -1,5 +1,5 @@
 from collections import OrderedDict
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Set
 
 from bulk_update.manager import BulkUpdateManager
 from django.conf import settings
@@ -8,15 +8,21 @@ from django.db.models.query import QuerySet
 
 from django_mysql.models import Model as MySqlModel, SetCharField
 
-from FRS.settings import SUPPORTED_YEARS
 from util.mathutils import solve_linear_least_squares, create_matrix, create_2d_vector
 
 
 class Team(MySqlModel):
     """
     Attributes:
-    :attr active_years {@set[int]}: A list of the years a team was active
-    :attr website {@string}: Team website
+        
+    :attr id: Unique team id, always equal to the team_number.
+    :attr active_years {@set[int]}: A set of years that the team has been active (in commission, not participated)
+    :attr website {@string}: URL for the team website
+    :attr team_number: FRC assigned team number
+    :attr name: Long FRC Team Name (note, this can be VERY long, short_name or nickname is recommended)
+    :attr short_name: Short FRC Team Name (often the more wel
+    :attr nickname: Team Nickname, e.g. Shaker Robotics or Cheesy Poofs
+    :attr key: Most specific team name, simply frc#### where #### is the team number
     """
     
     active_years = SetCharField(base_field=models.IntegerField(), max_length=255, default=set())
@@ -169,6 +175,14 @@ class Alliance(MySqlModel):
 
 
 class Event(MySqlModel):
+    """
+    
+    :attr id: Unique database id
+    :attr key: Unique event key, often of the form ###w where #### is the year and w is the event code
+    :attr name: Full event name (e.g. Finger Lakes Regional)
+    :attr short_name: Shortened event name (e.g. Finger Lakes)
+    :attr event_code: Unique event code (e.g. iri for Indiana Robotics Invitational)
+    """
     key = models.CharField(max_length=10, unique=True)  # e.g. 2016cmp
     name = models.CharField(max_length=100)  # e.g. Finger Lakes Regional
     short_name = models.CharField(null=True, max_length=50)  # e.g. Finger Lakes
@@ -244,7 +258,7 @@ class Event(MySqlModel):
 
         matches = Match.objects.prefetch_related('red_alliance__teams', 'blue_alliance__teams') \
             .select_related('scoring_model').filter(event=self, comp_level='qm')
-        teams = set(Team.objects.filter(event=self).all())
+        teams = set(Team.objects.filter(event=self).all())      # type: Set[Team]
 
         # Populate Score Vector
         s_vector = []
@@ -288,7 +302,8 @@ class Event(MySqlModel):
         # [y] is then known, [y] = [L]^T[OPR], [L]^T is an upper triangular matrix,
         # backwards substitute to solve for OPR.
         oprs = solve_linear_least_squares(create_matrix(m_row_array), create_2d_vector(s_vector))
-        return tuple((team, opr.item(0)) for team, opr in zip(teams, oprs))
+        team_oprs = zip(teams, oprs)    # type: List[Tuple[Team, float]]
+        return tuple((team, opr.item(0)) for team, opr in team_oprs)
 
     def compare_oprs(self):
         from TBAW.models import RankingModel2016

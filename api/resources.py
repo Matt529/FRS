@@ -103,6 +103,7 @@ class SearchableResource(object):
 class TeamResource(SearchableResource, ViewableResource, ModelResource):
     class Meta:
         model_type = Team
+        fields = ['id', 'team_number', 'name', 'nickname', 'key']
         frs_url = tba_urls.TEAMS().template
         generate_clientside_interface = True
         clientside_schema_name = schemas.PUBLIC_TEAMS_SCHEMA()
@@ -124,7 +125,9 @@ class TeamResource(SearchableResource, ViewableResource, ModelResource):
 class EventResource(SearchableResource, ViewableResource, ModelResource):
     class Meta:
         model_type = Event
+        fields = ['id', 'key', 'name', 'short_name']
         queryset = Event.objects.all()
+        
         frs_url = tba_urls.EVENTS().template
         generate_clientside_interface = True
         clientside_schema_name = schemas.PUBLIC_EVENTS_SCHEMA()

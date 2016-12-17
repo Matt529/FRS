@@ -3,79 +3,35 @@
     "title": "PublicEvent",
     "type": "object",
     "properties": {
-        "year": {
-            "description": "",
-            "type": "integer"
-        },
-        "event_code": {
-            "description": "",
-            "type": "string"
-        },
-        "event_district": {
-            "description": "",
-            "type": "integer"
-        },
-        "timezone": {
-            "description": "",
-            "type": "string"
-        },
-        "location": {
-            "description": "",
-            "type": "string"
-        },
-        "official": {
-            "description": "",
-            "default": "",
-            "type": "boolean"
-        },
-        "key": {
-            "description": "",
-            "type": "string"
-        },
         "short_name": {
-            "description": "",
-            "type": "string"
-        },
-        "id": {
-            "description": "",
-            "default": "",
-            "type": "integer"
-        },
-        "venue_address": {
-            "description": "",
-            "default": "",
-            "type": "string"
+            "type": "string",
+            "description": "Shortened event name (e.g. Finger Lakes)"
         },
         "resource_uri": {
-            "description": "",
-            "type": "string"
-        },
-        "event_type": {
-            "description": "",
-            "type": "integer"
+            "type": "string",
+            "description": ""
         },
         "name": {
-            "description": "",
-            "type": "string"
+            "type": "string",
+            "description": "Full event name (e.g. Finger Lakes Regional)"
         },
-        "website": {
-            "description": "",
-            "type": "string"
+        "id": {
+            "type": "integer",
+            "description": "Unique database id",
+            "default": ""
         },
-        "end_date": {
-            "description": "",
-            "type": "date"
+        "key": {
+            "type": "string",
+            "description": "Unique event key, often of the form ###w where #### is the year and w is the event code"
+        },
+        "frs_url": {
+            "type": "string",
+            "description": "URL redirecting to a viewable page of this resource."
         }
     },
     "required": [
         "id",
-        "event_district",
-        "timezone",
-        "location",
         "short_name",
-        "venue_address",
-        "event_type",
-        "website",
-        "end_date"
+        "frs_url"
     ]
 }
