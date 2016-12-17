@@ -5,13 +5,10 @@
 {% block body %}
     <form action="{% url 'search' %}" method="get" class="uk-form form-valign">
         {% csrf_token %}
-        <label for="search"></label>
-        <input autofocus required type="search" name="search" id="search"
-               placeholder="Search for anything (e.g. 2791, 2016cmp)"
-               class="uk-form-large">
         <div id="typeahead-wrapper" class="uk-form-row">
-            <label for="typeahead-search"></label>
-            <input class="typeahead" name="typeahead-search" type="text" placeholder="Teams/Events" />
+            <label for="typeahead-search">Search Our Data</label>
+            <input class="typeahead uk-form-large" name="typeahead-search" type="text"
+                   placeholder="Search for anything (e.g. 2791, 2016cmp)" />
         </div>
     </form>
 {% endblock %}
@@ -29,33 +26,5 @@
         FRS.search.initializeTeamEventSearch({
             resultLimit: 30
         });
-
-        function s(e) {
-            var query = $('#search').val();
-
-            if (query.length > 0) {
-                console.log(query);
-                $.ajax({
-                    url: "{% url 'search_api' %}",
-                    data: {'search': query},
-                    context: document.body,
-                    success: function (r) {
-                        console.log(r);
-                    }
-                });
-            }
-        }
-        $(document).ready(function () {
-            var timeout = null;
-            var delay = 1000; // 1.000 seconds
-            $('#search').keyup(function (e) {
-                if (timeout !== null) {
-                    clearTimeout(timeout);
-                }
-                timeout = setTimeout(function () {
-                    s(e);
-                }, delay);
-            })
-        })
     </script>
 {% endblock %}

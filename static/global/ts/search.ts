@@ -2,7 +2,6 @@
  * Created by Matthew Crocco on 12/10/2016.
  */
 
-
 import {ApiObj, PublicTeam, PublicEvent, ApiResponse} from './resource/resources';
 
 import * as _ from 'lodash';
