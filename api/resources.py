@@ -8,7 +8,7 @@ from haystack.query import SearchQuerySet
 import logging
 
 from FRS.config.tba import urls as tba_urls
-from FRS.config.api import names as resnames
+from FRS.config.api import names as resnames, schemas
 from TBAW.models import Team, Event
 from util.viewutils import ajax_success
 from util.strutils import fqn, varnames_from_fmt
@@ -105,6 +105,7 @@ class TeamResource(SearchableResource, ViewableResource, ModelResource):
         model_type = Team
         frs_url = tba_urls.TEAMS().template
         generate_clientside_interface = True
+        clientside_schema_name = schemas.PUBLIC_TEAMS_SCHEMA()
         
         queryset = Team.objects.all()
         resource_name = resnames.PUBLIC_TEAMS()
@@ -125,7 +126,8 @@ class EventResource(SearchableResource, ViewableResource, ModelResource):
         model_type = Event
         queryset = Event.objects.all()
         frs_url = tba_urls.EVENTS().template
-        generate_clientside_interface = False
+        generate_clientside_interface = True
+        clientside_schema_name = schemas.PUBLIC_EVENTS_SCHEMA()
         
         resource_name = resnames.PUBLIC_EVENTS()
         allowed_methods = ['get']

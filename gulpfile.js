@@ -1,5 +1,5 @@
 // Gulp Plugins
-var gulp = require('gulp'),
+const gulp = require('gulp'),
     sass = require('gulp-sass'),
     gutil = require('gulp-util'),
     sourcemaps = require('gulp-sourcemaps'),
@@ -10,7 +10,12 @@ var gulp = require('gulp'),
     gulpFilter = require('gulp-filter'),
     gulpWebpack = require('gulp-webpack');
 
-var path = require('path');
+const await = require('asyncawait/await');
+const async = require('asyncawait/async');
+const compileFromFile = require('json-schema-to-typescript').compileFromFile;
+
+const path = require('path');
+const fs = require('fs');
 
 // Directory Root Constants
 const STATIC_ROOT = path.join('.', 'static');
@@ -48,7 +53,7 @@ const SASS_CLEAN_CSS = path.join(COMPILED_FRS_ROOT, 'css', '**', '*.css');  // G
 const SASS_CLEAN_MAP = path.join(COMPILED_FRS_ROOT, 'css', '**', '*.map');  // Glob for cleaning compiled .map files (sourcemaps)
 
 /**
- * Cleans out compiled SCSS files, inherently this also deletes any css files that exist under global/css
+ * Cleans out compiled SCSS files, inherently this also devares any css files that exist under global/css
  */
 function cleanSass() {
     return gulp.src([SASS_CLEAN_CSS, SASS_CLEAN_MAP])
@@ -104,6 +109,23 @@ function lintTypescript() {
             emitError: true
         }));
 }
+function generateResourceInterfaces(cb) {
+    var schemaDir = path.join(STATIC_FRS_ROOT, 'schemas');
+    var outputDir = path.join(STATIC_FRS_ROOT, 'ts', 'resource', 'schemas');
+    var files = fs.readdirSync(schemaDir);
+
+    var generate = async(function() {
+        files.forEach(function(schema) {
+            var filename = path.basename(schema);
+            filename = filename.substr(0, filename.lastIndexOf('-')) + '.d.ts';
+            fs.writeFileSync(path.join(outputDir, filename), await(compileFromFile(path.join(schemaDir, schema))));
+        });
+
+        cb();
+    });
+
+    generate();
+}
 
 function buildBundle() {
     select = gulpFilter(JS_WEBPACK_SELECTS);
@@ -125,13 +147,14 @@ function copyJavascript() {
 var cleanJsAndTs = gulp.parallel(cleanTypescriptDefs, cleanJavascript);
 var cleanFn = gulp.parallel(cleanSass, cleanJsAndTs);
 var lintFn = gulp.parallel(lintTypescript);
-var bundleFn = gulp.series(lintFn, buildBundle);
+var bundleFn = gulp.series(lintFn, generateResourceInterfaces, buildBundle);
 var buildFn = gulp.parallel(buildSass, copyJavascript, bundleFn);
 var rebuildFn = gulp.series(cleanFn, buildFn);
 
 
 // Task Definitions
 gulp.task('buildSass', buildSass);
+gulp.task('generateInterfaces', generateResourceInterfaces);
 
 gulp.task('clean', cleanFn);
 gulp.task('build', buildFn);
