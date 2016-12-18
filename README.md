@@ -39,7 +39,12 @@ Anytime `requirements.txt` is updated you will need to run the `pip` command abo
 5. Download [`mysqlclient-1.3.7-cp35-none-win_amd64.whl`](https://drive.google.com/file/d/0B5k0KOgTOwrhSk5JR3lkU1duREU/view?usp=sharing).
 6. Install it using `pip install mysqlclient-1.3.7-cp35-none-win_amd64`.
 7. Run `pip install mysqlclient`.
-8. Type `mysql -u root -p` into your console, then `password`, and enter the following:
+8. Install [`Solr 4.10.2`](https://archive.apache.org/dist/lucene/solr/4.10.2/solr-4.10.2.zip) which acts as our search engine.
+9. `python manage.py build_solr_schema > schema.xml`
+10. Copy `schema.xml` to the directory of `Solr 4.10.2` under `example\solr\collection1\conf`
+11. In the `Solr 4.10.2` directory, execute `bin\solr start`, it is recommended you add the `bin` directory to your path.
+12. `python manage.py rebuild_index`, whenever changes are made to the search indices `update_index` must be executed to take effect.
+13. Type `mysql -u root -p` into your console, then `password`, and enter the following:
 ```
 CREATE DATABASE `FRS` DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;
 CREATE USER 'FRS_user'@'localhost' IDENTIFIED BY 'password';
@@ -47,13 +52,7 @@ USE 'mysql';
 GRANT ALL PRIVILEGES ON FRS.* TO 'FRS_user'@'localhost' IDENTIFIED BY 'password' WITH GRANT OPTION;
 FLUSH PRIVILEGES;
 ```
-9. `python manage.py makemigrations` and `python manage.py migrate`.
-10. Install [`Solr 4.10.2`](https://archive.apache.org/dist/lucene/solr/4.10.2/solr-4.10.2.zip) which acts as our search engine.
-11. `python manage.py build_solr_schema > schema.xml`
-12. Copy `schema.xml` to the directory of `Solr 4.10.2` under `example\solr\collection1\conf`
-13. In the `Solr 4.10.2` directory, execute `bin\solr start`, it is recommended you add the `bin` directory to your path.
-14. `python manage.py rebuild_index`, whenever changes are made to the search indices `update_index` must be executed to take effect.
-
+14. `python manage.py makemigrations` and `python manage.py migrate`.
 ---
 
 Want to contribute? [Read here!](https://github.com/FRC-RS/FRS/blob/master/CONTRIBUTING.md)
