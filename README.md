@@ -53,6 +53,7 @@ GRANT ALL PRIVILEGES ON FRS.* TO 'FRS_user'@'localhost' IDENTIFIED BY 'password'
 FLUSH PRIVILEGES;
 ```
 14. `python manage.py makemigrations` and `python manage.py migrate`.
+
 ---
 
 Want to contribute? [Read here!](https://github.com/FRC-RS/FRS/blob/master/CONTRIBUTING.md)
