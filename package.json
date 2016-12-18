@@ -65,8 +65,6 @@
     "react-google-maps": "^4.11.0",
     "react-komposer": "^2.0.0",
     "react-loaders": "^2.3.0",
-    "react-spinner": "^0.2.6",
-    "react-uikit-components": "^2.0.2",
     "react-vis": "^0.7.1",
     "string": "^3.3.3",
     "typed-react": "^3.4.1",
