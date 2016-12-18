@@ -10,18 +10,27 @@
     "type": "git",
     "url": "git+https://github.com/FRC-RS/FRS.git"
   },
-  "author": "Matthew Crocco, Justing Tervay",
+  "author": "Matthew Crocco, Justin Tervay",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/FRC-RS/FRS/issues"
   },
   "homepage": "https://github.com/FRC-RS/FRS#readme",
+  "peerDependencies": {
+    "react": "^15.4.1",
+    "react-dom": "^15.4.1"
+  },
   "devDependencies": {
+    "@types/classnames": "0.0.32",
+    "@types/d3": "^4.4.0",
+    "@types/halogen": "^0.2.0",
     "@types/immutable": "^3.8.6",
     "@types/jquery": "^2.0.34",
     "@types/lodash": "^4.14.43",
     "@types/node": "0.0.3",
     "@types/pluralize": "0.0.27",
+    "@types/react": "^0.14.55",
+    "@types/react-dom": "^0.14.19",
     "@types/string": "0.0.28",
     "@types/typeahead": "^0.11.27",
     "@types/vex-js": "^2.3.27",
@@ -38,18 +47,29 @@
     "gulp-webpack": "^1.5.0",
     "json-schema-to-typescript": "^3.1.0",
     "merge2": "^1.0.2",
+    "react": "^15.4.1",
+    "react-dom": "^15.4.1",
     "ts-loader": "^1.3.2",
     "tslint": "^3.10.2",
     "webpack": "^1.14.0"
   },
   "dependencies": {
+    "classnames": "^2.2.5",
     "corejs-typeahead": "^1.0.1",
     "d3": "^3.5.17",
     "immutable": "^3.8.1",
     "jquery": "^3.1.1",
     "lodash": "^4.17.2",
     "pluralize": "^3.0.0",
+    "react-addons-shallow-compare": "^15.4.1",
+    "react-google-maps": "^4.11.0",
+    "react-komposer": "^2.0.0",
+    "react-loaders": "^2.3.0",
+    "react-spinner": "^0.2.6",
+    "react-uikit-components": "^2.0.2",
+    "react-vis": "^0.7.1",
     "string": "^3.3.3",
+    "typed-react": "^3.4.1",
     "typescript": "^2.1.4",
     "vex-js": "^3.0.0"
   }
