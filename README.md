@@ -47,7 +47,12 @@ USE 'mysql';
 GRANT ALL PRIVILEGES ON FRS.* TO 'FRS_user'@'localhost' IDENTIFIED BY 'password' WITH GRANT OPTION;
 FLUSH PRIVILEGES;
 ```
-9. Then finally `python manage.py makemigrations` and `python manage.py migrate`.
+9. `python manage.py makemigrations` and `python manage.py migrate`.
+10. Install [`Solr 4.10.2`](https://archive.apache.org/dist/lucene/solr/4.10.2/solr-4.10.2.zip) which acts as our search engine.
+11. `python manage.py build_solr_schema > schema.xml`
+12. Copy `schema.xml` to the directory of `Solr 4.10.2` under `example\solr\collection1\conf`
+13. In the `Solr 4.10.2` directory, execute `bin\solr start`, it is recommended you add the `bin` directory to your path.
+14. `python manage.py rebuild_index`, whenever changes are made to the search indices `update_index` must be executed to take effect.
 
 ---
 
