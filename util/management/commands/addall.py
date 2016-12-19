@@ -6,7 +6,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         call_command('addteams')
         call_command('addevents')
-        call_command('addrankings')
         call_command('addmatches')
+        call_command('addrankings')
         call_command('addawards')
         call_command('addelo')

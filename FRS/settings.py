@@ -169,9 +169,10 @@ DEBUG_TOOLBAR_PANELS = PANELS_DEFAULTS + [
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
+ABSOLUTE_BASE = os.path.dirname(os.path.dirname(__file__))
 STATIC_URL = '/static/'
-STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
-STATIC_ROOT = os.path.join(BASE_DIR, 'static2')
+STATICFILES_DIRS = (os.path.join(ABSOLUTE_BASE, 'static'),)
+STATIC_ROOT = os.path.join(ABSOLUTE_BASE, 'static2')
 
 # General settings
 SUPPORTED_YEARS = list(range(2010, 2017))
